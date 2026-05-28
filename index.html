@@ -3,287 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aroma_bakery 線上點餐與會員系統</title>
-    <style>
-        :root {
-            --caramel-dark: #4A332D;
-            --caramel-main: #8B4513;
-            --caramel-light: #D2691E;
-            --cream-bg: #FDFBF7;
-            --sand-light: #F4EBE1;
-            --text-muted: #666666;
-            --border-color: #CCCCCC;
-        }
-        body {
-            font-family: "Microsoft JhengHei", sans-serif;
-            background-color: var(--cream-bg);
-            color: var(--caramel-dark);
-            margin: 0;
-            padding: 20px;
-        }
-        
-        /* 系統內建自訂彈窗樣式 */
-        .sys-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center;
-            z-index: 11000;
-        }
-        .sys-modal {
-            background: #FFFFFF; border-radius: 4px; padding: 25px; width: 90%; max-width: 340px;
-            text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        .sys-modal h3 { margin-top: 0; color: var(--caramel-main); font-size: 18px; margin-bottom: 15px; }
-        .sys-modal p { font-size: 14px; color: #333333; white-space: pre-line; line-height: 1.6; text-align: left; margin-bottom: 20px; }
-        .sys-modal-btns { display: flex; gap: 10px; justify-content: center; }
-        .btn-modal-confirm { background: var(--caramel-main); color: #FFFFFF; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        .btn-modal-cancel { background: #EEEEEE; color: #333333; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-
-        /* 全域維護模式遮罩 */
-        .maintenance-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--cream-bg); display: none; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 99999; text-align: center; padding: 20px;
-        }
-        .maintenance-box { background: #FFFFFF; border: 1px solid var(--border-color); padding: 40px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 420px; }
-        .maintenance-box h2 { color: #CC0000; margin-top: 0; font-size: 22px; margin-bottom: 15px; letter-spacing: 1px; }
-        .maintenance-box p { color: var(--caramel-dark); line-height: 1.6; font-size: 15px; margin-bottom: 25px; }
-
-        /* 會員驗證遮罩 */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--cream-bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .auth-box {
-            background: #FFFFFF; border: 1px solid var(--sand-light); border-radius: 4px;
-            padding: 35px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(74,51,45,0.05);
-        }
-        .auth-box h2 { color: var(--caramel-main); text-align: center; margin-top: 0; margin-bottom: 25px; font-size: 22px; }
-        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid var(--sand-light); }
-        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; color: #999999; font-size: 14px; }
-        .auth-tab.active { color: var(--caramel-main); border-bottom: 2px solid var(--caramel-main); }
-        .auth-form { display: none; }
-        .auth-form.active { display: block; }
-        
-        .input-group { margin-bottom: 18px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: var(--caramel-dark); }
-        .input-group input { width: 100%; padding: 11px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .phone-prefix { background-color: #EEEEEE; padding: 11px; border: 1px solid var(--border-color); border-radius: 4px 0 0 4px; font-weight: bold; text-align: center; font-size: 14px; }
-        
-        .lnk-forgot { text-align: right; margin-top: -10px; margin-bottom: 20px; }
-        .lnk-forgot a { color: var(--caramel-light); font-size: 13px; text-decoration: none; font-weight: bold; cursor: pointer; }
-
-        .btn-auth { background-color: var(--caramel-main); color: #FFFFFF; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; margin-top: 10px; letter-spacing: 1px; }
-        .btn-auth:hover { background-color: var(--caramel-dark); }
-        .btn-danger { background-color: #CC0000; color: #FFFFFF; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; margin-top: 25px; }
-
-        /* 主系統介面 */
-        .main-system { display: none; }
-        .system-header { text-align: center; border-bottom: 2px solid var(--caramel-main); padding-bottom: 12px; margin-bottom: 25px; position: relative; }
-        .menu-toggle { position: absolute; left: 10px; bottom: 12px; font-size: 24px; cursor: pointer; user-select: none; color: var(--caramel-main); }
-        .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 26px; letter-spacing: 1px; }
-        .system-header span { font-size: 13px; color: var(--caramel-light); letter-spacing: 1px; }
-        .member-badge { position: absolute; right: 10px; bottom: 12px; font-size: 14px; font-weight: bold; color: var(--caramel-dark); }
-        
-        /* 側邊欄 */
-        .side-drawer {
-            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: #FFFFFF; box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-            transition: left 0.3s ease; z-index: 10000; padding: 20px; box-sizing: border-box;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .side-drawer.open { left: 0; }
-        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 9999; }
-        .drawer-overlay.show { display: block; }
-        .drawer-header { font-size: 18px; font-weight: bold; color: var(--caramel-main); margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); padding-bottom: 12px; display: flex; justify-content: space-between; }
-        .drawer-close { cursor: pointer; color: #999999; }
-        .readonly-info { background: #F9F9F9; padding: 12px; border-radius: 4px; font-size: 13px; color: #555555; margin-bottom: 20px; border: 1px solid #EEEEEE; line-height: 1.6; }
-
-        .system-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .system-container { grid-template-columns: 1fr; } }
-        .panel { background: #FFFFFF; border: 1px solid var(--sand-light); border-radius: 4px; padding: 20px; box-shadow: 0 2px 5px rgba(74,51,45,0.02); }
-        .panel-title { font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 20px; color: var(--caramel-dark); border-left: 4px solid var(--caramel-main); padding-left: 10px; }
-        .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .menu-item { border: 1px solid #EEEEEE; border-radius: 4px; padding: 12px; text-align: center; background: #FFFFFF; }
-        .menu-item img { width: 100%; height: 110px; object-fit: cover; border-radius: 2px; margin-bottom: 10px; }
-        .item-name { font-weight: bold; font-size: 15px; margin-bottom: 6px; }
-        .item-price { color: var(--caramel-light); font-weight: bold; margin-bottom: 12px; font-size: 14px; }
-        .cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .cart-table th { border-bottom: 2px solid var(--sand-light); text-align: left; padding: 10px; color: var(--text-muted); }
-        .cart-table td { padding: 10px; border-bottom: 1px solid #F5F5F5; }
-        .total-box { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; color: var(--caramel-main); }
-    </style>
+    <title>Aroma Bakery - 顧客線上點餐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-amber-50 min-h-screen font-sans">
 
-    <div class="maintenance-overlay" id="maintenance-screen">
-        <div class="maintenance-box">
-            <h2>系統正在維護中</h2>
-            <p>十分抱歉，本點餐系統目前正進行數據維護與系統升級，暫時無法提供下單服務。</p>
-            <hr style="border:0; border-top:1px dashed var(--border-color); margin:20px 0;">
-            <div style="font-size:14px; color:var(--caramel-light); font-weight:bold; letter-spacing:1px;">歡迎使用 Aroma_bakery</div>
+    <nav class="bg-amber-700 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wide">🍞 Aroma Bakery</h1>
+            <span class="text-sm bg-amber-800 px-3 py-1 rounded-full">美味烘焙 ‧ 即刻預訂</span>
         </div>
-    </div>
+    </nav>
 
-    <div class="sys-modal-overlay" id="sys-modal-screen">
-        <div class="sys-modal">
-            <h3 id="modal-title">系統提示</h3>
-            <p id="modal-msg"></p>
-            <div class="sys-modal-btns" id="modal-btn-container"></div>
-        </div>
-    </div>
-
-    <div class="auth-overlay" id="auth-screen">
-        <div class="auth-box">
-            <h2>Aroma_bakery 會員系統</h2>
-            <div class="auth-tabs">
-                <div class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">會員登入</div>
-                <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">新會員註冊</div>
-                <div class="auth-tab" id="tab-forgot" onclick="switchAuthMode('forgot')" style="display:none;">忘記密碼</div>
+    <div class="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+            <h2 class="text-xl font-bold text-amber-900 mb-4 flex items-center">今日現烤麵包</h2>
+            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-gray-500">美味麵包出爐中，請稍候...</p>
             </div>
-
-            <form id="form-login" class="auth-form active" onsubmit="handleMemberLogin(event)">
-                <div class="input-group">
-                    <label for="loginPhone">香港電話號碼</label>
-                    <div style="display: flex;">
-                        <div class="phone-prefix">+852</div>
-                        <input type="text" id="loginPhone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="loginPassword">密碼</label>
-                    <input type="password" id="loginPassword" required placeholder="請輸入密碼">
-                </div>
-                <div class="lnk-forgot">
-                    <a onclick="switchAuthMode('forgot')">忘記密碼？</a>
-                </div>
-                <button type="submit" class="btn-auth">登入系統</button>
-            </form>
-
-            <form id="form-register" class="auth-form" onsubmit="handleMemberRegister(event)">
-                <div class="input-group">
-                    <label>中文姓名</label>
-                    <div class="input-row">
-                        <input type="text" id="regLastName" required placeholder="姓氏">
-                        <input type="text" id="regFirstName" required placeholder="名字">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="regPhone">香港電話號碼</label>
-                    <div style="display: flex;">
-                        <div class="phone-prefix">+852</div>
-                        <input type="text" id="regPhone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="regPassword">設定密碼</label>
-                    <input type="password" id="regPassword" required placeholder="請輸入密碼">
-                </div>
-                <div class="input-group">
-                    <label>出生日期 (設定後不可自行變更)</label>
-                    <div class="input-row">
-                        <input type="number" id="regBirthMonth" min="1" max="12" required placeholder="月份">
-                        <input type="number" id="regBirthDay" min="1" max="31" required placeholder="日期">
-                    </div>
-                </div>
-                <button type="submit" class="btn-auth">提交註冊申請</button>
-            </form>
-
-            <form id="form-forgot" class="auth-form" onsubmit="handleForgotSubmit(event)">
-                <div class="input-group">
-                    <label for="forgotPhone">註冊電話號碼</label>
-                    <div style="display: flex;">
-                        <div class="phone-prefix">+852</div>
-                        <input type="text" id="forgotPhone" required placeholder="請輸入8位電話號碼" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>會員出生日期</label>
-                    <div class="input-row">
-                        <input type="number" id="forgotMonth" min="1" max="12" required placeholder="月份">
-                        <input type="number" id="forgotDay" min="1" max="31" required placeholder="日期">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="forgotEmail">接收密碼電子郵件 (Email)</label>
-                    <input type="email" id="forgotEmail" required placeholder="example@mail.com">
-                </div>
-                <button type="submit" class="btn-auth" style="background-color: var(--caramel-light);">提交密碼查詢申請</button>
-                <button type="button" class="btn-auth" style="background-color: #999999; margin-top: 8px;" onclick="switchAuthMode('login')">返回登入</button>
-            </form>
         </div>
-    </div>
 
-    <div class="drawer-overlay" id="drawer-shadow" onclick="toggleDrawer(false)"></div>
-    <div class="side-drawer" id="side-profile-drawer">
-        <div>
-            <div class="drawer-header">
-                <span>個人基本資料</span>
-                <span class="drawer-close" onclick="toggleDrawer(false)">✕</span>
-            </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-amber-100 h-fit sticky top-20">
+            <h2 class="text-xl font-bold text-amber-900 mb-4 pb-2 border-b">🛒 您的購物車</h2>
             
-            <div class="readonly-info">
-                <div><strong>會員編號：</strong><span id="draw-numb"></span></div>
-                <div><strong>電話號碼：</strong><span id="draw-phone"></span></div>
-                <div><strong>註冊日期：</strong><span id="draw-regdate"></span></div>
-                <div><strong>出生日期：</strong><span id="draw-birth"></span></div>
+            <div id="cart-items" class="space-y-3 max-h-60 overflow-y-auto mb-4">
+                <p class="text-gray-400 text-center py-4">購物車還是空的，快去挑選麵包吧！</p>
             </div>
 
-            <form onsubmit="handleProfileUpdate(event)">
-                <div class="input-group">
-                    <label>修改姓氏</label>
-                    <input type="text" id="drawLastName" required>
+            <div class="flex justify-between items-center font-bold text-lg text-amber-950 mb-6">
+                <span>總計金額：</span>
+                <span>$ <span id="cart-total">0</span></span>
+            </div>
+
+            <form id="order-form" class="space-y-3">
+                <h3 class="font-semibold text-gray-700 border-t pt-3">📋 取貨資訊</h3>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">姓名</label>
+                    <input type="text" id="cust-name" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                 </div>
-                <div class="input-group">
-                    <label>修改名字</label>
-                    <input type="text" id="drawFirstName" required>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">電話</label>
+                    <input type="tel" id="cust-phone" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                 </div>
-                <button type="submit" class="btn-auth" style="font-size:13px; padding:8px;">儲存修改</button>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">預計取貨時間</label>
+                    <input type="time" id="cust-time" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 mt-4">
+                    確認送出訂單
+                </button>
             </form>
-            
-            <button class="btn-auth" style="background-color:#777777; font-size:13px; padding:6px; margin-top:15px;" onclick="handleLogout()">登出帳號</button>
-        </div>
-        <div>
-            <button class="btn-danger" onclick="handleCustomerSelfDelete()">註銷我的會員帳號</button>
-        </div>
-    </div>
-
-    <div class="main-system" id="main-order-system">
-        <div class="system-header">
-            <div class="menu-toggle" onclick="toggleDrawer(true)">☰</div>
-            <h1>Aroma_bakery 下單系統</h1>
-            <span>Ready to Serve</span>
-            <div class="member-badge">會員編號: <span id="user-numb-display">-</span></div>
-        </div>
-
-        <div class="system-container">
-            <div class="panel">
-                <div class="panel-title">線上商品菜單 (HKD 定價)</div>
-                <div class="menu-list" id="menu-view"></div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">下單明細</div>
-                <table class="cart-table">
-                    <thead>
-                        <tr><th>品名</th><th width="50">數量</th><th width="60">小計</th><th width="30"></th></tr>
-                    </thead>
-                    <tbody id="cart-view"></tbody>
-                </table>
-                <div class="total-box">總計: HKD $<span id="total-price">0</span></div>
-                <button class="btn-auth" style="margin-top:15px; padding:12px; background-color: var(--caramel-light);" onclick="submitOrder()">確認送出訂單</button>
-            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getFirestore, collection, onSnapshot, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
             authDomain: "aroma-bakery-492fa.firebaseapp.com",
-            databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com/",
             projectId: "aroma-bakery-492fa",
             storageBucket: "aroma-bakery-492fa.firebasestorage.app",
             messagingSenderId: "1060567946315",
@@ -291,222 +70,133 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const db = getFirestore(app);
 
-        let currentMember = null;
-        let currentMemberPhoneKey = ""; 
-        let productsFromServer = {};
-        let cart = [];
+        let productsData = {}; 
+        let cart = {};
 
-        // 實時監聽維護狀態
-        onValue(ref(db, 'system_maintenance'), (snapshot) => {
-            const isMaintenance = snapshot.val();
-            document.getElementById('maintenance-screen').style.display = (isMaintenance === true) ? 'flex' : 'none';
-        });
+        // 1. 即時監聽 Firestore 商品資料
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            const productList = document.getElementById("product-list");
+            productList.innerHTML = "";
+            productsData = {};
 
-        // 實時監聽選單更新
-        onValue(ref(db, 'products'), (snapshot) => {
-            productsFromServer = snapshot.val() || {};
-            if(document.getElementById('main-order-system').style.display === 'block') {
-                renderMenuUI();
-            }
-        });
-
-        function showSysModal(title, msg, onConfirm = null, isConfirmType = false) {
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-msg').innerText = msg;
-            const container = document.getElementById('modal-btn-container');
-            container.innerHTML = '';
-
-            const okBtn = document.createElement('button');
-            okBtn.className = 'btn-modal-confirm';
-            okBtn.innerText = '確定';
-            okBtn.onclick = () => {
-                document.getElementById('sys-modal-screen').style.display = 'none';
-                if(onConfirm) onConfirm();
-            };
-
-            if (isConfirmType) {
-                const cancelBtn = document.createElement('button');
-                cancelBtn.className = 'btn-modal-cancel';
-                cancelBtn.innerText = '取消';
-                cancelBtn.onclick = () => { document.getElementById('sys-modal-screen').style.display = 'none'; };
-                container.appendChild(cancelBtn);
-            }
-            container.appendChild(okBtn);
-            document.getElementById('sys-modal-screen').style.display = 'flex';
-        }
-
-        window.switchAuthMode = function(mode) {
-            document.querySelectorAll('.auth-tab, .auth-form').forEach(el => el.classList.remove('active'));
-            if(mode === 'login') {
-                document.getElementById('tab-login').classList.add('active');
-                document.getElementById('form-login').classList.add('active');
-            } else if (mode === 'register') {
-                document.getElementById('tab-register').classList.add('active');
-                document.getElementById('form-register').classList.add('active');
-            } else if (mode === 'forgot') {
-                document.getElementById('tab-forgot').classList.add('active');
-                document.getElementById('form-forgot').classList.add('active');
-            }
-        }
-
-        window.toggleDrawer = function(open) {
-            const drawer = document.getElementById('side-profile-drawer');
-            const shadow = document.getElementById('drawer-shadow');
-            if(open) {
-                drawer.classList.add('open'); shadow.classList.add('show');
-                document.getElementById('draw-numb').innerText = currentMember.memberNumb;
-                document.getElementById('draw-phone').innerText = currentMember.phone;
-                document.getElementById('draw-regdate').innerText = currentMember.registerDate || "未記載";
-                document.getElementById('draw-birth').innerText = currentMember.birthday;
-                document.getElementById('drawLastName').value = currentMember.lastName;
-                document.getElementById('drawFirstName').value = currentMember.firstName;
-            } else {
-                drawer.classList.remove('open'); shadow.classList.remove('show');
-            }
-        }
-
-        window.handleMemberRegister = function(event) {
-            event.preventDefault();
-            const phone = document.getElementById('regPhone').value.trim();
-            const lastName = document.getElementById('regLastName').value.trim();
-            const firstName = document.getElementById('regFirstName').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const month = parseInt(document.getElementById('regBirthMonth').value);
-            const day = parseInt(document.getElementById('regBirthDay').value);
-            const today = new Date();
-            const regDateString = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-            get(child(ref(db), `users/${phone}`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    showSysModal('註冊提示', '此電話號碼已存在，請直接登入。');
-                } else {
-                    const memberNumb = `AROMA-${Math.floor(100000 + Math.random() * 900000)}`;
-                    const userData = {
-                        lastName, firstName, phone: `(852)${phone}`, password, birthday: `${month}月${day}日`, memberNumb, registerDate: regDateString
-                    };
-                    set(ref(db, `users/${phone}`), userData).then(() => {
-                        showSysModal('註冊成功', `您的永久會員編號為：\n${memberNumb}`, () => {
-                            currentMemberPhoneKey = phone; enterSystem(userData);
-                        });
-                    });
-                }
-            });
-        }
-
-        window.handleMemberLogin = function(event) {
-            event.preventDefault();
-            const phone = document.getElementById('loginPhone').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            get(child(ref(db), `users/${phone}`)).then((snapshot) => {
-                if (snapshot.exists() && snapshot.val().password === password) {
-                    currentMemberPhoneKey = phone; enterSystem(snapshot.val());
-                } else {
-                    showSysModal('登入錯誤', '帳號不存在或密碼錯誤。');
-                }
-            }).catch(() => showSysModal('連線失敗', '資料庫連線超時。'));
-        }
-
-        window.handleForgotSubmit = function(event) {
-            event.preventDefault();
-            const phone = document.getElementById('forgotPhone').value.trim();
-            const month = document.getElementById('forgotMonth').value;
-            const day = document.getElementById('forgotDay').value;
-            const email = document.getElementById('forgotEmail').value.trim();
-            
-            const forgotData = { phone, birthday: `${month}月${day}日`, email, timestamp: Date.now() };
-
-            set(ref(db, `forgot_password_requests/${phone}`), forgotData).then(() => {
-                showSysModal('申請已送出', '查驗申請已提交！資料核實後管理處將向您的電郵發送密碼。\n\n提示：此服務非24小時自動發送，需人工手動審核，請耐心等候。', () => {
-                    document.getElementById('form-forgot').reset(); switchAuthMode('login');
-                });
-            }).catch(() => showSysModal('錯誤', '送出失敗，請檢查網路連線。'));
-        }
-
-        window.handleProfileUpdate = function(event) {
-            event.preventDefault();
-            const newLast = document.getElementById('drawLastName').value.trim();
-            const newFirst = document.getElementById('drawFirstName').value.trim();
-            update(ref(db), {
-                [`/users/${currentMemberPhoneKey}/lastName`]: newLast,
-                [`/users/${currentMemberPhoneKey}/firstName`]: newFirst
-            }).then(() => {
-                showSysModal('更新成功', '會員姓名已成功更新。');
-                currentMember.lastName = newLast; currentMember.firstName = newFirst; toggleDrawer(false);
-            });
-        }
-
-        window.handleLogout = function() {
-            currentMember = null; currentMemberPhoneKey = ""; cart = []; renderCart(); toggleDrawer(false);
-            document.getElementById('main-order-system').style.display = 'none';
-            document.getElementById('auth-screen').style.display = 'flex';
-        }
-
-        window.handleCustomerSelfDelete = function() {
-            showSysModal('確認註銷', '確定要永久刪除您的會員帳號嗎？此動作無法復原！', () => {
-                remove(ref(db, `users/${currentMemberPhoneKey}`)).then(() => {
-                    showSysModal('帳號已註銷', '您的資料已成功移除。', () => { handleLogout(); });
-                });
-            }, true);
-        }
-
-        function enterSystem(userData) {
-            currentMember = userData;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-order-system').style.display = 'block';
-            document.getElementById('user-numb-display').innerText = userData.memberNumb;
-            renderMenuUI();
-        }
-
-        function renderMenuUI() {
-            const menuView = document.getElementById('menu-view');
-            const keys = Object.keys(productsFromServer);
-            if (keys.length === 0) {
-                menuView.innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0; grid-column: 1/-1;">今日無商品出爐</div>';
+            if(snapshot.empty) {
+                productList.innerHTML = `<p class="text-gray-500 col-span-2">目前沒有上架中的麵包。</p>`;
                 return;
             }
-            menuView.innerHTML = keys.map(key => {
-                const p = productsFromServer[key];
-                return `
-                    <div class="menu-item">
-                        <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}">
-                        <div class="item-name">${p.name}</div>
-                        <div class="item-price">HKD $${p.price}</div>
-                        <button class="btn-auth" style="margin-top:0; padding:6px 12px; font-size:13px;" onclick="addToCart('${key}')">點購</button>
+
+            snapshot.forEach((doc) => {
+                const p = doc.data();
+                const id = doc.id;
+                productsData[id] = { id, ...p };
+
+                const card = document.createElement("div");
+                card.className = "bg-white p-4 rounded-xl shadow-sm border border-amber-100 flex gap-4 items-center";
+                card.innerHTML = `
+                    <img src="${p.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150'}" class="w-20 h-20 object-cover rounded-lg bg-gray-100">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-lg">${p.name}</h3>
+                        <p class="text-amber-700 font-semibold">$ ${p.price}</p>
+                        <p class="text-xs text-gray-400">當日剩餘庫存: ${p.stock || 0}</p>
+                    </div>
+                    <button onclick="addToCart('${id}')" class="bg-amber-100 hover:bg-amber-600 hover:text-white text-amber-800 font-bold py-1 px-3 rounded-lg transition duration-200 text-sm">
+                        + 加購物車
+                    </button>
+                `;
+                productList.appendChild(card);
+            });
+        });
+
+        // 2. 購物車邏輯 (掛載到 window 讓 HTML 監聽按鈕能觸發)
+        window.addToCart = (id) => {
+            const product = productsData[id];
+            if (!product || product.stock <= 0) {
+                alert("該商品已售完或不存在！");
+                return;
+            }
+            if (cart[id]) {
+                if (cart[id].qty >= product.stock) {
+                    alert("抱歉，已達今日現貨庫存上限！");
+                    return;
+                }
+                cart[id].qty++;
+            } else {
+                cart[id] = { name: product.name, price: product.price, qty: 1 };
+            }
+            renderCart();
+        };
+
+        window.updateQty = (id, amount) => {
+            if (!cart[id]) return;
+            cart[id].qty += amount;
+            if (cart[id].qty <= 0) delete cart[id];
+            renderCart();
+        };
+
+        function renderCart() {
+            const container = document.getElementById("cart-items");
+            const totalSpan = document.getElementById("cart-total");
+            container.innerHTML = "";
+            let total = 0;
+
+            const keys = Object.keys(cart);
+            if (keys.length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-center py-4">購物車還是空的，快去挑選麵包吧！</p>`;
+                totalSpan.innerText = "0";
+                return;
+            }
+
+            keys.forEach(id => {
+                const item = cart[id];
+                total += item.price * item.qty;
+                const div = document.createElement("div");
+                div.className = "flex justify-between items-center text-sm border-b pb-2";
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800">${item.name}</div>
+                        <div class="text-xs text-gray-400">$${item.price} x ${item.qty}</div>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="updateQty('${id}', -1)" class="px-2 py-0.5 bg-gray-200 rounded text-xs font-bold">-</button>
+                        <span class="w-6 text-center font-semibold">${item.qty}</span>
+                        <button onclick="updateQty('${id}', 1)" class="px-2 py-0.5 bg-gray-200 rounded text-xs font-bold">+</button>
                     </div>
                 `;
-            }).join('');
+                container.appendChild(div);
+            });
+            totalSpan.innerText = total;
         }
 
-        window.addToCart = function(key) {
-            const prod = productsFromServer[key]; if (!prod) return;
-            const item = cart.find(i => i.key === key);
-            if (item) { item.qty++; } else { cart.push({ key, name: prod.name, price: prod.price, qty: 1 }); }
-            renderCart();
-        }
-        window.removeFromCart = function(key) { cart = cart.filter(i => i.key !== key); renderCart(); }
-        
-        function renderCart() {
-            const cartView = document.getElementById('cart-view');
-            const totalPrice = document.getElementById('total-price');
-            if (cart.length === 0) {
-                cartView.innerHTML = '<tr><td colspan="4" style="color:#999; text-align:center; padding:30px 0;">未選擇商品</td></tr>';
-                totalPrice.innerText = '0'; return;
+        // 3. 送出訂單至 Firebase
+        document.getElementById("order-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (Object.keys(cart).length === 0) {
+                alert("購物車內沒有商品！");
+                return;
             }
-            let total = 0;
-            cartView.innerHTML = cart.map(item => {
-                const subtotal = item.price * item.qty; total += subtotal;
-                return `<tr><td>${item.name}</td><td>${item.qty}</td><td>HKD $${subtotal}</td><td style="color:#CC0000; cursor:pointer;" onclick="removeFromCart('${item.key}')">✕</td></tr>`;
-            }).join('');
-            totalPrice.innerText = total;
-        }
 
-        window.submitOrder = function() {
-            if (cart.length === 0) return;
-            showSysModal('訂單成立', `感謝您的點購，訂單已成功送出！`, () => { cart = []; renderCart(); });
-        }
+            const orderData = {
+                customerName: document.getElementById("cust-name").value,
+                customerPhone: document.getElementById("cust-phone").value,
+                pickupTime: document.getElementById("cust-time").value,
+                items: Object.values(cart),
+                totalPrice: Number(document.getElementById("cart-total").innerText),
+                status: "待接單", // 初始狀態
+                createdAt: Timestamp.now()
+            };
+
+            try {
+                await addDoc(collection(db, "orders"), orderData);
+                alert("🎉 訂單送出成功！請準時前往現場取貨。");
+                cart = {};
+                renderCart();
+                document.getElementById("order-form").reset();
+            } catch (error) {
+                console.error("Error added document: ", error);
+                alert("訂單送出失敗，請稍後再試。");
+            }
+        });
     </script>
 </body>
 </html>
