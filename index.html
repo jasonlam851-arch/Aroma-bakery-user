@@ -20,6 +20,24 @@
             padding: 20px;
         }
         
+        /* 系統內建自訂彈窗樣式 */
+        .sys-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center;
+            z-index: 11000;
+        }
+        .sys-modal {
+            background: white; border-radius: 8px; padding: 25px; width: 90%; max-width: 340px;
+            text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .sys-modal h3 { margin-top: 0; color: var(--caramel-main); }
+        .sys-modal p { font-size: 14px; color: #555; white-space: pre-line; line-height: 1.5; }
+        .sys-modal-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
+        .btn-modal-confirm { background: var(--caramel-main); color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-modal-cancel { background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
         /* 會員驗證遮罩 */
         .auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -34,38 +52,25 @@
         }
         .auth-box h2 { color: var(--caramel-main); text-align: center; margin-top: 0; margin-bottom: 20px; }
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); }
-        .auth-tab {
-            flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #999;
-        }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #999; }
         .auth-tab.active { color: var(--caramel-main); border-bottom: 2px solid var(--caramel-main); }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
         
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
-        .input-group input {
-            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px;
-        }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .phone-prefix { background-color: #eee; padding: 10px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; font-weight: bold; text-align: center; }
         
-        .btn-auth {
-            background-color: var(--caramel-main); color: white; border: none; padding: 12px;
-            border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px;
-        }
+        .btn-auth { background-color: var(--caramel-main); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px; }
         .btn-auth:hover { background-color: var(--caramel-dark); }
+        .btn-danger { background-color: #cc0000; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; margin-top: 25px; }
 
         /* 主系統介面 */
         .main-system { display: none; }
-        .system-header {
-            text-align: center; border-bottom: 2px solid var(--caramel-main);
-            padding-bottom: 10px; margin-bottom: 25px; position: relative;
-        }
-        
-        /* 左上角三條線漢堡選單 */
-        .menu-toggle {
-            position: absolute; left: 10px; bottom: 10px; font-size: 24px; cursor: pointer; user-select: none; color: var(--caramel-main);
-        }
+        .system-header { text-align: center; border-bottom: 2px solid var(--caramel-main); padding-bottom: 10px; margin-bottom: 25px; position: relative; }
+        .menu-toggle { position: absolute; left: 10px; bottom: 10px; font-size: 24px; cursor: pointer; user-select: none; color: var(--caramel-main); }
         .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 28px; }
         .system-header span { font-size: 14px; color: var(--caramel-light); letter-spacing: 1px; }
         .member-badge { position: absolute; right: 10px; bottom: 10px; font-size: 14px; font-weight: bold; color: var(--caramel-dark); }
@@ -75,39 +80,26 @@
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1);
             transition: left 0.3s ease; z-index: 10000; padding: 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         .side-drawer.open { left: 0; }
-        .drawer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3); display: none; z-index: 9999;
-        }
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 9999; }
         .drawer-overlay.show { display: block; }
         .drawer-header { font-size: 20px; font-weight: bold; color: var(--caramel-main); margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); padding-bottom: 10px; display: flex; justify-content: space-between; }
         .drawer-close { cursor: pointer; color: #999; }
         .readonly-info { background: #f9f9f9; padding: 10px; border-radius: 4px; font-size: 13px; color: #666; margin-bottom: 15px; border: 1px solid #eee; }
         .readonly-info div { margin-bottom: 5px; }
 
-        .system-container {
-            max-width: 1000px; margin: 0 auto;
-            display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;
-        }
+        .system-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .system-container { grid-template-columns: 1fr; } }
-        .panel {
-            background: white; border: 1px solid var(--sand-light); border-radius: 6px; padding: 15px;
-            box-shadow: 0 2px 5px rgba(74,51,45,0.05);
-        }
-        .panel-title {
-            font-size: 18px; font-weight: bold; margin-top: 0; margin-bottom: 15px;
-            color: var(--caramel-dark); border-left: 4px solid var(--caramel-main); padding-left: 8px;
-        }
+        .panel { background: white; border: 1px solid var(--sand-light); border-radius: 6px; padding: 15px; box-shadow: 0 2px 5px rgba(74,51,45,0.05); }
+        .panel-title { font-size: 18px; font-weight: bold; margin-top: 0; margin-bottom: 15px; color: var(--caramel-dark); border-left: 4px solid var(--caramel-main); padding-left: 8px; }
         .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
         .menu-item { border: 1px solid #eee; border-radius: 4px; padding: 12px; text-align: center; background: #fff; }
         .menu-item img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
         .item-name { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
         .item-price { color: var(--caramel-light); font-weight: bold; margin-bottom: 10px; }
-        .btn {
-            background-color: var(--caramel-main); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%;
-        }
+        .btn { background-color: var(--caramel-main); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn:hover { background-color: var(--caramel-dark); }
         .btn-order { background-color: var(--caramel-light); padding: 10px; font-size: 16px; margin-top: 15px; }
         .cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -118,6 +110,15 @@
 </head>
 <body>
 
+    <!-- 系統自訂通用彈窗 UI -->
+    <div class="sys-modal-overlay" id="sys-modal-screen">
+        <div class="sys-modal">
+            <h3 id="modal-title">系統提示</h3>
+            <p id="modal-msg"></p>
+            <div class="sys-modal-btns" id="modal-btn-container"></div>
+        </div>
+    </div>
+
     <!-- 會員驗證模組 -->
     <div class="auth-overlay" id="auth-screen">
         <div class="auth-box">
@@ -127,7 +128,6 @@
                 <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">新會員註冊</div>
             </div>
 
-            <!-- 登入表單 -->
             <form id="form-login" class="auth-form active" onsubmit="handleMemberLogin(event)">
                 <div class="input-group">
                     <label for="loginPhone">香港電話號碼</label>
@@ -143,7 +143,6 @@
                 <button type="submit" class="btn-auth">登入系統</button>
             </form>
 
-            <!-- 註冊表單 -->
             <form id="form-register" class="auth-form" onsubmit="handleMemberRegister(event)">
                 <div class="input-group">
                     <label>中文姓名</label>
@@ -178,37 +177,42 @@
     <!-- 側邊個人資料導覽欄 -->
     <div class="drawer-overlay" id="drawer-shadow" onclick="toggleDrawer(false)"></div>
     <div class="side-drawer" id="side-profile-drawer">
-        <div class="drawer-header">
-            <span>個人基本資料</span>
-            <span class="drawer-close" onclick="toggleDrawer(false)">✕</span>
-        </div>
-        
-        <!-- 唯讀固定的帳號資訊 -->
-        <div class="readonly-info">
-            <div><strong>會員編號：</strong><span id="draw-numb"></span></div>
-            <div><strong>電話號碼：</strong><span id="draw-phone"></span></div>
-            <div><strong>註冊日期：</strong><span id="draw-regdate"></span></div>
-            <div><strong>出生日期：</strong><span id="draw-birth"></span> (如需修改請洽管理員)</div>
+        <div>
+            <div class="drawer-header">
+                <span>個人基本資料</span>
+                <span class="drawer-close" onclick="toggleDrawer(false)">✕</span>
+            </div>
+            
+            <div class="readonly-info">
+                <div><strong>會員編號：</strong><span id="draw-numb"></span></div>
+                <div><strong>電話號碼：</strong><span id="draw-phone"></span></div>
+                <div><strong>註冊日期：</strong><span id="draw-regdate"></span></div>
+                <div><strong>出生日期：</strong><span id="draw-birth"></span></div>
+            </div>
+
+            <form onsubmit="handleProfileUpdate(event)">
+                <div class="input-group">
+                    <label>修改姓氏</label>
+                    <input type="text" id="drawLastName" required>
+                </div>
+                <div class="input-group">
+                    <label>修改名字</label>
+                    <input type="text" id="drawFirstName" required>
+                </div>
+                <button type="submit" class="btn-auth" style="font-size:14px; padding:8px;">儲存名稱修改</button>
+            </form>
+            
+            <button class="btn-auth" style="background-color:#777; font-size:13px; padding:6px; margin-top:15px;" onclick="handleLogout()">登出目前帳號</button>
         </div>
 
-        <!-- 唯獨可以修改的姓名欄位 -->
-        <form onsubmit="handleProfileUpdate(event)">
-            <div class="input-group">
-                <label>修改姓氏</label>
-                <input type="text" id="drawLastName" required>
-            </div>
-            <div class="input-group">
-                <label>修改名字</label>
-                <input type="text" id="drawFirstName" required>
-            </div>
-            <button type="submit" class="btn-auth" style="font-size:14px; padding:8px;">儲存名稱修改</button>
-        </form>
+        <div>
+            <button class="btn-danger" onclick="handleCustomerSelfDelete()">註銷我的會員帳號</button>
+        </div>
     </div>
 
     <!-- 主下單系統 -->
     <div class="main-system" id="main-order-system">
         <div class="system-header">
-            <!-- 左上角三條線漢堡按鈕 -->
             <div class="menu-toggle" onclick="toggleDrawer(true)">☰</div>
             <h1>Aroma_bakery 下單系統</h1>
             <span>Ready to Serve</span>
@@ -237,7 +241,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
@@ -253,9 +257,35 @@
         const db = getDatabase(app);
 
         let currentMember = null;
-        let currentMemberPhoneKey = ""; // 用來後續更新自己資料的標記
+        let currentMemberPhoneKey = ""; 
         let productsFromServer = {};
         let cart = [];
+
+        // 封裝系統內建模態窗提示
+        function showSysModal(title, msg, onConfirm = null, isConfirmType = false) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-msg').innerText = msg;
+            const container = document.getElementById('modal-btn-container');
+            container.innerHTML = '';
+
+            const okBtn = document.createElement('button');
+            okBtn.className = 'btn-modal-confirm';
+            okBtn.innerText = '確 定';
+            okBtn.onclick = () => {
+                document.getElementById('sys-modal-screen').style.display = 'none';
+                if(onConfirm) onConfirm();
+            };
+
+            if (isConfirmType) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn-modal-cancel';
+                cancelBtn.innerText = '取 消';
+                cancelBtn.onclick = () => { document.getElementById('sys-modal-screen').style.display = 'none'; };
+                container.appendChild(cancelBtn);
+            }
+            container.appendChild(okBtn);
+            document.getElementById('sys-modal-screen').style.display = 'flex';
+        }
 
         window.switchAuthMode = function(mode) {
             document.querySelectorAll('.auth-tab, .auth-form').forEach(el => el.classList.remove('active'));
@@ -268,14 +298,12 @@
             }
         }
 
-        // 側邊選單開關
         window.toggleDrawer = function(open) {
             const drawer = document.getElementById('side-profile-drawer');
             const shadow = document.getElementById('drawer-shadow');
             if(open) {
                 drawer.classList.add('open');
                 shadow.classList.add('show');
-                // 同步載入最新個人資料到欄位中
                 document.getElementById('draw-numb').innerText = currentMember.memberNumb;
                 document.getElementById('draw-phone').innerText = currentMember.phone;
                 document.getElementById('draw-regdate').innerText = currentMember.registerDate || "未記載";
@@ -288,7 +316,6 @@
             }
         }
 
-        // 處理會員註冊
         window.handleMemberRegister = function(event) {
             event.preventDefault();
             const phone = document.getElementById('regPhone').value.trim();
@@ -298,13 +325,12 @@
             const month = parseInt(document.getElementById('regBirthMonth').value);
             const day = parseInt(document.getElementById('regBirthDay').value);
 
-            // 取得今天的註冊日期
             const today = new Date();
             const regDateString = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             get(child(ref(db), `users/${phone}`)).then((snapshot) => {
                 if (snapshot.exists()) {
-                    alert('此電話號碼已經被註冊過，請直接選擇登入。');
+                    showSysModal('註冊提示', '此電話號碼已經被註冊過，請直接選擇登入。');
                 } else {
                     const randNumb = Math.floor(100000 + Math.random() * 900000);
                     const memberNumb = `AROMA-${randNumb}`;
@@ -320,15 +346,15 @@
                     };
 
                     set(ref(db, `users/${phone}`), userData).then(() => {
-                        alert(`註冊成功！您的永久會員編號為：${memberNumb}`);
-                        currentMemberPhoneKey = phone;
-                        enterSystem(userData);
+                        showSysModal('註冊成功', `您的永久會員編號為：\n${memberNumb}`, () => {
+                            currentMemberPhoneKey = phone;
+                            enterSystem(userData);
+                        });
                     });
                 }
             });
         }
 
-        // 處理會員登入
         window.handleMemberLogin = function(event) {
             event.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
@@ -341,15 +367,14 @@
                         currentMemberPhoneKey = phone;
                         enterSystem(user);
                     } else {
-                        alert('密碼輸入錯誤，請重新確認。');
+                        showSysModal('登入錯誤', '密碼輸入錯誤，請重新確認。');
                     }
                 } else {
-                    alert('找不到此會員資料，請確認號碼或前往註冊。');
+                    showSysModal('登入錯誤', '找不到此會員資料，請確認號碼或前往註冊。');
                 }
-            }).catch(err => alert('連線失敗'));
+            }).catch(err => showSysModal('連線失敗', '資料庫連線逾時。'));
         }
 
-        // 顧客自行修改姓名（只允許改名字）
         window.handleProfileUpdate = function(event) {
             event.preventDefault();
             const newLast = document.getElementById('drawLastName').value.trim();
@@ -360,11 +385,33 @@
             updates[`/users/${currentMemberPhoneKey}/firstName`] = newFirst;
 
             update(ref(db), updates).then(() => {
-                alert('基本姓名資料已成功同步更新！');
+                showSysModal('更新成功', '基本姓名資料已成功同步更新！');
                 currentMember.lastName = newLast;
                 currentMember.firstName = newFirst;
                 toggleDrawer(false);
-            }).catch(err => alert('修改失敗，請稍後再試。'));
+            }).catch(err => showSysModal('錯誤', '修改失敗，請稍後再試。'));
+        }
+
+        window.handleLogout = function() {
+            currentMember = null;
+            currentMemberPhoneKey = "";
+            cart = [];
+            renderCart();
+            toggleDrawer(false);
+            document.getElementById('main-order-system').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('form-login').reset();
+            document.getElementById('form-register').reset();
+        }
+
+        window.handleCustomerSelfDelete = function() {
+            showSysModal('危險操作確認', '警告：確定要註銷並永久刪除您的 Aroma_bakery 會員帳號嗎？此動作將無法復原！', () => {
+                remove(ref(db, `users/${currentMemberPhoneKey}`)).then(() => {
+                    showSysModal('帳號已註銷', '您的帳號已成功註銷，謝謝您過去的支持。', () => {
+                        handleLogout();
+                    });
+                }).catch(err => showSysModal('錯誤', '系統處理失敗，請稍後再試。'));
+            }, true);
         }
 
         function enterSystem(userData) {
@@ -422,11 +469,12 @@
             totalPrice.innerText = total;
         }
         window.submitOrder = function() {
-            if (cart.length === 0) { alert('請先點購商品。'); return; }
+            if (cart.length === 0) { showSysModal('點餐提示', '請先點購商品。'); return; }
             let summary = cart.map(i => `${i.name} x ${i.qty}`).join('\n');
-            alert(`【訂單成立】\n會員：${currentMember.lastName}${currentMember.firstName}\n\n${summary}\n\n總金額：HKD $${document.getElementById('total-price').innerText}`);
-            cart = [];
-            renderCart();
+            showSysModal('訂單成立', `會員：${currentMember.lastName}${currentMember.firstName}\n\n${summary}\n\n總金額：HKD $${document.getElementById('total-price').innerText}`, () => {
+                cart = [];
+                renderCart();
+            });
         }
     </script>
 </body>
