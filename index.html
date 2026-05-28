@@ -11,6 +11,8 @@
             --caramel-light: #D2691E;
             --cream-bg: #FDFBF7;
             --sand-light: #F4EBE1;
+            --text-muted: #666666;
+            --border-color: #CCCCCC;
         }
         body {
             font-family: "Microsoft JhengHei", sans-serif;
@@ -27,16 +29,14 @@
             z-index: 11000;
         }
         .sys-modal {
-            background: white; border-radius: 8px; padding: 25px; width: 90%; max-width: 340px;
+            background: #FFFFFF; border-radius: 4px; padding: 25px; width: 90%; max-width: 340px;
             text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            animation: fadeIn 0.2s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .sys-modal h3 { margin-top: 0; color: var(--caramel-main); }
-        .sys-modal p { font-size: 14px; color: #555; white-space: pre-line; line-height: 1.5; }
-        .sys-modal-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
-        .btn-modal-confirm { background: var(--caramel-main); color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-modal-cancel { background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .sys-modal h3 { margin-top: 0; color: var(--caramel-main); font-size: 18px; margin-bottom: 15px; }
+        .sys-modal p { font-size: 14px; color: #333333; white-space: pre-line; line-height: 1.6; text-align: left; margin-bottom: 20px; }
+        .sys-modal-btns { display: flex; gap: 10px; justify-content: center; }
+        .btn-modal-confirm { background: var(--caramel-main); color: #FFFFFF; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn-modal-cancel { background: #EEEEEE; color: #333333; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; }
 
         /* 全域維護模式遮罩 */
         .maintenance-overlay {
@@ -44,90 +44,87 @@
             background-color: var(--cream-bg); display: none; flex-direction: column;
             justify-content: center; align-items: center; z-index: 99999; text-align: center; padding: 20px;
         }
-        .maintenance-box { background: white; border: 2px solid var(--caramel-light); padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 400px; }
-        .maintenance-box h2 { color: #cc0000; margin-top: 0; }
-        .maintenance-box p { color: var(--caramel-dark); line-height: 1.6; font-weight: bold; }
+        .maintenance-box { background: #FFFFFF; border: 1px solid var(--border-color); padding: 40px 30px; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 420px; }
+        .maintenance-box h2 { color: #CC0000; margin-top: 0; font-size: 22px; margin-bottom: 15px; letter-spacing: 1px; }
+        .maintenance-box p { color: var(--caramel-dark); line-height: 1.6; font-size: 15px; margin-bottom: 25px; }
 
         /* 會員驗證遮罩 */
         .auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--cream-bg);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 9999;
+            background-color: var(--cream-bg); display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
         .auth-box {
-            background: white; border: 1px solid var(--sand-light); border-radius: 8px;
-            padding: 30px; width: 100%; max-width: 400px;
-            box-shadow: 0 4px 15px rgba(74,51,45,0.08);
+            background: #FFFFFF; border: 1px solid var(--sand-light); border-radius: 4px;
+            padding: 35px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(74,51,45,0.05);
         }
-        .auth-box h2 { color: var(--caramel-main); text-align: center; margin-top: 0; margin-bottom: 20px; }
-        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); }
-        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #999; font-size: 14px; }
+        .auth-box h2 { color: var(--caramel-main); text-align: center; margin-top: 0; margin-bottom: 25px; font-size: 22px; }
+        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid var(--sand-light); }
+        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: bold; color: #999999; font-size: 14px; }
         .auth-tab.active { color: var(--caramel-main); border-bottom: 2px solid var(--caramel-main); }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
         
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        .input-group { margin-bottom: 18px; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: var(--caramel-dark); }
+        .input-group input { width: 100%; padding: 11px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 14px; }
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .phone-prefix { background-color: #eee; padding: 10px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; font-weight: bold; text-align: center; }
+        .phone-prefix { background-color: #EEEEEE; padding: 11px; border: 1px solid var(--border-color); border-radius: 4px 0 0 4px; font-weight: bold; text-align: center; font-size: 14px; }
         
-        .lnk-forgot { text-align: right; margin-top: -10px; margin-bottom: 15px; }
+        .lnk-forgot { text-align: right; margin-top: -10px; margin-bottom: 20px; }
         .lnk-forgot a { color: var(--caramel-light); font-size: 13px; text-decoration: none; font-weight: bold; cursor: pointer; }
 
-        .btn-auth { background-color: var(--caramel-main); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px; }
+        .btn-auth { background-color: var(--caramel-main); color: #FFFFFF; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; margin-top: 10px; letter-spacing: 1px; }
         .btn-auth:hover { background-color: var(--caramel-dark); }
-        .btn-danger { background-color: #cc0000; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; margin-top: 25px; }
+        .btn-danger { background-color: #CC0000; color: #FFFFFF; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; margin-top: 25px; }
 
         /* 主系統介面 */
         .main-system { display: none; }
-        .system-header { text-align: center; border-bottom: 2px solid var(--caramel-main); padding-bottom: 10px; margin-bottom: 25px; position: relative; }
-        .menu-toggle { position: absolute; left: 10px; bottom: 10px; font-size: 24px; cursor: pointer; user-select: none; color: var(--caramel-main); }
-        .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 28px; }
-        .system-header span { font-size: 14px; color: var(--caramel-light); letter-spacing: 1px; }
-        .member-badge { position: absolute; right: 10px; bottom: 10px; font-size: 14px; font-weight: bold; color: var(--caramel-dark); }
+        .system-header { text-align: center; border-bottom: 2px solid var(--caramel-main); padding-bottom: 12px; margin-bottom: 25px; position: relative; }
+        .menu-toggle { position: absolute; left: 10px; bottom: 12px; font-size: 24px; cursor: pointer; user-select: none; color: var(--caramel-main); }
+        .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 26px; letter-spacing: 1px; }
+        .system-header span { font-size: 13px; color: var(--caramel-light); letter-spacing: 1px; }
+        .member-badge { position: absolute; right: 10px; bottom: 12px; font-size: 14px; font-weight: bold; color: var(--caramel-dark); }
         
-        /* 側邊個人資料欄 */
+        /* 側邊欄 */
         .side-drawer {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            background: #FFFFFF; box-shadow: 4px 0 15px rgba(0,0,0,0.1);
             transition: left 0.3s ease; z-index: 10000; padding: 20px; box-sizing: border-box;
             display: flex; flex-direction: column; justify-content: space-between;
         }
         .side-drawer.open { left: 0; }
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 9999; }
         .drawer-overlay.show { display: block; }
-        .drawer-header { font-size: 20px; font-weight: bold; color: var(--caramel-main); margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); padding-bottom: 10px; display: flex; justify-content: space-between; }
-        .drawer-close { cursor: pointer; color: #999; }
-        .readonly-info { background: #f9f9f9; padding: 10px; border-radius: 4px; font-size: 13px; color: #666; margin-bottom: 15px; border: 1px solid #eee; }
-        .readonly-info div { margin-bottom: 5px; }
+        .drawer-header { font-size: 18px; font-weight: bold; color: var(--caramel-main); margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); padding-bottom: 12px; display: flex; justify-content: space-between; }
+        .drawer-close { cursor: pointer; color: #999999; }
+        .readonly-info { background: #F9F9F9; padding: 12px; border-radius: 4px; font-size: 13px; color: #555555; margin-bottom: 20px; border: 1px solid #EEEEEE; line-height: 1.6; }
 
         .system-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .system-container { grid-template-columns: 1fr; } }
-        .panel { background: white; border: 1px solid var(--sand-light); border-radius: 6px; padding: 15px; box-shadow: 0 2px 5px rgba(74,51,45,0.05); }
-        .panel-title { font-size: 18px; font-weight: bold; margin-top: 0; margin-bottom: 15px; color: var(--caramel-dark); border-left: 4px solid var(--caramel-main); padding-left: 8px; }
-        .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .menu-item { border: 1px solid #eee; border-radius: 4px; padding: 12px; text-align: center; background: #fff; }
-        .menu-item img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
-        .item-name { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
-        .item-price { color: var(--caramel-light); font-weight: bold; margin-bottom: 10px; }
-        .total-box { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; color: var(--caramel-main); }
+        .panel { background: #FFFFFF; border: 1px solid var(--sand-light); border-radius: 4px; padding: 20px; box-shadow: 0 2px 5px rgba(74,51,45,0.02); }
+        .panel-title { font-size: 16px; font-weight: bold; margin-top: 0; margin-bottom: 20px; color: var(--caramel-dark); border-left: 4px solid var(--caramel-main); padding-left: 10px; }
+        .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .menu-item { border: 1px solid #EEEEEE; border-radius: 4px; padding: 12px; text-align: center; background: #FFFFFF; }
+        .menu-item img { width: 100%; height: 110px; object-fit: cover; border-radius: 2px; margin-bottom: 10px; }
+        .item-name { font-weight: bold; font-size: 15px; margin-bottom: 6px; }
+        .item-price { color: var(--caramel-light); font-weight: bold; margin-bottom: 12px; font-size: 14px; }
+        .cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .cart-table th { border-bottom: 2px solid var(--sand-light); text-align: left; padding: 10px; color: var(--text-muted); }
+        .cart-table td { padding: 10px; border-bottom: 1px solid #F5F5F5; }
+        .total-box { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; color: var(--caramel-main); }
     </style>
 </head>
 <body>
 
-    <!-- 系統強制維護模式蓋板 -->
     <div class="maintenance-overlay" id="maintenance-screen">
         <div class="maintenance-box">
-            <h2>⚙️ 系統維護中</h2>
-            <p>十分抱歉，本點餐應用程式目前正進行系統升級與數據維護，暫時無法提供下單服務。</p>
-            <hr style="border:0; border-top:1px dashed var(--sand-light); margin:20px 0;">
-            <div style="font-size:14px; color:var(--caramel-light); font-weight:bold;">歡迎使用 Aroma_bakery</div>
+            <h2>系統正在維護中</h2>
+            <p>十分抱歉，本點餐系統目前正進行數據維護與系統升級，暫時無法提供下單服務。</p>
+            <hr style="border:0; border-top:1px dashed var(--border-color); margin:20px 0;">
+            <div style="font-size:14px; color:var(--caramel-light); font-weight:bold; letter-spacing:1px;">歡迎使用 Aroma_bakery</div>
         </div>
     </div>
 
-    <!-- 系統自訂通用彈窗 UI -->
     <div class="sys-modal-overlay" id="sys-modal-screen">
         <div class="sys-modal">
             <h3 id="modal-title">系統提示</h3>
@@ -136,7 +133,6 @@
         </div>
     </div>
 
-    <!-- 會員驗證與登入註冊模組 -->
     <div class="auth-overlay" id="auth-screen">
         <div class="auth-box">
             <h2>Aroma_bakery 會員系統</h2>
@@ -146,7 +142,6 @@
                 <div class="auth-tab" id="tab-forgot" onclick="switchAuthMode('forgot')" style="display:none;">忘記密碼</div>
             </div>
 
-            <!-- 1. 登入表單 -->
             <form id="form-login" class="auth-form active" onsubmit="handleMemberLogin(event)">
                 <div class="input-group">
                     <label for="loginPhone">香港電話號碼</label>
@@ -165,7 +160,6 @@
                 <button type="submit" class="btn-auth">登入系統</button>
             </form>
 
-            <!-- 2. 註冊表單 -->
             <form id="form-register" class="auth-form" onsubmit="handleMemberRegister(event)">
                 <div class="input-group">
                     <label>中文姓名</label>
@@ -183,10 +177,10 @@
                 </div>
                 <div class="input-group">
                     <label for="regPassword">設定密碼</label>
-                    <input type="password" id="regPassword" required placeholder="請輸入個人密碼">
+                    <input type="password" id="regPassword" required placeholder="請輸入密碼">
                 </div>
                 <div class="input-group">
-                    <label>出生日期 (生日設定後不可自行變更)</label>
+                    <label>出生日期 (設定後不可自行變更)</label>
                     <div class="input-row">
                         <input type="number" id="regBirthMonth" min="1" max="12" required placeholder="月份">
                         <input type="number" id="regBirthDay" min="1" max="31" required placeholder="日期">
@@ -195,7 +189,6 @@
                 <button type="submit" class="btn-auth">提交註冊申請</button>
             </form>
 
-            <!-- 3. 新增：忘記密碼表單 -->
             <form id="form-forgot" class="auth-form" onsubmit="handleForgotSubmit(event)">
                 <div class="input-group">
                     <label for="forgotPhone">註冊電話號碼</label>
@@ -215,14 +208,12 @@
                     <label for="forgotEmail">接收密碼電子郵件 (Email)</label>
                     <input type="email" id="forgotEmail" required placeholder="example@mail.com">
                 </div>
-                <button type="submit" class="btn-auth" style="background-color: var(--caramel-light);">送出查驗密碼申請</button>
-                <button type="button" class="btn-auth" style="background-color: #aaa; margin-top: 8px;" onclick="switchAuthMode('login')">返回登入畫面</button>
+                <button type="submit" class="btn-auth" style="background-color: var(--caramel-light);">提交密碼查詢申請</button>
+                <button type="button" class="btn-auth" style="background-color: #999999; margin-top: 8px;" onclick="switchAuthMode('login')">返回登入</button>
             </form>
-
         </div>
     </div>
 
-    <!-- 側邊個人資料導覽欄 -->
     <div class="drawer-overlay" id="drawer-shadow" onclick="toggleDrawer(false)"></div>
     <div class="side-drawer" id="side-profile-drawer">
         <div>
@@ -247,18 +238,16 @@
                     <label>修改名字</label>
                     <input type="text" id="drawFirstName" required>
                 </div>
-                <button type="submit" class="btn-auth" style="font-size:14px; padding:8px;">儲存名稱修改</button>
+                <button type="submit" class="btn-auth" style="font-size:13px; padding:8px;">儲存修改</button>
             </form>
             
-            <button class="btn-auth" style="background-color:#777; font-size:13px; padding:6px; margin-top:15px;" onclick="handleLogout()">登出目前帳號</button>
+            <button class="btn-auth" style="background-color:#777777; font-size:13px; padding:6px; margin-top:15px;" onclick="handleLogout()">登出帳號</button>
         </div>
-
         <div>
             <button class="btn-danger" onclick="handleCustomerSelfDelete()">註銷我的會員帳號</button>
         </div>
     </div>
 
-    <!-- 主下單系統 -->
     <div class="main-system" id="main-order-system">
         <div class="system-header">
             <div class="menu-toggle" onclick="toggleDrawer(true)">☰</div>
@@ -282,7 +271,7 @@
                     <tbody id="cart-view"></tbody>
                 </table>
                 <div class="total-box">總計: HKD $<span id="total-price">0</span></div>
-                <button class="btn btn-auth" style="margin-top:15px; padding:10px; background-color: var(--caramel-light);" onclick="submitOrder()">確認送出訂單</button>
+                <button class="btn-auth" style="margin-top:15px; padding:12px; background-color: var(--caramel-light);" onclick="submitOrder()">確認送出訂單</button>
             </div>
         </div>
     </div>
@@ -309,46 +298,20 @@
         let productsFromServer = {};
         let cart = [];
 
-        // 核心一：全局監聽系統維護狀態
+        // 實時監聽維護狀態
         onValue(ref(db, 'system_maintenance'), (snapshot) => {
             const isMaintenance = snapshot.val();
-            const maintScreen = document.getElementById('maintenance-screen');
-            if (isMaintenance === true) {
-                maintScreen.style.display = 'flex'; // 強制強制覆蓋彈出
-            } else {
-                maintScreen.style.display = 'none';
-            }
+            document.getElementById('maintenance-screen').style.display = (isMaintenance === true) ? 'flex' : 'none';
         });
 
-        // 核心二：全局即時同步監聽商品菜單
+        // 實時監聽選單更新
         onValue(ref(db, 'products'), (snapshot) => {
-            const data = snapshot.val();
-            const menuView = document.getElementById('menu-view');
-            if (!data) {
-                menuView.innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0; grid-column: 1/-1;">今日無商品出爐</div>';
-                productsFromServer = {};
-                return;
-            }
-            productsFromServer = data;
-            
-            // 如果當前主系統開啟中，立即 0 秒更新 DOM 畫面
+            productsFromServer = snapshot.val() || {};
             if(document.getElementById('main-order-system').style.display === 'block') {
                 renderMenuUI();
             }
         });
 
-        // 核心三：監聽當前登入用戶是否被後台管理員註銷
-        function listenToCurrentUserStatus(phone) {
-            onValue(ref(db, `users/${phone}`), (snapshot) => {
-                if(currentMemberPhoneKey === phone && !snapshot.exists()) {
-                    showSysModal('安全性通知', '您的會員帳號已在後台被管理員註銷移除。', () => {
-                        handleLogout();
-                    });
-                }
-            });
-        }
-
-        // 封裝系統內建模態窗提示
         function showSysModal(title, msg, onConfirm = null, isConfirmType = false) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-msg').innerText = msg;
@@ -357,7 +320,7 @@
 
             const okBtn = document.createElement('button');
             okBtn.className = 'btn-modal-confirm';
-            okBtn.innerText = '確 定';
+            okBtn.innerText = '確定';
             okBtn.onclick = () => {
                 document.getElementById('sys-modal-screen').style.display = 'none';
                 if(onConfirm) onConfirm();
@@ -366,7 +329,7 @@
             if (isConfirmType) {
                 const cancelBtn = document.createElement('button');
                 cancelBtn.className = 'btn-modal-cancel';
-                cancelBtn.innerText = '取 消';
+                cancelBtn.innerText = '取消';
                 cancelBtn.onclick = () => { document.getElementById('sys-modal-screen').style.display = 'none'; };
                 container.appendChild(cancelBtn);
             }
@@ -392,8 +355,7 @@
             const drawer = document.getElementById('side-profile-drawer');
             const shadow = document.getElementById('drawer-shadow');
             if(open) {
-                drawer.classList.add('open');
-                shadow.classList.add('show');
+                drawer.classList.add('open'); shadow.classList.add('show');
                 document.getElementById('draw-numb').innerText = currentMember.memberNumb;
                 document.getElementById('draw-phone').innerText = currentMember.phone;
                 document.getElementById('draw-regdate').innerText = currentMember.registerDate || "未記載";
@@ -401,8 +363,7 @@
                 document.getElementById('drawLastName').value = currentMember.lastName;
                 document.getElementById('drawFirstName').value = currentMember.firstName;
             } else {
-                drawer.classList.remove('open');
-                shadow.classList.remove('show');
+                drawer.classList.remove('open'); shadow.classList.remove('show');
             }
         }
 
@@ -414,31 +375,20 @@
             const password = document.getElementById('regPassword').value;
             const month = parseInt(document.getElementById('regBirthMonth').value);
             const day = parseInt(document.getElementById('regBirthDay').value);
-
             const today = new Date();
             const regDateString = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
             get(child(ref(db), `users/${phone}`)).then((snapshot) => {
                 if (snapshot.exists()) {
-                    showSysModal('註冊提示', '此電話號碼已經被註冊過，請直接選擇登入。');
+                    showSysModal('註冊提示', '此電話號碼已存在，請直接登入。');
                 } else {
-                    const randNumb = Math.floor(100000 + Math.random() * 900000);
-                    const memberNumb = `AROMA-${randNumb}`;
-
+                    const memberNumb = `AROMA-${Math.floor(100000 + Math.random() * 900000)}`;
                     const userData = {
-                        lastName: lastName,
-                        firstName: firstName,
-                        phone: `(852)${phone}`,
-                        password: password,
-                        birthday: `${month}月${day}日`,
-                        memberNumb: memberNumb,
-                        registerDate: regDateString
+                        lastName, firstName, phone: `(852)${phone}`, password, birthday: `${month}月${day}日`, memberNumb, registerDate: regDateString
                     };
-
                     set(ref(db, `users/${phone}`), userData).then(() => {
                         showSysModal('註冊成功', `您的永久會員編號為：\n${memberNumb}`, () => {
-                            currentMemberPhoneKey = phone;
-                            enterSystem(userData);
+                            currentMemberPhoneKey = phone; enterSystem(userData);
                         });
                     });
                 }
@@ -451,21 +401,14 @@
             const password = document.getElementById('loginPassword').value;
 
             get(child(ref(db), `users/${phone}`)).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const user = snapshot.val();
-                    if(user.password === password) {
-                        currentMemberPhoneKey = phone;
-                        enterSystem(user);
-                    } else {
-                        showSysModal('登入錯誤', '密碼輸入錯誤，請重新確認。');
-                    }
+                if (snapshot.exists() && snapshot.val().password === password) {
+                    currentMemberPhoneKey = phone; enterSystem(snapshot.val());
                 } else {
-                    showSysModal('登入錯誤', '找不到此會員資料，請確認號碼或前往註冊。');
+                    showSysModal('登入錯誤', '帳號不存在或密碼錯誤。');
                 }
-            }).catch(err => showSysModal('連線失敗', '資料庫連線逾時。'));
+            }).catch(() => showSysModal('連線失敗', '資料庫連線超時。'));
         }
 
-        // 新增：處理忘記密碼查驗申請
         window.handleForgotSubmit = function(event) {
             event.preventDefault();
             const phone = document.getElementById('forgotPhone').value.trim();
@@ -473,59 +416,39 @@
             const day = document.getElementById('forgotDay').value;
             const email = document.getElementById('forgotEmail').value.trim();
             
-            const timestamp = Date.now();
-            const forgotData = {
-                phone: phone,
-                birthday: `${month}月${day}日`,
-                email: email,
-                timestamp: timestamp
-            };
+            const forgotData = { phone, birthday: `${month}月${day}日`, email, timestamp: Date.now() };
 
-            // 將申請單實時送至資料庫給管理員查看
             set(ref(db, `forgot_password_requests/${phone}`), forgotData).then(() => {
-                showSysModal('申請已送出', '【密碼查驗與電郵通知提示】\n資料已提交管理處核實！小組會將密碼手動發送至您的電郵。\n\n⚠️ 注意：此服務非24小時全自動發送，需人工審查，請耐心等候。', () => {
-                    document.getElementById('form-forgot').reset();
-                    switchAuthMode('login');
+                showSysModal('申請已送出', '查驗申請已提交！資料核實後管理處將向您的電郵發送密碼。\n\n提示：此服務非24小時自動發送，需人工手動審核，請耐心等候。', () => {
+                    document.getElementById('form-forgot').reset(); switchAuthMode('login');
                 });
-            }).catch(err => showSysModal('錯誤', '送出失敗，請檢查網路連線。'));
+            }).catch(() => showSysModal('錯誤', '送出失敗，請檢查網路連線。'));
         }
 
         window.handleProfileUpdate = function(event) {
             event.preventDefault();
             const newLast = document.getElementById('drawLastName').value.trim();
             const newFirst = document.getElementById('drawFirstName').value.trim();
-
-            const updates = {};
-            updates[`/users/${currentMemberPhoneKey}/lastName`] = newLast;
-            updates[`/users/${currentMemberPhoneKey}/firstName`] = newFirst;
-
-            update(ref(db), updates).then(() => {
-                showSysModal('更新成功', '基本姓名資料已成功同步更新！');
-                currentMember.lastName = newLast;
-                currentMember.firstName = newFirst;
-                toggleDrawer(false);
-            }).catch(err => showSysModal('錯誤', '修改失敗，請稍後再試。'));
+            update(ref(db), {
+                [`/users/${currentMemberPhoneKey}/lastName`]: newLast,
+                [`/users/${currentMemberPhoneKey}/firstName`]: newFirst
+            }).then(() => {
+                showSysModal('更新成功', '會員姓名已成功更新。');
+                currentMember.lastName = newLast; currentMember.firstName = newFirst; toggleDrawer(false);
+            });
         }
 
         window.handleLogout = function() {
-            currentMember = null;
-            currentMemberPhoneKey = "";
-            cart = [];
-            renderCart();
-            toggleDrawer(false);
+            currentMember = null; currentMemberPhoneKey = ""; cart = []; renderCart(); toggleDrawer(false);
             document.getElementById('main-order-system').style.display = 'none';
             document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('form-login').reset();
-            document.getElementById('form-register').reset();
         }
 
         window.handleCustomerSelfDelete = function() {
-            showSysModal('危險操作確認', '警告：確定要註銷並永久刪除您的 Aroma_bakery 會員帳號嗎？此動作將無法復原！', () => {
+            showSysModal('確認註銷', '確定要永久刪除您的會員帳號嗎？此動作無法復原！', () => {
                 remove(ref(db, `users/${currentMemberPhoneKey}`)).then(() => {
-                    showSysModal('帳號已註銷', '您的帳號已成功註銷，謝謝您過去的支持。', () => {
-                        handleLogout();
-                    });
-                }).catch(err => showSysModal('錯誤', '系統處理失敗，請稍後再試。'));
+                    showSysModal('帳號已註銷', '您的資料已成功移除。', () => { handleLogout(); });
+                });
             }, true);
         }
 
@@ -534,8 +457,6 @@
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-order-system').style.display = 'block';
             document.getElementById('user-numb-display').innerText = userData.memberNumb;
-            
-            listenToCurrentUserStatus(currentMemberPhoneKey); // 啟動防刪除即時監聽
             renderMenuUI();
         }
 
@@ -550,49 +471,41 @@
                 const p = productsFromServer[key];
                 return `
                     <div class="menu-item">
-                        <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
+                        <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}">
                         <div class="item-name">${p.name}</div>
                         <div class="item-price">HKD $${p.price}</div>
-                        <button class="btn" style="background-color: var(--caramel-main); color:white; border:none; padding: 6px 12px; border-radius:4px; cursor:pointer; width:100%; font-weight:bold;" onclick="addToCart('${key}')">點購</button>
+                        <button class="btn-auth" style="margin-top:0; padding:6px 12px; font-size:13px;" onclick="addToCart('${key}')">點購</button>
                     </div>
                 `;
             }).join('');
         }
 
         window.addToCart = function(key) {
-            const prod = productsFromServer[key];
-            if (!prod) return;
+            const prod = productsFromServer[key]; if (!prod) return;
             const item = cart.find(i => i.key === key);
-            if (item) { item.qty++; } else { cart.push({ key: key, name: prod.name, price: prod.price, qty: 1 }); }
+            if (item) { item.qty++; } else { cart.push({ key, name: prod.name, price: prod.price, qty: 1 }); }
             renderCart();
         }
-        window.removeFromCart = function(key) {
-            cart = cart.filter(i => i.key !== key);
-            renderCart();
-        }
+        window.removeFromCart = function(key) { cart = cart.filter(i => i.key !== key); renderCart(); }
+        
         function renderCart() {
             const cartView = document.getElementById('cart-view');
             const totalPrice = document.getElementById('total-price');
             if (cart.length === 0) {
                 cartView.innerHTML = '<tr><td colspan="4" style="color:#999; text-align:center; padding:30px 0;">未選擇商品</td></tr>';
-                totalPrice.innerText = '0';
-                return;
+                totalPrice.innerText = '0'; return;
             }
             let total = 0;
             cartView.innerHTML = cart.map(item => {
-                const subtotal = item.price * item.qty;
-                total += subtotal;
-                return `<tr><td>${item.name}</td><td>${item.qty}</td><td>HKD $${subtotal}</td><td style="color:#cc0000; cursor:pointer;" onclick="removeFromCart('${item.key}')">✕</td></tr>`;
+                const subtotal = item.price * item.qty; total += subtotal;
+                return `<tr><td>${item.name}</td><td>${item.qty}</td><td>HKD $${subtotal}</td><td style="color:#CC0000; cursor:pointer;" onclick="removeFromCart('${item.key}')">✕</td></tr>`;
             }).join('');
             totalPrice.innerText = total;
         }
+
         window.submitOrder = function() {
-            if (cart.length === 0) { showSysModal('點餐提示', '請先點購商品。'); return; }
-            let summary = cart.map(i => `${i.name} x ${i.qty}`).join('\n');
-            showSysModal('訂單成立', `會員：${currentMember.lastName}${currentMember.firstName}\n\n${summary}\n\n總金額：HKD $${document.getElementById('total-price').innerText}`, () => {
-                cart = [];
-                renderCart();
-            });
+            if (cart.length === 0) return;
+            showSysModal('訂單成立', `感謝您的點購，訂單已成功送出！`, () => { cart = []; renderCart(); });
         }
     </script>
 </body>
