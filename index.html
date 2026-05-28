@@ -61,10 +61,32 @@
             text-align: center; border-bottom: 2px solid var(--caramel-main);
             padding-bottom: 10px; margin-bottom: 25px; position: relative;
         }
+        
+        /* 左上角三條線漢堡選單 */
+        .menu-toggle {
+            position: absolute; left: 10px; bottom: 10px; font-size: 24px; cursor: pointer; user-select: none; color: var(--caramel-main);
+        }
         .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 28px; }
         .system-header span { font-size: 14px; color: var(--caramel-light); letter-spacing: 1px; }
         .member-badge { position: absolute; right: 10px; bottom: 10px; font-size: 14px; font-weight: bold; color: var(--caramel-dark); }
         
+        /* 側邊個人資料欄 */
+        .side-drawer {
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
+            background: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transition: left 0.3s ease; z-index: 10000; padding: 20px; box-sizing: border-box;
+        }
+        .side-drawer.open { left: 0; }
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); display: none; z-index: 9999;
+        }
+        .drawer-overlay.show { display: block; }
+        .drawer-header { font-size: 20px; font-weight: bold; color: var(--caramel-main); margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); padding-bottom: 10px; display: flex; justify-content: space-between; }
+        .drawer-close { cursor: pointer; color: #999; }
+        .readonly-info { background: #f9f9f9; padding: 10px; border-radius: 4px; font-size: 13px; color: #666; margin-bottom: 15px; border: 1px solid #eee; }
+        .readonly-info div { margin-bottom: 5px; }
+
         .system-container {
             max-width: 1000px; margin: 0 auto;
             display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;
@@ -96,6 +118,7 @@
 </head>
 <body>
 
+    <!-- 會員驗證模組 -->
     <div class="auth-overlay" id="auth-screen">
         <div class="auth-box">
             <h2>Aroma_bakery 會員系統</h2>
@@ -104,6 +127,7 @@
                 <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">新會員註冊</div>
             </div>
 
+            <!-- 登入表單 -->
             <form id="form-login" class="auth-form active" onsubmit="handleMemberLogin(event)">
                 <div class="input-group">
                     <label for="loginPhone">香港電話號碼</label>
@@ -112,9 +136,14 @@
                         <input type="text" id="loginPhone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
                     </div>
                 </div>
+                <div class="input-group">
+                    <label for="loginPassword">密碼</label>
+                    <input type="password" id="loginPassword" required placeholder="請輸入密碼">
+                </div>
                 <button type="submit" class="btn-auth">登入系統</button>
             </form>
 
+            <!-- 註冊表單 -->
             <form id="form-register" class="auth-form" onsubmit="handleMemberRegister(event)">
                 <div class="input-group">
                     <label>中文姓名</label>
@@ -131,7 +160,11 @@
                     </div>
                 </div>
                 <div class="input-group">
-                    <label>出生日期 (不含年份)</label>
+                    <label for="regPassword">設定密碼</label>
+                    <input type="password" id="regPassword" required placeholder="請輸入個人密碼">
+                </div>
+                <div class="input-group">
+                    <label>出生日期 (生日設定後不可自行變更)</label>
                     <div class="input-row">
                         <input type="number" id="regBirthMonth" min="1" max="12" required placeholder="月份">
                         <input type="number" id="regBirthDay" min="1" max="31" required placeholder="日期">
@@ -142,8 +175,41 @@
         </div>
     </div>
 
+    <!-- 側邊個人資料導覽欄 -->
+    <div class="drawer-overlay" id="drawer-shadow" onclick="toggleDrawer(false)"></div>
+    <div class="side-drawer" id="side-profile-drawer">
+        <div class="drawer-header">
+            <span>個人基本資料</span>
+            <span class="drawer-close" onclick="toggleDrawer(false)">✕</span>
+        </div>
+        
+        <!-- 唯讀固定的帳號資訊 -->
+        <div class="readonly-info">
+            <div><strong>會員編號：</strong><span id="draw-numb"></span></div>
+            <div><strong>電話號碼：</strong><span id="draw-phone"></span></div>
+            <div><strong>註冊日期：</strong><span id="draw-regdate"></span></div>
+            <div><strong>出生日期：</strong><span id="draw-birth"></span> (如需修改請洽管理員)</div>
+        </div>
+
+        <!-- 唯獨可以修改的姓名欄位 -->
+        <form onsubmit="handleProfileUpdate(event)">
+            <div class="input-group">
+                <label>修改姓氏</label>
+                <input type="text" id="drawLastName" required>
+            </div>
+            <div class="input-group">
+                <label>修改名字</label>
+                <input type="text" id="drawFirstName" required>
+            </div>
+            <button type="submit" class="btn-auth" style="font-size:14px; padding:8px;">儲存名稱修改</button>
+        </form>
+    </div>
+
+    <!-- 主下單系統 -->
     <div class="main-system" id="main-order-system">
         <div class="system-header">
+            <!-- 左上角三條線漢堡按鈕 -->
+            <div class="menu-toggle" onclick="toggleDrawer(true)">☰</div>
             <h1>Aroma_bakery 下單系統</h1>
             <span>Ready to Serve</span>
             <div class="member-badge">會員編號: <span id="user-numb-display">-</span></div>
@@ -151,7 +217,7 @@
 
         <div class="system-container">
             <div class="panel">
-                <div class="panel-title">線上商品菜單</div>
+                <div class="panel-title">線上商品菜單 (HKD 定價)</div>
                 <div class="menu-list" id="menu-view"></div>
             </div>
 
@@ -163,7 +229,7 @@
                     </thead>
                     <tbody id="cart-view"></tbody>
                 </table>
-                <div class="total-box">總計: $<span id="total-price">0</span></div>
+                <div class="total-box">總計: HKD $<span id="total-price">0</span></div>
                 <button class="btn btn-order" onclick="submitOrder()">確認送出訂單</button>
             </div>
         </div>
@@ -171,7 +237,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
@@ -187,10 +253,10 @@
         const db = getDatabase(app);
 
         let currentMember = null;
+        let currentMemberPhoneKey = ""; // 用來後續更新自己資料的標記
         let productsFromServer = {};
         let cart = [];
 
-        // 切換登入/註冊分頁
         window.switchAuthMode = function(mode) {
             document.querySelectorAll('.auth-tab, .auth-form').forEach(el => el.classList.remove('active'));
             if(mode === 'login') {
@@ -202,21 +268,44 @@
             }
         }
 
-        // 處理新會員註冊
+        // 側邊選單開關
+        window.toggleDrawer = function(open) {
+            const drawer = document.getElementById('side-profile-drawer');
+            const shadow = document.getElementById('drawer-shadow');
+            if(open) {
+                drawer.classList.add('open');
+                shadow.classList.add('show');
+                // 同步載入最新個人資料到欄位中
+                document.getElementById('draw-numb').innerText = currentMember.memberNumb;
+                document.getElementById('draw-phone').innerText = currentMember.phone;
+                document.getElementById('draw-regdate').innerText = currentMember.registerDate || "未記載";
+                document.getElementById('draw-birth').innerText = currentMember.birthday;
+                document.getElementById('drawLastName').value = currentMember.lastName;
+                document.getElementById('drawFirstName').value = currentMember.firstName;
+            } else {
+                drawer.classList.remove('open');
+                shadow.classList.remove('show');
+            }
+        }
+
+        // 處理會員註冊
         window.handleMemberRegister = function(event) {
             event.preventDefault();
             const phone = document.getElementById('regPhone').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
             const firstName = document.getElementById('regFirstName').value.trim();
+            const password = document.getElementById('regPassword').value;
             const month = parseInt(document.getElementById('regBirthMonth').value);
             const day = parseInt(document.getElementById('regBirthDay').value);
 
-            // 檢查該電話是否已存在
+            // 取得今天的註冊日期
+            const today = new Date();
+            const regDateString = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
             get(child(ref(db), `users/${phone}`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     alert('此電話號碼已經被註冊過，請直接選擇登入。');
                 } else {
-                    // 自動隨機生成會員編號 Numb
                     const randNumb = Math.floor(100000 + Math.random() * 900000);
                     const memberNumb = `AROMA-${randNumb}`;
 
@@ -224,12 +313,15 @@
                         lastName: lastName,
                         firstName: firstName,
                         phone: `(852)${phone}`,
+                        password: password,
                         birthday: `${month}月${day}日`,
-                        memberNumb: memberNumb
+                        memberNumb: memberNumb,
+                        registerDate: regDateString
                     };
 
                     set(ref(db, `users/${phone}`), userData).then(() => {
                         alert(`註冊成功！您的永久會員編號為：${memberNumb}`);
+                        currentMemberPhoneKey = phone;
                         enterSystem(userData);
                     });
                 }
@@ -240,24 +332,47 @@
         window.handleMemberLogin = function(event) {
             event.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
             get(child(ref(db), `users/${phone}`)).then((snapshot) => {
                 if (snapshot.exists()) {
-                    enterSystem(snapshot.val());
+                    const user = snapshot.val();
+                    if(user.password === password) {
+                        currentMemberPhoneKey = phone;
+                        enterSystem(user);
+                    } else {
+                        alert('密碼輸入錯誤，請重新確認。');
+                    }
                 } else {
                     alert('找不到此會員資料，請確認號碼或前往註冊。');
                 }
             }).catch(err => alert('連線失敗'));
         }
 
-        // 成功進入下單系統
+        // 顧客自行修改姓名（只允許改名字）
+        window.handleProfileUpdate = function(event) {
+            event.preventDefault();
+            const newLast = document.getElementById('drawLastName').value.trim();
+            const newFirst = document.getElementById('drawFirstName').value.trim();
+
+            const updates = {};
+            updates[`/users/${currentMemberPhoneKey}/lastName`] = newLast;
+            updates[`/users/${currentMemberPhoneKey}/firstName`] = newFirst;
+
+            update(ref(db), updates).then(() => {
+                alert('基本姓名資料已成功同步更新！');
+                currentMember.lastName = newLast;
+                currentMember.firstName = newFirst;
+                toggleDrawer(false);
+            }).catch(err => alert('修改失敗，請稍後再試。'));
+        }
+
         function enterSystem(userData) {
             currentMember = userData;
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-order-system').style.display = 'block';
             document.getElementById('user-numb-display').innerText = userData.memberNumb;
             
-            // 監聽並加載雲端菜單
             onValue(ref(db, 'products'), (snapshot) => {
                 const data = snapshot.val();
                 const menuView = document.getElementById('menu-view');
@@ -272,7 +387,7 @@
                         <div class="menu-item">
                             <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
                             <div class="item-name">${p.name}</div>
-                            <div class="item-price">$${p.price}</div>
+                            <div class="item-price">HKD $${p.price}</div>
                             <button class="btn" onclick="addToCart('${key}')">點購</button>
                         </div>
                     `;
@@ -280,7 +395,6 @@
             });
         }
 
-        // 購物車運作邏輯
         window.addToCart = function(key) {
             const prod = productsFromServer[key];
             const item = cart.find(i => i.key === key);
@@ -303,14 +417,14 @@
             cartView.innerHTML = cart.map(item => {
                 const subtotal = item.price * item.qty;
                 total += subtotal;
-                return `<tr><td>${item.name}</td><td>${item.qty}</td><td>$${subtotal}</td><td style="color:#cc0000; cursor:pointer;" onclick="removeFromCart('${item.key}')">✕</td></tr>`;
+                return `<tr><td>${item.name}</td><td>${item.qty}</td><td>HKD $${subtotal}</td><td style="color:#cc0000; cursor:pointer;" onclick="removeFromCart('${item.key}')">✕</td></tr>`;
             }).join('');
             totalPrice.innerText = total;
         }
         window.submitOrder = function() {
             if (cart.length === 0) { alert('請先點購商品。'); return; }
             let summary = cart.map(i => `${i.name} x ${i.qty}`).join('\n');
-            alert(`【訂單成立】\n會員：${currentMember.lastName}${currentMember.firstName}\n\n${summary}\n\n總金額：$${document.getElementById('total-price').innerText}`);
+            alert(`【訂單成立】\n會員：${currentMember.lastName}${currentMember.firstName}\n\n${summary}\n\n總金額：HKD $${document.getElementById('total-price').innerText}`);
             cart = [];
             renderCart();
         }
