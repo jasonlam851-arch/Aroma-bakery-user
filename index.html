@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aroma_bakery 下單系統 (Firebase)</title>
+    <style>
+        :root {
+            --caramel-dark: #4A332D;
+            --caramel-main: #8B4513;
+            --caramel-light: #D2691E;
+            --cream-bg: #FDFBF7;
+            --sand-light: #F4EBE1;
+        }
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--cream-bg);
+            color: var(--caramel-dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .system-header {
+            text-align: center;
+            border-bottom: 2px solid var(--caramel-main);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 28px; }
+        .system-header span { font-size: 14px; color: var(--caramel-light); letter-spacing: 1px; }
+        .system-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) { .system-container { grid-template-columns: 1fr; } }
+        .panel {
+            background: white;
+            border: 1px solid var(--sand-light);
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(74,51,45,0.05);
+        }
+        .panel-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--caramel-dark);
+            border-left: 4px solid var(--caramel-main);
+            padding-left: 8px;
+        }
+        .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        .menu-item { border: 1px solid #eee; border-radius: 4px; padding: 12px; text-align: center; background: #fff; }
+        .menu-item img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
+        .item-name { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
+        .item-price { color: var(--caramel-light); font-weight: bold; margin-bottom: 10px; }
+        .btn {
+            background-color: var(--caramel-main); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%;
+        }
+        .btn:hover { background-color: var(--caramel-dark); }
+        .btn-order { background-color: var(--caramel-light); padding: 10px; font-size: 16px; margin-top: 15px; }
+        .btn-order:hover { background-color: var(--caramel-main); }
+        .cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .cart-table th { border-bottom: 2px solid var(--sand-light); text-align: left; padding: 8px; color: #666; }
+        .cart-table td { padding: 8px; border-bottom: 1px solid #f5f5f5; }
+        .cart-empty { color: #999; text-align: center; padding: 30px 0; }
+        .remove-text { color: #cc0000; cursor: pointer; font-weight: bold; }
+        .total-box { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; color: var(--caramel-main); }
+    </style>
+</head>
+<body>
+
+    <div class="system-header">
+        <h1>Aroma_bakery 下單系統</h1>
+        <span>Ready to Serve</span>
+    </div>
+
+    <div class="system-container">
+        <div class="panel">
+            <div class="panel-title">線上商品菜單</div>
+            <div class="menu-list" id="menu-view">
+                <div style="color:#999; text-align:center; padding:20px; grid-column:1/-1;">讀取雲端菜單中...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">下單明細</div>
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>品名</th>
+                        <th width="50">數量</th>
+                        <th width="60">小計</th>
+                        <th width="30"></th>
+                    </tr>
+                </thead>
+                <tbody id="cart-view"></tbody>
+            </table>
+            <div class="total-box">總計: $<span id="total-price">0</span></div>
+            <button class="btn btn-order" onclick="submitOrder()">確認送出訂單</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // 已填入你的專案 Firebase 設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
+            authDomain: "aroma-bakery-492fa.firebaseapp.com",
+            databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com/",
+            projectId: "aroma-bakery-492fa",
+            storageBucket: "aroma-bakery-492fa.firebasestorage.app",
+            messagingSenderId: "1060567946315",
+            appId: "1:1060567946315:web:9693ac0e3486ab52c5e9ce"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbProductsRef = ref(db, 'products');
+
+        let productsFromServer = {};
+        let cart = [];
+
+        // 即時從 Firebase 讀取菜單
+        onValue(dbProductsRef, (snapshot) => {
+            const data = snapshot.val();
+            const menuView = document.getElementById('menu-view');
+            
+            if (!data) {
+                menuView.innerHTML = `<div style="color: #999; grid-column: 1/-1; text-align: center; padding: 40px 0;">今日無商品出爐</div>`;
+                productsFromServer = {};
+                return;
+            }
+
+            productsFromServer = data;
+            
+            menuView.innerHTML = Object.keys(data).map(key => {
+                const p = data[key];
+                return `
+                    <div class="menu-item">
+                        <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
+                        <div class="item-name">${p.name}</div>
+                        <div class="item-price">$${p.price}</div>
+                        <button class="btn" onclick="addToCart('${key}')">點購</button>
+                    </div>
+                `;
+            }).join('');
+        });
+
+        // 購物車邏輯
+        window.addToCart = function(key) {
+            const prod = productsFromServer[key];
+            const item = cart.find(i => i.key === key);
+            if (item) {
+                item.qty++;
+            } else {
+                cart.push({ key: key, name: prod.name, price: prod.price, qty: 1 });
+            }
+            renderCart();
+        }
+
+        window.removeFromCart = function(key) {
+            cart = cart.filter(i => i.key !== key);
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartView = document.getElementById('cart-view');
+            const totalPrice = document.getElementById('total-price');
+            
+            if (cart.length === 0) {
+                cartView.innerHTML = `<tr><td colspan="4" class="cart-empty">未選擇商品</td></tr>`;
+                totalPrice.innerText = '0';
+                return;
+            }
+
+            let total = 0;
+            cartView.innerHTML = cart.map(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.qty}</td>
+                        <td>$${subtotal}</td>
+                        <td class="remove-text" onclick="removeFromCart('${item.key}')">✕</td>
+                    </tr>
+                `;
+            }).join('');
+
+            totalPrice.innerText = total;
+        }
+
+        window.submitOrder = function() {
+            if (cart.length === 0) {
+                alert('請先點購商品。');
+                return;
+            }
+            let summary = cart.map(i => `${i.name} x ${i.qty}`).join('\n');
+            let total = document.getElementById('total-price').innerText;
+            alert(`【訂單成立】\n\n${summary}\n\n總金額：$${total}\n\nReady to Serve.`);
+            cart = [];
+            renderCart();
+        }
+
+        renderCart();
+    </script>
+</body>
+</html>
