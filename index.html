@@ -3,54 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aroma Bakery - 顧客線上點餐</title>
+    <title>Aroma Bakery | Premium Artisanal Ordering</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+TC:wght@400;600&display=swap');
+        .font-brand { font-family: 'Cinzel', 'Noto Serif TC', serif; }
+    </style>
 </head>
-<body class="bg-amber-50 min-h-screen font-sans">
+<body class="bg-[#FBF9F6] text-[#2C2623] font-brand min-h-screen antialiased">
 
-    <nav class="bg-amber-700 text-white p-4 shadow-md sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wide">🍞 Aroma Bakery</h1>
-            <span class="text-sm bg-amber-800 px-3 py-1 rounded-full">美味烘焙 ‧ 即刻預訂</span>
+    <nav class="bg-[#1A1512] text-[#E5D5C5] py-6 px-8 shadow-sm sticky top-0 z-50 tracking-widest border-b border-[#322A24]">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <h1 class="text-3xl font-bold tracking-[0.2em] uppercase">Aroma Bakery</h1>
+                <p class="text-[10px] text-[#A89280] uppercase tracking-[0.3em] mt-1">Artisanal & Premium Boulangerie</p>
+            </div>
+            <span class="text-xs border border-[#A89280] px-4 py-1.5 rounded-full text-[#A89280]">TODAY's FRESH BAKED</span>
         </div>
     </nav>
 
-    <div class="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="container mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div class="lg:col-span-2">
-            <h2 class="text-xl font-bold text-amber-900 mb-4 flex items-center">今日現烤麵包</h2>
-            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <p class="text-gray-500">美味麵包出爐中，請稍候...</p>
+            <h2 class="text-xl font-semibold tracking-wider text-[#1A1512] mb-8 pb-3 border-b border-[#E5D5C5]">今日限量出爐</h2>
+            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <p class="text-[#A89280] italic">Loading the aroma...</p>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-lg border border-amber-100 h-fit sticky top-20">
-            <h2 class="text-xl font-bold text-amber-900 mb-4 pb-2 border-b">🛒 您的購物車</h2>
+        <div class="bg-white p-8 rounded-none shadow-sm border border-[#E5D5C5] h-fit sticky top-28">
+            <h2 class="text-lg font-semibold tracking-widest text-[#1A1512] mb-6 pb-2 border-b border-[#2C2623]">YOUR SELECTION</h2>
             
-            <div id="cart-items" class="space-y-3 max-h-60 overflow-y-auto mb-4">
-                <p class="text-gray-400 text-center py-4">購物車還是空的，快去挑選麵包吧！</p>
+            <div id="cart-items" class="space-y-4 max-h-60 overflow-y-auto mb-6">
+                <p class="text-gray-400 text-center py-6 text-sm italic">購物車尚無選購上品</p>
             </div>
 
-            <div class="flex justify-between items-center font-bold text-lg text-amber-950 mb-6">
-                <span>總計金額：</span>
-                <span>$ <span id="cart-total">0</span></span>
+            <div class="flex justify-between items-center font-semibold text-md text-[#1A1512] mb-8 pt-4 border-t border-dashed border-[#E5D5C5]">
+                <span class="tracking-widest">ESTIMATED TOTAL</span>
+                <span class="text-xl">NT$ <span id="cart-total">0</span></span>
             </div>
 
-            <form id="order-form" class="space-y-3">
-                <h3 class="font-semibold text-gray-700 border-t pt-3">📋 取貨資訊</h3>
+            <form id="order-form" class="space-y-4 text-sm">
+                <h3 class="font-semibold text-[#1A1512] tracking-wider uppercase text-xs mb-2">PICKUP DETAILS</h3>
                 <div>
-                    <label class="block text-sm text-gray-600 mb-1">姓名</label>
-                    <input type="text" id="cust-name" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <input type="text" id="cust-name" placeholder="尊姓大名" required class="w-full p-3 bg-[#FBF9F6] border border-[#E5D5C5] rounded-none focus:outline-none focus:border-[#1A1512] transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-gray-600 mb-1">電話</label>
-                    <input type="tel" id="cust-phone" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <input type="tel" id="cust-phone" placeholder="聯絡電話" required class="w-full p-3 bg-[#FBF9F6] border border-[#E5D5C5] rounded-none focus:outline-none focus:border-[#1A1512] transition">
                 </div>
                 <div>
-                    <label class="block text-sm text-gray-600 mb-1">預計取貨時間</label>
-                    <input type="time" id="cust-time" required class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <label class="block text-xs text-[#A89280] mb-1 tracking-wider">預計取貨時間 TIME</label>
+                    <input type="time" id="cust-time" required class="w-full p-3 bg-[#FBF9F6] border border-[#E5D5C5] rounded-none focus:outline-none focus:border-[#1A1512] transition">
                 </div>
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 mt-4">
-                    確認送出訂單
+                <button type="submit" class="w-full bg-[#1A1512] hover:bg-[#322A24] text-[#E5D5C5] tracking-[0.2em] font-medium py-4 px-4 rounded-none transition duration-300 mt-6 uppercase text-xs">
+                    送出預訂訂單
                 </button>
             </form>
         </div>
@@ -58,11 +63,12 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
             authDomain: "aroma-bakery-492fa.firebaseapp.com",
+            databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com", // 補上RTDB專用URL
             projectId: "aroma-bakery-492fa",
             storageBucket: "aroma-bakery-492fa.firebasestorage.app",
             messagingSenderId: "1060567946315",
@@ -70,56 +76,53 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
 
         let productsData = {}; 
         let cart = {};
 
-        // 1. 即時監聽 Firestore 商品資料
-        onSnapshot(collection(db, "products"), (snapshot) => {
+        // 監聽 RTDB 商品
+        onValue(ref(db, "products"), (snapshot) => {
             const productList = document.getElementById("product-list");
             productList.innerHTML = "";
-            productsData = {};
+            productsData = snapshot.val() || {};
 
-            if(snapshot.empty) {
-                productList.innerHTML = `<p class="text-gray-500 col-span-2">目前沒有上架中的麵包。</p>`;
+            if(Object.keys(productsData).length === 0) {
+                productList.innerHTML = `<p class="text-gray-400 italic">今日限定烘焙準備中...</p>`;
                 return;
             }
 
-            snapshot.forEach((doc) => {
-                const p = doc.data();
-                const id = doc.id;
-                productsData[id] = { id, ...p };
-
+            for (let id in productsData) {
+                const p = productsData[id];
                 const card = document.createElement("div");
-                card.className = "bg-white p-4 rounded-xl shadow-sm border border-amber-100 flex gap-4 items-center";
+                card.className = "bg-white rounded-none border border-[#E5D5C5] overflow-hidden group hover:shadow-md transition duration-300 flex flex-col justify-between";
                 card.innerHTML = `
-                    <img src="${p.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150'}" class="w-20 h-20 object-cover rounded-lg bg-gray-100">
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-800 text-lg">${p.name}</h3>
-                        <p class="text-amber-700 font-semibold">$ ${p.price}</p>
-                        <p class="text-xs text-gray-400">當日剩餘庫存: ${p.stock || 0}</p>
+                    <div class="relative overflow-hidden aspect-[4/3]">
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                        ${p.stock <= 0 ? '<div class="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center text-[#E5D5C5] tracking-widest text-xs">SOLD OUT</div>' : ''}
                     </div>
-                    <button onclick="addToCart('${id}')" class="bg-amber-100 hover:bg-amber-600 hover:text-white text-amber-800 font-bold py-1 px-3 rounded-lg transition duration-200 text-sm">
-                        + 加購物車
-                    </button>
+                    <div class="p-5 flex-1 flex flex-col justify-between gap-4">
+                        <div>
+                            <h3 class="font-semibold text-base text-[#1A1512] tracking-wide mb-1">${p.name}</h3>
+                            <p class="text-xs text-[#A89280] tracking-wider">每日限量現貨 / 剩餘 ${p.stock || 0} 個</p>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-[#FBF9F6]">
+                            <span class="text-sm font-medium text-[#2C2623]">NT$ ${p.price}</span>
+                            <button onclick="addToCart('${id}')" ${p.stock <= 0 ? 'disabled' : ''} class="border border-[#1A1512] hover:bg-[#1A1512] hover:text-[#E5D5C5] text-[#1A1512] text-xs px-3 py-1.5 transition duration-300 tracking-widest uppercase disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#1A1512]">
+                                + ADD
+                            </button>
+                        </div>
+                    </div>
                 `;
                 productList.appendChild(card);
-            });
+            }
         });
 
-        // 2. 購物車邏輯 (掛載到 window 讓 HTML 監聽按鈕能觸發)
         window.addToCart = (id) => {
             const product = productsData[id];
-            if (!product || product.stock <= 0) {
-                alert("該商品已售完或不存在！");
-                return;
-            }
+            if (!product || product.stock <= 0) return;
             if (cart[id]) {
-                if (cart[id].qty >= product.stock) {
-                    alert("抱歉，已達今日現貨庫存上限！");
-                    return;
-                }
+                if (cart[id].qty >= product.stock) { alert("已達今日現貨供應上限"); return; }
                 cart[id].qty++;
             } else {
                 cart[id] = { name: product.name, price: product.price, qty: 1 };
@@ -140,41 +143,36 @@
             container.innerHTML = "";
             let total = 0;
 
-            const keys = Object.keys(cart);
-            if (keys.length === 0) {
-                container.innerHTML = `<p class="text-gray-400 text-center py-4">購物車還是空的，快去挑選麵包吧！</p>`;
+            if (Object.keys(cart).length === 0) {
+                container.innerHTML = `<p class="text-gray-400 text-center py-6 text-sm italic">購物車尚無選購上品</p>`;
                 totalSpan.innerText = "0";
                 return;
             }
 
-            keys.forEach(id => {
+            for (let id in cart) {
                 const item = cart[id];
                 total += item.price * item.qty;
                 const div = document.createElement("div");
-                div.className = "flex justify-between items-center text-sm border-b pb-2";
+                div.className = "flex justify-between items-center text-xs pb-3 border-b border-[#FBF9F6]";
                 div.innerHTML = `
                     <div class="flex-1">
-                        <div class="font-medium text-gray-800">${item.name}</div>
-                        <div class="text-xs text-gray-400">$${item.price} x ${item.qty}</div>
+                        <div class="font-medium text-[#1A1512] tracking-wide">${item.name}</div>
+                        <div class="text-[#A89280] mt-0.5">NT$ ${item.price}</div>
                     </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="updateQty('${id}', -1)" class="px-2 py-0.5 bg-gray-200 rounded text-xs font-bold">-</button>
-                        <span class="w-6 text-center font-semibold">${item.qty}</span>
-                        <button onclick="updateQty('${id}', 1)" class="px-2 py-0.5 bg-gray-200 rounded text-xs font-bold">+</button>
+                    <div class="flex items-center gap-3 border border-[#E5D5C5] px-2 py-1">
+                        <button onclick="updateQty('${id}', -1)" class="text-gray-500 hover:text-black font-bold">-</button>
+                        <span class="w-4 text-center font-semibold">${item.qty}</span>
+                        <button onclick="updateQty('${id}', 1)" class="text-gray-500 hover:text-black font-bold">+</button>
                     </div>
                 `;
                 container.appendChild(div);
-            });
+            }
             totalSpan.innerText = total;
         }
 
-        // 3. 送出訂單至 Firebase
         document.getElementById("order-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            if (Object.keys(cart).length === 0) {
-                alert("購物車內沒有商品！");
-                return;
-            }
+            if (Object.keys(cart).length === 0) { alert("購物車內無商品"); return; }
 
             const orderData = {
                 customerName: document.getElementById("cust-name").value,
@@ -182,20 +180,17 @@
                 pickupTime: document.getElementById("cust-time").value,
                 items: Object.values(cart),
                 totalPrice: Number(document.getElementById("cart-total").innerText),
-                status: "待接單", // 初始狀態
-                createdAt: Timestamp.now()
+                status: "待接單",
+                createdAt: Date.now()
             };
 
-            try {
-                await addDoc(collection(db, "orders"), orderData);
-                alert("🎉 訂單送出成功！請準時前往現場取貨。");
-                cart = {};
-                renderCart();
-                document.getElementById("order-form").reset();
-            } catch (error) {
-                console.error("Error added document: ", error);
-                alert("訂單送出失敗，請稍後再試。");
-            }
+            const ordersRef = ref(db, "orders");
+            const newOrderRef = push(ordersRef);
+            await set(newOrderRef, orderData);
+            alert("✨ 貴賓您好，Aroma Bakery 已收到您的精緻預訂訂單。");
+            cart = {};
+            renderCart();
+            document.getElementById("order-form").reset();
         });
     </script>
 </body>
