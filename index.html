@@ -38,6 +38,16 @@
         .btn-modal-confirm { background: var(--caramel-main); color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-modal-cancel { background: #ccc; color: #333; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
+        /* 全域維護模式遮罩 */
+        .maintenance-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--cream-bg); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 99999; text-align: center; padding: 20px;
+        }
+        .maintenance-box { background: white; border: 2px solid var(--caramel-light); padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 400px; }
+        .maintenance-box h2 { color: #cc0000; margin-top: 0; }
+        .maintenance-box p { color: var(--caramel-dark); line-height: 1.6; font-weight: bold; }
+
         /* 會員驗證遮罩 */
         .auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -52,7 +62,7 @@
         }
         .auth-box h2 { color: var(--caramel-main); text-align: center; margin-top: 0; margin-bottom: 20px; }
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); }
-        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #999; }
+        .auth-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #999; font-size: 14px; }
         .auth-tab.active { color: var(--caramel-main); border-bottom: 2px solid var(--caramel-main); }
         .auth-form { display: none; }
         .auth-form.active { display: block; }
@@ -63,6 +73,9 @@
         .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .phone-prefix { background-color: #eee; padding: 10px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; font-weight: bold; text-align: center; }
         
+        .lnk-forgot { text-align: right; margin-top: -10px; margin-bottom: 15px; }
+        .lnk-forgot a { color: var(--caramel-light); font-size: 13px; text-decoration: none; font-weight: bold; cursor: pointer; }
+
         .btn-auth { background-color: var(--caramel-main); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px; }
         .btn-auth:hover { background-color: var(--caramel-dark); }
         .btn-danger { background-color: #cc0000; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; margin-top: 25px; }
@@ -99,16 +112,20 @@
         .menu-item img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
         .item-name { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
         .item-price { color: var(--caramel-light); font-weight: bold; margin-bottom: 10px; }
-        .btn { background-color: var(--caramel-main); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn:hover { background-color: var(--caramel-dark); }
-        .btn-order { background-color: var(--caramel-light); padding: 10px; font-size: 16px; margin-top: 15px; }
-        .cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .cart-table th { border-bottom: 2px solid var(--sand-light); text-align: left; padding: 8px; color: #666; }
-        .cart-table td { padding: 8px; border-bottom: 1px solid #f5f5f5; }
         .total-box { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; color: var(--caramel-main); }
     </style>
 </head>
 <body>
+
+    <!-- 系統強制維護模式蓋板 -->
+    <div class="maintenance-overlay" id="maintenance-screen">
+        <div class="maintenance-box">
+            <h2>⚙️ 系統維護中</h2>
+            <p>十分抱歉，本點餐應用程式目前正進行系統升級與數據維護，暫時無法提供下單服務。</p>
+            <hr style="border:0; border-top:1px dashed var(--sand-light); margin:20px 0;">
+            <div style="font-size:14px; color:var(--caramel-light); font-weight:bold;">歡迎使用 Aroma_bakery</div>
+        </div>
+    </div>
 
     <!-- 系統自訂通用彈窗 UI -->
     <div class="sys-modal-overlay" id="sys-modal-screen">
@@ -119,15 +136,17 @@
         </div>
     </div>
 
-    <!-- 會員驗證模組 -->
+    <!-- 會員驗證與登入註冊模組 -->
     <div class="auth-overlay" id="auth-screen">
         <div class="auth-box">
             <h2>Aroma_bakery 會員系統</h2>
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">會員登入</div>
                 <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">新會員註冊</div>
+                <div class="auth-tab" id="tab-forgot" onclick="switchAuthMode('forgot')" style="display:none;">忘記密碼</div>
             </div>
 
+            <!-- 1. 登入表單 -->
             <form id="form-login" class="auth-form active" onsubmit="handleMemberLogin(event)">
                 <div class="input-group">
                     <label for="loginPhone">香港電話號碼</label>
@@ -140,9 +159,13 @@
                     <label for="loginPassword">密碼</label>
                     <input type="password" id="loginPassword" required placeholder="請輸入密碼">
                 </div>
+                <div class="lnk-forgot">
+                    <a onclick="switchAuthMode('forgot')">忘記密碼？</a>
+                </div>
                 <button type="submit" class="btn-auth">登入系統</button>
             </form>
 
+            <!-- 2. 註冊表單 -->
             <form id="form-register" class="auth-form" onsubmit="handleMemberRegister(event)">
                 <div class="input-group">
                     <label>中文姓名</label>
@@ -171,6 +194,31 @@
                 </div>
                 <button type="submit" class="btn-auth">提交註冊申請</button>
             </form>
+
+            <!-- 3. 新增：忘記密碼表單 -->
+            <form id="form-forgot" class="auth-form" onsubmit="handleForgotSubmit(event)">
+                <div class="input-group">
+                    <label for="forgotPhone">註冊電話號碼</label>
+                    <div style="display: flex;">
+                        <div class="phone-prefix">+852</div>
+                        <input type="text" id="forgotPhone" required placeholder="請輸入8位電話號碼" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>會員出生日期</label>
+                    <div class="input-row">
+                        <input type="number" id="forgotMonth" min="1" max="12" required placeholder="月份">
+                        <input type="number" id="forgotDay" min="1" max="31" required placeholder="日期">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="forgotEmail">接收密碼電子郵件 (Email)</label>
+                    <input type="email" id="forgotEmail" required placeholder="example@mail.com">
+                </div>
+                <button type="submit" class="btn-auth" style="background-color: var(--caramel-light);">送出查驗密碼申請</button>
+                <button type="button" class="btn-auth" style="background-color: #aaa; margin-top: 8px;" onclick="switchAuthMode('login')">返回登入畫面</button>
+            </form>
+
         </div>
     </div>
 
@@ -234,7 +282,7 @@
                     <tbody id="cart-view"></tbody>
                 </table>
                 <div class="total-box">總計: HKD $<span id="total-price">0</span></div>
-                <button class="btn btn-order" onclick="submitOrder()">確認送出訂單</button>
+                <button class="btn btn-auth" style="margin-top:15px; padding:10px; background-color: var(--caramel-light);" onclick="submitOrder()">確認送出訂單</button>
             </div>
         </div>
     </div>
@@ -260,6 +308,45 @@
         let currentMemberPhoneKey = ""; 
         let productsFromServer = {};
         let cart = [];
+
+        // 核心一：全局監聽系統維護狀態
+        onValue(ref(db, 'system_maintenance'), (snapshot) => {
+            const isMaintenance = snapshot.val();
+            const maintScreen = document.getElementById('maintenance-screen');
+            if (isMaintenance === true) {
+                maintScreen.style.display = 'flex'; // 強制強制覆蓋彈出
+            } else {
+                maintScreen.style.display = 'none';
+            }
+        });
+
+        // 核心二：全局即時同步監聽商品菜單
+        onValue(ref(db, 'products'), (snapshot) => {
+            const data = snapshot.val();
+            const menuView = document.getElementById('menu-view');
+            if (!data) {
+                menuView.innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0; grid-column: 1/-1;">今日無商品出爐</div>';
+                productsFromServer = {};
+                return;
+            }
+            productsFromServer = data;
+            
+            // 如果當前主系統開啟中，立即 0 秒更新 DOM 畫面
+            if(document.getElementById('main-order-system').style.display === 'block') {
+                renderMenuUI();
+            }
+        });
+
+        // 核心三：監聽當前登入用戶是否被後台管理員註銷
+        function listenToCurrentUserStatus(phone) {
+            onValue(ref(db, `users/${phone}`), (snapshot) => {
+                if(currentMemberPhoneKey === phone && !snapshot.exists()) {
+                    showSysModal('安全性通知', '您的會員帳號已在後台被管理員註銷移除。', () => {
+                        handleLogout();
+                    });
+                }
+            });
+        }
 
         // 封裝系統內建模態窗提示
         function showSysModal(title, msg, onConfirm = null, isConfirmType = false) {
@@ -292,9 +379,12 @@
             if(mode === 'login') {
                 document.getElementById('tab-login').classList.add('active');
                 document.getElementById('form-login').classList.add('active');
-            } else {
+            } else if (mode === 'register') {
                 document.getElementById('tab-register').classList.add('active');
                 document.getElementById('form-register').classList.add('active');
+            } else if (mode === 'forgot') {
+                document.getElementById('tab-forgot').classList.add('active');
+                document.getElementById('form-forgot').classList.add('active');
             }
         }
 
@@ -375,6 +465,31 @@
             }).catch(err => showSysModal('連線失敗', '資料庫連線逾時。'));
         }
 
+        // 新增：處理忘記密碼查驗申請
+        window.handleForgotSubmit = function(event) {
+            event.preventDefault();
+            const phone = document.getElementById('forgotPhone').value.trim();
+            const month = document.getElementById('forgotMonth').value;
+            const day = document.getElementById('forgotDay').value;
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            const timestamp = Date.now();
+            const forgotData = {
+                phone: phone,
+                birthday: `${month}月${day}日`,
+                email: email,
+                timestamp: timestamp
+            };
+
+            // 將申請單實時送至資料庫給管理員查看
+            set(ref(db, `forgot_password_requests/${phone}`), forgotData).then(() => {
+                showSysModal('申請已送出', '【密碼查驗與電郵通知提示】\n資料已提交管理處核實！小組會將密碼手動發送至您的電郵。\n\n⚠️ 注意：此服務非24小時全自動發送，需人工審查，請耐心等候。', () => {
+                    document.getElementById('form-forgot').reset();
+                    switchAuthMode('login');
+                });
+            }).catch(err => showSysModal('錯誤', '送出失敗，請檢查網路連線。'));
+        }
+
         window.handleProfileUpdate = function(event) {
             event.preventDefault();
             const newLast = document.getElementById('drawLastName').value.trim();
@@ -420,30 +535,33 @@
             document.getElementById('main-order-system').style.display = 'block';
             document.getElementById('user-numb-display').innerText = userData.memberNumb;
             
-            onValue(ref(db, 'products'), (snapshot) => {
-                const data = snapshot.val();
-                const menuView = document.getElementById('menu-view');
-                if (!data) {
-                    menuView.innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0; grid-column: 1/-1;">今日無商品出爐</div>';
-                    return;
-                }
-                productsFromServer = data;
-                menuView.innerHTML = Object.keys(data).map(key => {
-                    const p = data[key];
-                    return `
-                        <div class="menu-item">
-                            <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
-                            <div class="item-name">${p.name}</div>
-                            <div class="item-price">HKD $${p.price}</div>
-                            <button class="btn" onclick="addToCart('${key}')">點購</button>
-                        </div>
-                    `;
-                }).join('');
-            });
+            listenToCurrentUserStatus(currentMemberPhoneKey); // 啟動防刪除即時監聽
+            renderMenuUI();
+        }
+
+        function renderMenuUI() {
+            const menuView = document.getElementById('menu-view');
+            const keys = Object.keys(productsFromServer);
+            if (keys.length === 0) {
+                menuView.innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0; grid-column: 1/-1;">今日無商品出爐</div>';
+                return;
+            }
+            menuView.innerHTML = keys.map(key => {
+                const p = productsFromServer[key];
+                return `
+                    <div class="menu-item">
+                        <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
+                        <div class="item-name">${p.name}</div>
+                        <div class="item-price">HKD $${p.price}</div>
+                        <button class="btn" style="background-color: var(--caramel-main); color:white; border:none; padding: 6px 12px; border-radius:4px; cursor:pointer; width:100%; font-weight:bold;" onclick="addToCart('${key}')">點購</button>
+                    </div>
+                `;
+            }).join('');
         }
 
         window.addToCart = function(key) {
             const prod = productsFromServer[key];
+            if (!prod) return;
             const item = cart.find(i => i.key === key);
             if (item) { item.qty++; } else { cart.push({ key: key, name: prod.name, price: prod.price, qty: 1 }); }
             renderCart();
