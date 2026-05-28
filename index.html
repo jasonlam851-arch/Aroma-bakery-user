@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aroma_bakery 下單系統 (Firebase)</title>
+    <title>Aroma_bakery 線上點餐與會員系統</title>
     <style>
         :root {
             --caramel-dark: #4A332D;
@@ -19,37 +19,64 @@
             margin: 0;
             padding: 20px;
         }
+        
+        /* 會員驗證遮罩 */
+        .auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--cream-bg);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .auth-box {
+            background: white; border: 1px solid var(--sand-light); border-radius: 8px;
+            padding: 30px; width: 100%; max-width: 400px;
+            box-shadow: 0 4px 15px rgba(74,51,45,0.08);
+        }
+        .auth-box h2 { color: var(--caramel-main); text-align: center; margin-top: 0; margin-bottom: 20px; }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--sand-light); }
+        .auth-tab {
+            flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #999;
+        }
+        .auth-tab.active { color: var(--caramel-main); border-bottom: 2px solid var(--caramel-main); }
+        .auth-form { display: none; }
+        .auth-form.active { display: block; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
+        .input-group input {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px;
+        }
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .phone-prefix { background-color: #eee; padding: 10px; border: 1px solid #ccc; border-radius: 4px 0 0 4px; font-weight: bold; text-align: center; }
+        
+        .btn-auth {
+            background-color: var(--caramel-main); color: white; border: none; padding: 12px;
+            border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px;
+        }
+        .btn-auth:hover { background-color: var(--caramel-dark); }
+
+        /* 主系統介面 */
+        .main-system { display: none; }
         .system-header {
-            text-align: center;
-            border-bottom: 2px solid var(--caramel-main);
-            padding-bottom: 10px;
-            margin-bottom: 25px;
+            text-align: center; border-bottom: 2px solid var(--caramel-main);
+            padding-bottom: 10px; margin-bottom: 25px; position: relative;
         }
         .system-header h1 { margin: 0; color: var(--caramel-main); font-size: 28px; }
         .system-header span { font-size: 14px; color: var(--caramel-light); letter-spacing: 1px; }
+        .member-badge { position: absolute; right: 10px; bottom: 10px; font-size: 14px; font-weight: bold; color: var(--caramel-dark); }
+        
         .system-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 20px;
+            max-width: 1000px; margin: 0 auto;
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;
         }
         @media (max-width: 768px) { .system-container { grid-template-columns: 1fr; } }
         .panel {
-            background: white;
-            border: 1px solid var(--sand-light);
-            border-radius: 6px;
-            padding: 15px;
+            background: white; border: 1px solid var(--sand-light); border-radius: 6px; padding: 15px;
             box-shadow: 0 2px 5px rgba(74,51,45,0.05);
         }
         .panel-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: var(--caramel-dark);
-            border-left: 4px solid var(--caramel-main);
-            padding-left: 8px;
+            font-size: 18px; font-weight: bold; margin-top: 0; margin-bottom: 15px;
+            color: var(--caramel-dark); border-left: 4px solid var(--caramel-main); padding-left: 8px;
         }
         .menu-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
         .menu-item { border: 1px solid #eee; border-radius: 4px; padding: 12px; text-align: center; background: #fff; }
@@ -61,53 +88,91 @@
         }
         .btn:hover { background-color: var(--caramel-dark); }
         .btn-order { background-color: var(--caramel-light); padding: 10px; font-size: 16px; margin-top: 15px; }
-        .btn-order:hover { background-color: var(--caramel-main); }
         .cart-table { width: 100%; border-collapse: collapse; font-size: 14px; }
         .cart-table th { border-bottom: 2px solid var(--sand-light); text-align: left; padding: 8px; color: #666; }
         .cart-table td { padding: 8px; border-bottom: 1px solid #f5f5f5; }
-        .cart-empty { color: #999; text-align: center; padding: 30px 0; }
-        .remove-text { color: #cc0000; cursor: pointer; font-weight: bold; }
         .total-box { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; color: var(--caramel-main); }
     </style>
 </head>
 <body>
 
-    <div class="system-header">
-        <h1>Aroma_bakery 下單系統</h1>
-        <span>Ready to Serve</span>
+    <div class="auth-overlay" id="auth-screen">
+        <div class="auth-box">
+            <h2>Aroma_bakery 會員系統</h2>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuthMode('login')">會員登入</div>
+                <div class="auth-tab" id="tab-register" onclick="switchAuthMode('register')">新會員註冊</div>
+            </div>
+
+            <form id="form-login" class="auth-form active" onsubmit="handleMemberLogin(event)">
+                <div class="input-group">
+                    <label for="loginPhone">香港電話號碼</label>
+                    <div style="display: flex;">
+                        <div class="phone-prefix">+852</div>
+                        <input type="text" id="loginPhone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
+                    </div>
+                </div>
+                <button type="submit" class="btn-auth">登入系統</button>
+            </form>
+
+            <form id="form-register" class="auth-form" onsubmit="handleMemberRegister(event)">
+                <div class="input-group">
+                    <label>中文姓名</label>
+                    <div class="input-row">
+                        <input type="text" id="regLastName" required placeholder="姓氏">
+                        <input type="text" id="regFirstName" required placeholder="名字">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="regPhone">香港電話號碼</label>
+                    <div style="display: flex;">
+                        <div class="phone-prefix">+852</div>
+                        <input type="text" id="regPhone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}" style="border-radius: 0 4px 4px 0;">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>出生日期 (不含年份)</label>
+                    <div class="input-row">
+                        <input type="number" id="regBirthMonth" min="1" max="12" required placeholder="月份">
+                        <input type="number" id="regBirthDay" min="1" max="31" required placeholder="日期">
+                    </div>
+                </div>
+                <button type="submit" class="btn-auth">提交註冊申請</button>
+            </form>
+        </div>
     </div>
 
-    <div class="system-container">
-        <div class="panel">
-            <div class="panel-title">線上商品菜單</div>
-            <div class="menu-list" id="menu-view">
-                <div style="color:#999; text-align:center; padding:20px; grid-column:1/-1;">讀取雲端菜單中...</div>
-            </div>
+    <div class="main-system" id="main-order-system">
+        <div class="system-header">
+            <h1>Aroma_bakery 下單系統</h1>
+            <span>Ready to Serve</span>
+            <div class="member-badge">會員編號: <span id="user-numb-display">-</span></div>
         </div>
 
-        <div class="panel">
-            <div class="panel-title">下單明細</div>
-            <table class="cart-table">
-                <thead>
-                    <tr>
-                        <th>品名</th>
-                        <th width="50">數量</th>
-                        <th width="60">小計</th>
-                        <th width="30"></th>
-                    </tr>
-                </thead>
-                <tbody id="cart-view"></tbody>
-            </table>
-            <div class="total-box">總計: $<span id="total-price">0</span></div>
-            <button class="btn btn-order" onclick="submitOrder()">確認送出訂單</button>
+        <div class="system-container">
+            <div class="panel">
+                <div class="panel-title">線上商品菜單</div>
+                <div class="menu-list" id="menu-view"></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">下單明細</div>
+                <table class="cart-table">
+                    <thead>
+                        <tr><th>品名</th><th width="50">數量</th><th width="60">小計</th><th width="30"></th></tr>
+                    </thead>
+                    <tbody id="cart-view"></tbody>
+                </table>
+                <div class="total-box">總計: $<span id="total-price">0</span></div>
+                <button class="btn btn-order" onclick="submitOrder()">確認送出訂單</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 已填入你的專案 Firebase 設定
         const firebaseConfig = {
             apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
             authDomain: "aroma-bakery-492fa.firebaseapp.com",
@@ -120,94 +185,135 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const dbProductsRef = ref(db, 'products');
 
+        let currentMember = null;
         let productsFromServer = {};
         let cart = [];
 
-        // 即時從 Firebase 讀取菜單
-        onValue(dbProductsRef, (snapshot) => {
-            const data = snapshot.val();
-            const menuView = document.getElementById('menu-view');
-            
-            if (!data) {
-                menuView.innerHTML = `<div style="color: #999; grid-column: 1/-1; text-align: center; padding: 40px 0;">今日無商品出爐</div>`;
-                productsFromServer = {};
-                return;
+        // 切換登入/註冊分頁
+        window.switchAuthMode = function(mode) {
+            document.querySelectorAll('.auth-tab, .auth-form').forEach(el => el.classList.remove('active'));
+            if(mode === 'login') {
+                document.getElementById('tab-login').classList.add('active');
+                document.getElementById('form-login').classList.add('active');
+            } else {
+                document.getElementById('tab-register').classList.add('active');
+                document.getElementById('form-register').classList.add('active');
             }
+        }
 
-            productsFromServer = data;
+        // 處理新會員註冊
+        window.handleMemberRegister = function(event) {
+            event.preventDefault();
+            const phone = document.getElementById('regPhone').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const month = parseInt(document.getElementById('regBirthMonth').value);
+            const day = parseInt(document.getElementById('regBirthDay').value);
+
+            // 檢查該電話是否已存在
+            get(child(ref(db), `users/${phone}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    alert('此電話號碼已經被註冊過，請直接選擇登入。');
+                } else {
+                    // 自動隨機生成會員編號 Numb
+                    const randNumb = Math.floor(100000 + Math.random() * 900000);
+                    const memberNumb = `AROMA-${randNumb}`;
+
+                    const userData = {
+                        lastName: lastName,
+                        firstName: firstName,
+                        phone: `(852)${phone}`,
+                        birthday: `${month}月${day}日`,
+                        memberNumb: memberNumb
+                    };
+
+                    set(ref(db, `users/${phone}`), userData).then(() => {
+                        alert(`註冊成功！您的永久會員編號為：${memberNumb}`);
+                        enterSystem(userData);
+                    });
+                }
+            });
+        }
+
+        // 處理會員登入
+        window.handleMemberLogin = function(event) {
+            event.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+
+            get(child(ref(db), `users/${phone}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    enterSystem(snapshot.val());
+                } else {
+                    alert('找不到此會員資料，請確認號碼或前往註冊。');
+                }
+            }).catch(err => alert('連線失敗'));
+        }
+
+        // 成功進入下單系統
+        function enterSystem(userData) {
+            currentMember = userData;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-order-system').style.display = 'block';
+            document.getElementById('user-numb-display').innerText = userData.memberNumb;
             
-            menuView.innerHTML = Object.keys(data).map(key => {
-                const p = data[key];
-                return `
-                    <div class="menu-item">
-                        <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
-                        <div class="item-name">${p.name}</div>
-                        <div class="item-price">$${p.price}</div>
-                        <button class="btn" onclick="addToCart('${key}')">點購</button>
-                    </div>
-                `;
-            }).join('');
-        });
+            // 監聽並加載雲端菜單
+            onValue(ref(db, 'products'), (snapshot) => {
+                const data = snapshot.val();
+                const menuView = document.getElementById('menu-view');
+                if (!data) {
+                    menuView.innerHTML = '<div style="color: #999; text-align: center; padding: 40px 0; grid-column: 1/-1;">今日無商品出爐</div>';
+                    return;
+                }
+                productsFromServer = data;
+                menuView.innerHTML = Object.keys(data).map(key => {
+                    const p = data[key];
+                    return `
+                        <div class="menu-item">
+                            <img src="${p.image || 'https://via.placeholder.com/150?text=No+Image'}" alt="${p.name}">
+                            <div class="item-name">${p.name}</div>
+                            <div class="item-price">$${p.price}</div>
+                            <button class="btn" onclick="addToCart('${key}')">點購</button>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
 
-        // 購物車邏輯
+        // 購物車運作邏輯
         window.addToCart = function(key) {
             const prod = productsFromServer[key];
             const item = cart.find(i => i.key === key);
-            if (item) {
-                item.qty++;
-            } else {
-                cart.push({ key: key, name: prod.name, price: prod.price, qty: 1 });
-            }
+            if (item) { item.qty++; } else { cart.push({ key: key, name: prod.name, price: prod.price, qty: 1 }); }
             renderCart();
         }
-
         window.removeFromCart = function(key) {
             cart = cart.filter(i => i.key !== key);
             renderCart();
         }
-
         function renderCart() {
             const cartView = document.getElementById('cart-view');
             const totalPrice = document.getElementById('total-price');
-            
             if (cart.length === 0) {
-                cartView.innerHTML = `<tr><td colspan="4" class="cart-empty">未選擇商品</td></tr>`;
+                cartView.innerHTML = '<tr><td colspan="4" style="color:#999; text-align:center; padding:30px 0;">未選擇商品</td></tr>';
                 totalPrice.innerText = '0';
                 return;
             }
-
             let total = 0;
             cartView.innerHTML = cart.map(item => {
                 const subtotal = item.price * item.qty;
                 total += subtotal;
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.qty}</td>
-                        <td>$${subtotal}</td>
-                        <td class="remove-text" onclick="removeFromCart('${item.key}')">✕</td>
-                    </tr>
-                `;
+                return `<tr><td>${item.name}</td><td>${item.qty}</td><td>$${subtotal}</td><td style="color:#cc0000; cursor:pointer;" onclick="removeFromCart('${item.key}')">✕</td></tr>`;
             }).join('');
-
             totalPrice.innerText = total;
         }
-
         window.submitOrder = function() {
-            if (cart.length === 0) {
-                alert('請先點購商品。');
-                return;
-            }
+            if (cart.length === 0) { alert('請先點購商品。'); return; }
             let summary = cart.map(i => `${i.name} x ${i.qty}`).join('\n');
-            let total = document.getElementById('total-price').innerText;
-            alert(`【訂單成立】\n\n${summary}\n\n總金額：$${total}\n\nReady to Serve.`);
+            alert(`【訂單成立】\n會員：${currentMember.lastName}${currentMember.firstName}\n\n${summary}\n\n總金額：$${document.getElementById('total-price').innerText}`);
             cart = [];
             renderCart();
         }
-
-        renderCart();
     </script>
 </body>
 </html>
