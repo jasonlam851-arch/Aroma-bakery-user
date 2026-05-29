@@ -1,74 +1,155 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aroma Bakery | Premium Artisanal Ordering</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Aroma_bakery | 顧客登入與註冊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+TC:wght@400;600&display=swap');
-        .font-brand { font-family: 'Cinzel', 'Noto Serif TC', serif; }
+        :root {
+            --primary-color: #1e3932;
+            --secondary-color: #d4e9e2;
+            --accent-color: #cba258;
+            --text-color: #212529;
+            --bg-overlay: rgba(30, 57, 50, 0.6);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', 'Noto Serif TC', serif;
+            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
+                        url('https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-header { text-align: center; margin-bottom: 30px; }
+        .brand-logo { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 700; color: var(--primary-color); letter-spacing: 2px; text-transform: uppercase; }
+        .brand-subtitle { font-size: 12px; color: var(--accent-color); letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; }
+
+        .form-toggle { display: flex; justify-content: center; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; }
+        .toggle-btn { background: none; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; color: #6c757d; font-weight: 600; position: relative; transition: color 0.3s; }
+        .toggle-btn.active { color: var(--primary-color); }
+        .toggle-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--primary-color); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-row { display: flex; gap: 15px; }
+        .form-row .form-group { flex: 1; }
+
+        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--primary-color); letter-spacing: 0.5px; }
+        input { width: 100%; padding: 12px 15px; border: 1px solid #cccccc; border-radius: 6px; font-size: 14px; background-color: #fbfbfb; transition: all 0.3s; }
+        input:focus { outline: none; border-color: var(--primary-color); background-color: #ffffff; box-shadow: 0 0 0 3px rgba(30, 57, 50, 0.1); }
+
+        .phone-input-container { display: flex; }
+        .phone-prefix { background: #e9ecef; border: 1px solid #cccccc; border-right: none; padding: 12px; font-size: 14px; border-radius: 6px 0 0 6px; color: #495057; font-weight: 600; }
+        .phone-input-container input { border-radius: 0 6px 6px 0; }
+
+        .btn-submit { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background-color 0.3s; margin-top: 10px; letter-spacing: 1px; }
+        .btn-submit:hover { background-color: #132521; }
+        .input-hint { font-size: 11px; color: #6c757d; margin-top: 5px; }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="bg-[#FBF9F6] text-[#2C2623] font-brand min-h-screen antialiased">
+<body>
 
-    <nav class="bg-[#1A1512] text-[#E5D5C5] py-6 px-8 shadow-sm sticky top-0 z-50 tracking-widest border-b border-[#322A24]">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-center md:text-left">
-                <h1 class="text-3xl font-bold tracking-[0.2em] uppercase">Aroma Bakery</h1>
-                <p class="text-[10px] text-[#A89280] uppercase tracking-[0.3em] mt-1">Artisanal & Premium Boulangerie</p>
-            </div>
-            <span class="text-xs border border-[#A89280] px-4 py-1.5 rounded-full text-[#A89280]">TODAY's FRESH BAKED</span>
-        </div>
-    </nav>
-
-    <div class="container mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div class="lg:col-span-2">
-            <h2 class="text-xl font-semibold tracking-wider text-[#1A1512] mb-8 pb-3 border-b border-[#E5D5C5]">今日限量出爐</h2>
-            <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <p class="text-[#A89280] italic">Loading the aroma...</p>
-            </div>
+    <div class="container">
+        <div class="brand-header">
+            <div class="brand-logo">Aroma_bakery</div>
+            <div class="brand-subtitle">Coffee & Premium Snacks</div>
         </div>
 
-        <div class="bg-white p-8 rounded-none shadow-sm border border-[#E5D5C5] h-fit sticky top-28">
-            <h2 class="text-lg font-semibold tracking-widest text-[#1A1512] mb-6 pb-2 border-b border-[#2C2623]">YOUR SELECTION</h2>
-            
-            <div id="cart-items" class="space-y-4 max-h-60 overflow-y-auto mb-6">
-                <p class="text-gray-400 text-center py-6 text-sm italic">購物車尚無選購上品</p>
-            </div>
-
-            <div class="flex justify-between items-center font-semibold text-md text-[#1A1512] mb-8 pt-4 border-t border-dashed border-[#E5D5C5]">
-                <span class="tracking-widest">ESTIMATED TOTAL</span>
-                <span class="text-xl">NT$ <span id="cart-total">0</span></span>
-            </div>
-
-            <form id="order-form" class="space-y-4 text-sm">
-                <h3 class="font-semibold text-[#1A1512] tracking-wider uppercase text-xs mb-2">PICKUP DETAILS</h3>
-                <div>
-                    <input type="text" id="cust-name" placeholder="尊姓大名" required class="w-full p-3 bg-[#FBF9F6] border border-[#E5D5C5] rounded-none focus:outline-none focus:border-[#1A1512] transition">
-                </div>
-                <div>
-                    <input type="tel" id="cust-phone" placeholder="聯絡電話" required class="w-full p-3 bg-[#FBF9F6] border border-[#E5D5C5] rounded-none focus:outline-none focus:border-[#1A1512] transition">
-                </div>
-                <div>
-                    <label class="block text-xs text-[#A89280] mb-1 tracking-wider">預計取貨時間 TIME</label>
-                    <input type="time" id="cust-time" required class="w-full p-3 bg-[#FBF9F6] border border-[#E5D5C5] rounded-none focus:outline-none focus:border-[#1A1512] transition">
-                </div>
-                <button type="submit" class="w-full bg-[#1A1512] hover:bg-[#322A24] text-[#E5D5C5] tracking-[0.2em] font-medium py-4 px-4 rounded-none transition duration-300 mt-6 uppercase text-xs">
-                    送出預訂訂單
-                </button>
-            </form>
+        <div class="form-toggle">
+            <button class="toggle-btn active" onclick="switchForm('login')">會員登入</button>
+            <button class="toggle-btn" onclick="switchForm('register')">註冊新帳戶</button>
         </div>
+
+        <form id="login-form" onsubmit="handleCustomerLogin(event)">
+            <div class="form-group">
+                <label for="login-phone">電話號碼</label>
+                <div class="phone-input-container">
+                    <span class="phone-prefix">+852</span>
+                    <input type="tel" id="login-phone" required placeholder="請輸入流動電話號碼" pattern="[0-9]{8}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="login-password">密碼</label>
+                <input type="password" id="login-password" required placeholder="請輸入密碼">
+            </div>
+            <button type="submit" class="btn-submit">登入</button>
+        </form>
+
+        <form id="register-form" class="hidden" onsubmit="handleCustomerRegister(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reg-last-name">中文姓氏</label>
+                    <input type="text" id="reg-last-name" required placeholder="例：陳">
+                </div>
+                <div class="form-group">
+                    <label for="reg-first-name">名字</label>
+                    <input type="text" id="reg-first-name" required placeholder="例：大文">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-phone">852 電話號碼</label>
+                <div class="phone-input-container">
+                    <span class="phone-prefix">+852</span>
+                    <input type="tel" id="reg-phone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-birthday">出生月日</label>
+                <input type="text" id="reg-birthday" required placeholder="MMDD (例：0529)" pattern="(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])" maxlength="4">
+            </div>
+
+            <div class="form-group">
+                <label for="reg-email">電子郵件 (選填)</label>
+                <input type="email" id="reg-email" placeholder="example@domain.com">
+            </div>
+
+            <div class="form-group">
+                <label for="reg-password">密碼</label>
+                <input type="password" id="reg-password" required placeholder="請設定密碼" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+                <div class="input-hint">必須至少八位，且包含大寫字母、小寫字母及數字</div>
+            </div>
+
+            <div class="form-group">
+                <label for="reg-referral">推薦號碼 (選填)</label>
+                <input type="text" id="reg-referral" placeholder="請輸入推薦人號碼">
+            </div>
+
+            <button type="submit" class="btn-submit">確認註冊</button>
+        </form>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
             authDomain: "aroma-bakery-492fa.firebaseapp.com",
-            databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com", // 補上RTDB專用URL
+            databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com",
             projectId: "aroma-bakery-492fa",
             storageBucket: "aroma-bakery-492fa.firebasestorage.app",
             messagingSenderId: "1060567946315",
@@ -76,122 +157,82 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-        let productsData = {}; 
-        let cart = {};
+        // 登入邏輯
+        window.handleCustomerLogin = function(event) {
+            event.preventDefault();
+            const phone = document.getElementById('login-phone').value;
+            const pass = document.getElementById('login-password').value;
+            const virtualEmail = `852${phone}@aroma.com`;
 
-        // 監聽 RTDB 商品
-        onValue(ref(db, "products"), (snapshot) => {
-            const productList = document.getElementById("product-list");
-            productList.innerHTML = "";
-            productsData = snapshot.val() || {};
-
-            if(Object.keys(productsData).length === 0) {
-                productList.innerHTML = `<p class="text-gray-400 italic">今日限定烘焙準備中...</p>`;
-                return;
-            }
-
-            for (let id in productsData) {
-                const p = productsData[id];
-                const card = document.createElement("div");
-                card.className = "bg-white rounded-none border border-[#E5D5C5] overflow-hidden group hover:shadow-md transition duration-300 flex flex-col justify-between";
-                card.innerHTML = `
-                    <div class="relative overflow-hidden aspect-[4/3]">
-                        <img src="${p.image || 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                        ${p.stock <= 0 ? '<div class="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center text-[#E5D5C5] tracking-widest text-xs">SOLD OUT</div>' : ''}
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col justify-between gap-4">
-                        <div>
-                            <h3 class="font-semibold text-base text-[#1A1512] tracking-wide mb-1">${p.name}</h3>
-                            <p class="text-xs text-[#A89280] tracking-wider">每日限量現貨 / 剩餘 ${p.stock || 0} 個</p>
-                        </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-[#FBF9F6]">
-                            <span class="text-sm font-medium text-[#2C2623]">NT$ ${p.price}</span>
-                            <button onclick="addToCart('${id}')" ${p.stock <= 0 ? 'disabled' : ''} class="border border-[#1A1512] hover:bg-[#1A1512] hover:text-[#E5D5C5] text-[#1A1512] text-xs px-3 py-1.5 transition duration-300 tracking-widest uppercase disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#1A1512]">
-                                + ADD
-                            </button>
-                        </div>
-                    </div>
-                `;
-                productList.appendChild(card);
-            }
-        });
-
-        window.addToCart = (id) => {
-            const product = productsData[id];
-            if (!product || product.stock <= 0) return;
-            if (cart[id]) {
-                if (cart[id].qty >= product.stock) { alert("已達今日現貨供應上限"); return; }
-                cart[id].qty++;
-            } else {
-                cart[id] = { name: product.name, price: product.price, qty: 1 };
-            }
-            renderCart();
-        };
-
-        window.updateQty = (id, amount) => {
-            if (!cart[id]) return;
-            cart[id].qty += amount;
-            if (cart[id].qty <= 0) delete cart[id];
-            renderCart();
-        };
-
-        function renderCart() {
-            const container = document.getElementById("cart-items");
-            const totalSpan = document.getElementById("cart-total");
-            container.innerHTML = "";
-            let total = 0;
-
-            if (Object.keys(cart).length === 0) {
-                container.innerHTML = `<p class="text-gray-400 text-center py-6 text-sm italic">購物車尚無選購上品</p>`;
-                totalSpan.innerText = "0";
-                return;
-            }
-
-            for (let id in cart) {
-                const item = cart[id];
-                total += item.price * item.qty;
-                const div = document.createElement("div");
-                div.className = "flex justify-between items-center text-xs pb-3 border-b border-[#FBF9F6]";
-                div.innerHTML = `
-                    <div class="flex-1">
-                        <div class="font-medium text-[#1A1512] tracking-wide">${item.name}</div>
-                        <div class="text-[#A89280] mt-0.5">NT$ ${item.price}</div>
-                    </div>
-                    <div class="flex items-center gap-3 border border-[#E5D5C5] px-2 py-1">
-                        <button onclick="updateQty('${id}', -1)" class="text-gray-500 hover:text-black font-bold">-</button>
-                        <span class="w-4 text-center font-semibold">${item.qty}</span>
-                        <button onclick="updateQty('${id}', 1)" class="text-gray-500 hover:text-black font-bold">+</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-            totalSpan.innerText = total;
+            signInWithEmailAndPassword(auth, virtualEmail, pass)
+                .then((userCredential) => {
+                    alert("登入成功，前往下單頁面");
+                })
+                .catch((error) => {
+                    alert("登入失敗: 電話或密碼錯誤");
+                });
         }
 
-        document.getElementById("order-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            if (Object.keys(cart).length === 0) { alert("購物車內無商品"); return; }
+        // 註冊邏輯
+        window.handleCustomerRegister = function(event) {
+            event.preventDefault();
+            const lastName = document.getElementById('reg-last-name').value;
+            const firstName = document.getElementById('reg-first-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            const birthday = document.getElementById('reg-birthday').value;
+            const email = document.getElementById('reg-email').value || "未填寫";
+            const pass = document.getElementById('reg-password').value;
+            const referral = document.getElementById('reg-referral').value || "無";
 
-            const orderData = {
-                customerName: document.getElementById("cust-name").value,
-                customerPhone: document.getElementById("cust-phone").value,
-                pickupTime: document.getElementById("cust-time").value,
-                items: Object.values(cart),
-                totalPrice: Number(document.getElementById("cart-total").innerText),
-                status: "待接單",
-                createdAt: Date.now()
-            };
+            const virtualEmail = `852${phone}@aroma.com`;
 
-            const ordersRef = ref(db, "orders");
-            const newOrderRef = push(ordersRef);
-            await set(newOrderRef, orderData);
-            alert("✨ 貴賓您好，Aroma Bakery 已收到您的精緻預訂訂單。");
-            cart = {};
-            renderCart();
-            document.getElementById("order-form").reset();
-        });
+            createUserWithEmailAndPassword(auth, virtualEmail, pass)
+                .then((userCredential) => {
+                    const uid = userCredential.user.uid;
+                    // 將自訂使用者資料寫入 Realtime Database
+                    set(ref(database, 'users/' + uid), {
+                        lastName: lastName,
+                        firstName: firstName,
+                        phone: "852" + phone,
+                        birthday: birthday,
+                        email: email,
+                        referral: referral,
+                        role: "customer"
+                    }).then(() => {
+                        alert("註冊成功！已自動登入。");
+                        location.reload();
+                    });
+                })
+                .catch((error) => {
+                    if(error.code === "auth/email-already-in-use") {
+                        alert("該電話號碼已被註冊。");
+                    } else {
+                        alert("註冊失敗: " + error.message);
+                    }
+                });
+        }
+    </script>
+
+    <script>
+        function switchForm(formType) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const buttons = document.querySelectorAll('.toggle-btn');
+            if (formType === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
+            }
+        }
     </script>
 </body>
 </html>
