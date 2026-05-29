@@ -18,6 +18,7 @@
             --text-color: #212529;
             --bg-cream: #f4f2ed;
             --bg-overlay: rgba(30, 57, 50, 0.65);
+            --danger-color: #b02a37;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -89,6 +90,10 @@
         input[readonly] { background-color: #e9ecef; color: #6c757d; cursor: not-allowed; }
         .btn-action { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-action:hover { background-color: #132521; }
+        
+        /* 登出按鈕高級質感樣式 */
+        .btn-logout { width: 100%; padding: 12px; background-color: transparent; color: var(--danger-color); border: 2px solid var(--danger-color); border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 15px; }
+        .btn-logout:hover { background-color: var(--danger-color); color: white; }
 
         .qr-container { text-align: center; padding: 20px 0; }
         .member-id-display { font-size: 18px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 20px; }
@@ -203,6 +208,8 @@
                     <div class="form-group"><label>出生月日 (不可修改)</label><input type="text" id="profile-birthday" readonly></div>
                     <div class="form-group"><label>Google 電子郵件 (不可修改)</label><input type="text" id="profile-email" readonly></div>
                     <button class="btn-action" onclick="updateProfileName()">儲存修改</button>
+                    
+                    <button class="btn-logout" onclick="handleCustomerLogout()">登出會員帳戶</button>
                 </div>
             </div>
             
@@ -226,7 +233,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
@@ -256,6 +263,7 @@
                 }
 
                 currentUserUid = user.uid;
+                // 顯示系統主介面，隱藏登入封面
                 document.getElementById('auth-overlay').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('auth-overlay').style.display = 'none';
@@ -271,7 +279,6 @@
                         document.getElementById('profile-birthday').value = data.birthday || '';
                         document.getElementById('profile-email').value = data.email || '';
                         
-                        // 生成會員二維碼編碼（以資料庫內的真實手機為準）
                         const memberCode = `AROMA_${data.phone}`;
                         document.getElementById('member-code-text').innerText = memberCode;
                         
@@ -298,6 +305,14 @@
                         }
                     }
                 });
+            } else {
+                // 【關鍵安全邏輯】當 user 為 null（未登入或已登出狀態），立刻強制將畫面鎖回登入封面
+                currentUserUid = null;
+                document.getElementById('main-system').style.display = 'none';
+                document.getElementById('auth-overlay').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('auth-overlay').style.opacity = '1';
+                }, 50);
             }
         });
 
@@ -305,7 +320,7 @@
         function renderMobileQRCode(textData) {
             const container = document.getElementById('qr-code-output');
             if (!container) return;
-            container.innerHTML = ''; // 清空舊節點
+            container.innerHTML = '';
             
             try {
                 mobileQRCodeEngine = new QRCode(container, {
@@ -321,7 +336,7 @@
             }
         }
 
-        // 處理顧客登入（全面改為真實 Google Email 認證）
+        // 處理顧客登入（真實 Google Email 認證）
         window.handleCustomerLogin = function(e) {
             if(e && e.preventDefault) e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
@@ -329,12 +344,12 @@
             
             signInWithEmailAndPassword(auth, email, pass)
                 .catch((err) => {
-                    console.error("登入錯誤資訊:", err);
+                    console.error(err);
                     showNotice('登入失敗：電子郵件或密碼錯誤。');
                 });
         };
 
-        // 處理顧客註冊（全面改為真實 Google Email 認證）
+        // 處理顧客註冊（真實 Google Email 認證）
         window.handleCustomerRegister = function(e) {
             if(e && e.preventDefault) e.preventDefault();
             const lastName = document.getElementById('reg-last-name').value;
@@ -350,18 +365,10 @@
                 return;
             }
 
-            // 直接使用真實的 Google Email 建立 Firebase 認證帳戶
             createUserWithEmailAndPassword(auth, email, pass)
                 .then((cred) => {
-                    // 註冊成功後，將用戶資料同步寫入 Realtime Database 
                     set(ref(database, 'users/' + cred.user.uid), {
-                        lastName, 
-                        firstName, 
-                        phone: "852" + phone, 
-                        birthday, 
-                        email, 
-                        referral, 
-                        role: "customer"
+                        lastName, firstName, phone: "852" + phone, birthday, email, referral, role: "customer"
                     }).then(() => showNotice('帳戶註冊成功！系統已為您自動登入。'));
                 })
                 .catch((err) => {
@@ -378,11 +385,26 @@
             const fullName = document.getElementById('profile-name').value;
             if(!fullName) { showNotice('名稱欄位不可為空'); return; }
             
-            // 由於安全規則中設定了 $uid 權限，這裡的更新會被安全放行
             update(ref(database, 'users/' + currentUserUid), {
                 lastName: fullName.charAt(0), 
                 firstName: fullName.substring(1)
             }).then(() => showNotice('個人名稱資料更新成功！'));
+        };
+
+        // 【全新加入】安全登出執行函式
+        window.handleCustomerLogout = function() {
+            if (confirm("確定要登出當前 Aroma_bakery 會員帳戶嗎？")) {
+                signOut(auth)
+                    .then(() => {
+                        // 登出成功後重置表單，避免残留隱私資料
+                        document.getElementById('login-email').value = '';
+                        document.getElementById('login-password').value = '';
+                    })
+                    .catch((err) => {
+                        console.error("登出發生錯誤:", err);
+                        showNotice("系統錯誤：登出失敗，請重試。");
+                    });
+            }
         };
     </script>
     
