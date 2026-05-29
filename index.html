@@ -129,17 +129,19 @@
                 <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">會員登入</button>
                 <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">註冊新帳戶</button>
             </div>
+            
             <form id="login-form" onsubmit="handleCustomerLogin(event); return false;">
                 <div class="form-group">
-                    <label>電話號碼</label>
-                    <div class="phone-input-container">
-                        <span class="phone-prefix">+852</span>
-                        <input type="tel" id="login-phone" required placeholder="請輸入流動電話" pattern="[0-9]{8}">
-                    </div>
+                    <label>Google 電子郵件</label>
+                    <input type="email" id="login-email" required placeholder="請輸入註冊的 Gmail 地址">
                 </div>
-                <div class="form-group"><label>密碼</label><input type="password" id="login-password" required placeholder="請輸入密碼"></div>
+                <div class="form-group">
+                    <label>密碼</label>
+                    <input type="password" id="login-password" required placeholder="請輸入密碼">
+                </div>
                 <button type="submit" class="btn-submit">驗證登入</button>
             </form>
+            
             <form id="register-form" class="hidden" onsubmit="handleCustomerRegister(event); return false;">
                 <div class="form-row">
                     <div class="form-group"><label>中文姓氏</label><input type="text" id="reg-last-name" required placeholder="例：陳"></div>
@@ -192,6 +194,7 @@
                 <div class="category-title">甜點類 / Desserts</div>
                 <div class="product-grid" id="desserts-grid"></div>
             </div>
+            
             <div id="section-profile" class="page-section">
                 <h2>個人資料</h2>
                 <div class="card-panel">
@@ -202,12 +205,12 @@
                     <button class="btn-action" onclick="updateProfileName()">儲存修改</button>
                 </div>
             </div>
+            
             <div id="section-qrcode" class="page-section">
                 <h2>會員專屬憑證</h2>
                 <div class="card-panel qr-container">
                     <div class="member-id-display">會員碼：<span id="member-code-text">-</span></div>
                     <p style="font-size:13px; color:#6c757d;">結帳時請出示此二維碼以累積積分</p>
-                    
                     <div id="qr-code-output"></div>
                 </div>
             </div>
@@ -242,8 +245,10 @@
         let currentUserUid = null;
         let mobileQRCodeEngine = null;
 
+        // 監聽登入狀態改變
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // 防呆：防止管理員誤登入前台
                 if(user.email === 'admin01@aroma.com') {
                     showNotice('此帳戶為管理員專用，請移步至管理後台平台。');
                     auth.signOut();
@@ -257,6 +262,7 @@
                     document.getElementById('main-system').style.display = 'block';
                 }, 400);
 
+                // 讀取當前登入顧客的專屬個人資料
                 onValue(ref(database, 'users/' + user.uid), (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
@@ -265,14 +271,15 @@
                         document.getElementById('profile-birthday').value = data.birthday || '';
                         document.getElementById('profile-email').value = data.email || '';
                         
+                        // 生成會員二維碼編碼（以資料庫內的真實手機為準）
                         const memberCode = `AROMA_${data.phone}`;
                         document.getElementById('member-code-text').innerText = memberCode;
                         
-                        // 呼叫本地高相容二維碼生成函數，解決手機端不顯示的問題
                         renderMobileQRCode(memberCode);
                     }
                 });
 
+                // 監聽並加載商品列表
                 onValue(ref(database, 'products'), (snapshot) => {
                     const products = snapshot.val() || {};
                     const drinksGrid = document.getElementById('drinks-grid');
@@ -294,13 +301,11 @@
             }
         });
 
-        // 專門對抗手機瀏覽器相容性的本地生成邏輯
+        // 手機端高相容性二維碼渲染引擎
         function renderMobileQRCode(textData) {
             const container = document.getElementById('qr-code-output');
             if (!container) return;
-            
-            // 清空舊節點，防止重複生成
-            container.innerHTML = '';
+            container.innerHTML = ''; // 清空舊節點
             
             try {
                 mobileQRCodeEngine = new QRCode(container, {
@@ -316,14 +321,20 @@
             }
         }
 
+        // 處理顧客登入（全面改為真實 Google Email 認證）
         window.handleCustomerLogin = function(e) {
             if(e && e.preventDefault) e.preventDefault();
-            const phone = document.getElementById('login-phone').value;
+            const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
-            signInWithEmailAndPassword(auth, `852${phone}@aroma.com`, pass)
-                .catch(() => showNotice('登入失敗：電話號碼或密碼錯誤。'));
+            
+            signInWithEmailAndPassword(auth, email, pass)
+                .catch((err) => {
+                    console.error("登入錯誤資訊:", err);
+                    showNotice('登入失敗：電子郵件或密碼錯誤。');
+                });
         };
 
+        // 處理顧客註冊（全面改為真實 Google Email 認證）
         window.handleCustomerRegister = function(e) {
             if(e && e.preventDefault) e.preventDefault();
             const lastName = document.getElementById('reg-last-name').value;
@@ -339,23 +350,38 @@
                 return;
             }
 
-            createUserWithEmailAndPassword(auth, `852${phone}@aroma.com`, pass)
+            // 直接使用真實的 Google Email 建立 Firebase 認證帳戶
+            createUserWithEmailAndPassword(auth, email, pass)
                 .then((cred) => {
+                    // 註冊成功後，將用戶資料同步寫入 Realtime Database 
                     set(ref(database, 'users/' + cred.user.uid), {
-                        lastName, firstName, phone: "852" + phone, birthday, email, referral, role: "customer"
+                        lastName, 
+                        firstName, 
+                        phone: "852" + phone, 
+                        birthday, 
+                        email, 
+                        referral, 
+                        role: "customer"
                     }).then(() => showNotice('帳戶註冊成功！系統已為您自動登入。'));
                 })
                 .catch((err) => {
-                    if(err.code === "auth/email-already-in-use") showNotice('該電話號碼在系統中已被註冊。');
-                    else showNotice('註冊阻斷：請確認密碼強度符合規格要求。');
+                    if(err.code === "auth/email-already-in-use") {
+                        showNotice('該電子郵件在系統中已被註冊。');
+                    } else {
+                        showNotice('註冊阻斷：請確認密碼強度符合規格要求。');
+                    }
                 });
         };
 
+        // 顧客修改自己的顯示名稱
         window.updateProfileName = function() {
             const fullName = document.getElementById('profile-name').value;
             if(!fullName) { showNotice('名稱欄位不可為空'); return; }
+            
+            // 由於安全規則中設定了 $uid 權限，這裡的更新會被安全放行
             update(ref(database, 'users/' + currentUserUid), {
-                lastName: fullName.charAt(0), firstName: fullName.substring(1)
+                lastName: fullName.charAt(0), 
+                firstName: fullName.substring(1)
             }).then(() => showNotice('個人名稱資料更新成功！'));
         };
     </script>
