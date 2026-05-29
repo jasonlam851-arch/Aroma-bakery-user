@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1e3932; /* 星巴克深綠 */
-            --secondary-color: #d4e9e2; /* 淺綠 */
-            --accent-color: #cba258; /* 高級金 */
+            --primary-color: #1e3932;
+            --secondary-color: #d4e9e2;
+            --accent-color: #cba258;
             --text-color: #212529;
             --bg-cream: #f4f2ed;
             --bg-overlay: rgba(30, 57, 50, 0.65);
@@ -20,13 +20,13 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Montserrat', 'Noto Serif TC', serif; background-color: var(--bg-cream); color: var(--text-color); min-height: 100vh; }
 
-        /* ================= 高級封面與登入區 (初始顯示) ================= */
+        /* 高級封面與登入區 */
         #auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
                         url('https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
             background-size: cover; z-index: 1000; display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: opacity 0.5s ease;
         }
         .auth-container {
             background: rgba(255, 255, 255, 0.96); padding: 40px; border-radius: 12px;
@@ -55,7 +55,7 @@
         .input-hint { font-size: 11px; color: #6c757d; margin-top: 4px; line-height: 1.3; }
         .hidden { display: none; }
 
-        /* ================= 系統內部建設 (登入後顯示) ================= */
+        /* 系統內部建設 */
         #main-system { display: none; }
         nav { background-color: var(--primary-color); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
         .menu-toggle { font-size: 24px; cursor: pointer; color: var(--secondary-color); }
@@ -91,7 +91,7 @@
         .member-id-display { font-size: 18px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 20px; }
         #qr-code-img { width: 200px; height: 200px; margin-top: 15px; border: 4px solid var(--primary-color); padding: 5px; background: white; }
 
-        /* ================= 自訂高級模態彈窗 (代替 Alert) ================= */
+        /* 自訂模態彈窗 */
         .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(5px); }
         .custom-modal.active { opacity: 1; pointer-events: auto; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 400px; width: 90%; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
@@ -219,24 +219,31 @@
         const database = getDatabase(app);
         let currentUserUid = null;
 
-        // 監聽登入狀態切換 UI
+        // 監聽登入狀態並執行介面無縫切換
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // 如果是管理員誤入，不允許進入客端
+                if(user.email === 'admin01@aroma.com') {
+                    showNotice('此帳戶為管理員專用，請移步至管理後台平台。');
+                    auth.signOut();
+                    return;
+                }
+
                 currentUserUid = user.uid;
                 document.getElementById('auth-overlay').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('auth-overlay').style.display = 'none';
                     document.getElementById('main-system').style.display = 'block';
-                }, 500);
+                }, 400);
 
-                // 獲取會員資料並生成會員碼
+                // 根據新規則：精確讀取屬於登入者本人的個資節點
                 onValue(ref(database, 'users/' + user.uid), (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
-                        document.getElementById('profile-name').value = `${data.lastName}${data.firstName}`;
-                        document.getElementById('profile-phone').value = data.phone;
-                        document.getElementById('profile-birthday').value = data.birthday;
-                        document.getElementById('profile-email').value = data.email;
+                        document.getElementById('profile-name').value = `${data.lastName || ''}${data.firstName || ''}`;
+                        document.getElementById('profile-phone').value = data.phone || '';
+                        document.getElementById('profile-birthday').value = data.birthday || '';
+                        document.getElementById('profile-email').value = data.email || '';
                         
                         const memberCode = `AROMA_${data.phone}`;
                         document.getElementById('member-code-text').innerText = memberCode;
@@ -246,7 +253,7 @@
                     }
                 });
 
-                // 加載商品列表
+                // 所有人皆能讀取開放的 products 節點
                 onValue(ref(database, 'products'), (snapshot) => {
                     const products = snapshot.val() || {};
                     const drinksGrid = document.getElementById('drinks-grid');
@@ -272,7 +279,7 @@
             const phone = document.getElementById('login-phone').value;
             const pass = document.getElementById('login-password').value;
             signInWithEmailAndPassword(auth, `852${phone}@aroma.com`, pass)
-                .catch(() => showNotice('登入失敗：電話或密碼不正確'));
+                .catch(() => showNotice('登入失敗：電話號碼或密碼錯誤。'));
         };
 
         window.handleCustomerRegister = function(e) {
@@ -289,20 +296,20 @@
                 .then((cred) => {
                     set(ref(database, 'users/' + cred.user.uid), {
                         lastName, firstName, phone: "852" + phone, birthday, email, referral, role: "customer"
-                    }).then(() => showNotice('帳戶註冊成功並已自動登入！'));
+                    }).then(() => showNotice('帳戶註冊成功！系統已為您自動登入。'));
                 })
                 .catch((err) => {
-                    if(err.code === "auth/email-already-in-use") showNotice('該電話號碼已被註冊。');
-                    else showNotice('註冊失敗，請重試。');
+                    if(err.code === "auth/email-already-in-use") showNotice('該電話號碼在系統中已被註冊。');
+                    else showNotice('註冊阻斷：請確認密碼強度符合規格要求。');
                 });
         };
 
         window.updateProfileName = function() {
             const fullName = document.getElementById('profile-name').value;
-            if(!fullName) { showNotice('請輸入欲修改的名稱'); return; }
+            if(!fullName) { showNotice('名稱欄位不可為空'); return; }
             update(ref(database, 'users/' + currentUserUid), {
                 lastName: fullName.charAt(0), firstName: fullName.substring(1)
-            }).then(() => showNotice('名稱更新成功！'));
+            }).then(() => showNotice('個人名稱資料更新成功！'));
         };
     </script>
     <script>
