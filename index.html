@@ -137,7 +137,12 @@
                     </div>
                 </div>
                 <div class="form-group"><label>出生月日</label><input type="text" id="reg-birthday" required placeholder="MMDD (例：0529)" pattern="(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])" maxlength="4"></div>
-                <div class="form-group"><label>電子郵件 (選填)</label><input type="email" id="reg-email" placeholder="example@domain.com"></div>
+                
+                <div class="form-group">
+                    <label>Google 電子郵件 (必填)</label>
+                    <input type="email" id="reg-email" required placeholder="您的帳號@gmail.com">
+                </div>
+                
                 <div class="form-group">
                     <label>密碼</label>
                     <input type="password" id="reg-password" required placeholder="請設定密碼" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
@@ -177,7 +182,7 @@
                     <div class="form-group"><label>名稱 (可修改)</label><input type="text" id="profile-name"></div>
                     <div class="form-group"><label>852 電話號碼 (不可修改)</label><input type="text" id="profile-phone" readonly></div>
                     <div class="form-group"><label>出生月日 (不可修改)</label><input type="text" id="profile-birthday" readonly></div>
-                    <div class="form-group"><label>電子郵件 (不可修改)</label><input type="text" id="profile-email" readonly></div>
+                    <div class="form-group"><label>Google 電子郵件 (不可修改)</label><input type="text" id="profile-email" readonly></div>
                     <button class="btn-action" onclick="updateProfileName()">儲存修改</button>
                 </div>
             </div>
@@ -219,10 +224,8 @@
         const database = getDatabase(app);
         let currentUserUid = null;
 
-        // 監聽登入狀態並執行介面無縫切換
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // 如果是管理員誤入，不允許進入客端
                 if(user.email === 'admin01@aroma.com') {
                     showNotice('此帳戶為管理員專用，請移步至管理後台平台。');
                     auth.signOut();
@@ -236,7 +239,6 @@
                     document.getElementById('main-system').style.display = 'block';
                 }, 400);
 
-                // 根據新規則：精確讀取屬於登入者本人的個資節點
                 onValue(ref(database, 'users/' + user.uid), (snapshot) => {
                     const data = snapshot.val();
                     if(data) {
@@ -253,7 +255,6 @@
                     }
                 });
 
-                // 所有人皆能讀取開放的 products 節點
                 onValue(ref(database, 'products'), (snapshot) => {
                     const products = snapshot.val() || {};
                     const drinksGrid = document.getElementById('drinks-grid');
@@ -288,9 +289,15 @@
             const firstName = document.getElementById('reg-first-name').value;
             const phone = document.getElementById('reg-phone').value;
             const birthday = document.getElementById('reg-birthday').value;
-            const email = document.getElementById('reg-email').value || "未填寫";
+            const email = document.getElementById('reg-email').value.trim();
             const pass = document.getElementById('reg-password').value;
             const referral = document.getElementById('reg-referral').value || "無";
+
+            // 💡 檢查是否為真實的 Google 信箱
+            if (!email.toLowerCase().endsWith('@gmail.com')) {
+                showNotice('註冊失敗：必須使用真實的 Google 電子郵件 (@gmail.com)！');
+                return;
+            }
 
             createUserWithEmailAndPassword(auth, `852${phone}@aroma.com`, pass)
                 .then((cred) => {
