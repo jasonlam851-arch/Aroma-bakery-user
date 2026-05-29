@@ -380,7 +380,7 @@
                 });
         };
 
-        // 顧客修改自己的顯示名稱
+        // 顧客修改自己的顯示名稱 (完全保留您原本的拆分規則)
         window.updateProfileName = function() {
             const fullName = document.getElementById('profile-name').value;
             if(!fullName) { showNotice('名稱欄位不可為空'); return; }
@@ -396,7 +396,7 @@
             if (confirm("確定要登出當前 Aroma_bakery 會員帳戶嗎？")) {
                 signOut(auth)
                     .then(() => {
-                        // 登出成功後重置表單，避免残留隱私資料
+                        // 登出成功後重置表單，避免殘留隱私資料
                         document.getElementById('login-email').value = '';
                         document.getElementById('login-password').value = '';
                     })
