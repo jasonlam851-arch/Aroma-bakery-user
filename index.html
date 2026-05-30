@@ -1,1052 +1,523 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aroma Bakery | 尊享星賞聚樂部</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        :root {
-            --sb-dark-green: #1e3932;
-            --sb-primary-green: #006241;
-            --sb-light-green: #f1f8f5;
-            --sb-gold: #cba258;
-            --sb-text-black: #212529;
-            --sb-text-gray: #6b6b6b;
-            --sb-bg-cream: #f7f7f7;
-            --sb-border: #ecebe9;
-            --sb-danger: #d62d2d;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Montserrat', "Noto Sans HK", "Microsoft JhengHei", sans-serif; 
-            background-color: var(--sb-bg-cream); 
-            color: var(--sb-text-black); 
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased; 
-        }
-        
-        /* 登入註冊遮罩 */
-        #auth-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: var(--sb-dark-green); 
-            z-index: 1000; 
-            display: flex; 
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        .auth-container { 
-            background: #ffffff; 
-            padding: 48px; 
-            width: 100%; 
-            max-width: 480px; 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            box-shadow: none;
-        }
-        @media (min-width: 576px) { 
-            .auth-container { min-height: auto; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); } 
-        }
-        .brand-header { text-align: left; margin-bottom: 36px; }
-        .brand-logo { font-size: 24px; font-weight: 700; color: var(--sb-dark-green); letter-spacing: 1px; text-transform: uppercase; }
-        .brand-subtitle { font-size: 12px; color: var(--sb-text-gray); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
-        .form-toggle { display: flex; gap: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--sb-border); }
-        .toggle-btn { background: none; border: none; padding: 12px 0; font-size: 16px; font-weight: 600; cursor: pointer; color: var(--sb-text-gray); position: relative; }
-        .toggle-btn.active { color: var(--sb-text-black); }
-        .toggle-btn.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--sb-primary-green); }
-        
-        .form-group { margin-bottom: 24px; }
-        .form-row { display: flex; gap: 16px; }
-        label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--sb-text-black); }
-        input, select, textarea { width: 100%; padding: 14px 16px; border: 1px solid var(--sb-text-gray); border-radius: 8px; font-size: 15px; background-color: #ffffff; color: var(--sb-text-black); transition: border-color 0.2s; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--sb-primary-green); border-width: 2px; padding: 13px 15px; }
-        
-        .phone-input-container { display: flex; }
-        .phone-prefix { background: var(--sb-light-green); border: 1px solid var(--sb-text-gray); border-right: none; padding: 14px; font-size: 15px; border-radius: 8px 0 0 8px; color: var(--sb-dark-green); font-weight: 600; }
-        .phone-input-container input { border-radius: 0 8px 8px 0; }
-        
-        .btn-submit { width: auto; align-self: flex-end; padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; margin-top: 12px; display: inline-block; text-align: center; }
-        .btn-submit:hover { background-color: #004d33; }
-        .input-hint { font-size: 12px; color: var(--sb-text-gray); margin-top: 6px; line-height: 1.4; }
-        .hidden { display: none; }
-        
-        /* 主系統版面 */
-        #main-system { display: none; }
-        nav { background-color: var(--sb-dark-green); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
-        .menu-toggle { font-size: 22px; cursor: pointer; color: white; display: flex; align-items: center; }
-        .cart-trigger-container { display: flex; align-items: center; gap: 12px; }
-        .cart-text-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .cart-text-btn:hover { background: white; color: var(--sb-dark-green); }
-        
-        /* 側邊欄 */
-        .sidebar { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background-color: #ffffff; padding-top: 24px; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200; box-shadow: 4px 0 12px rgba(0,0,0,0.05); }
-        .sidebar.active { transform: translateX(300px); }
-        .sidebar-header { display: flex; justify-content: flex-end; padding: 0 24px 16px; border-bottom: 1px solid var(--sb-border); }
-        .close-btn { font-size: 28px; color: var(--sb-text-black); cursor: pointer; }
-        .sidebar-menu { list-style: none; padding: 16px 0; }
-        .sidebar-menu li { padding: 16px 32px; color: var(--sb-text-black); font-size: 15px; font-weight: 500; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-menu li:hover { background-color: var(--sb-light-green); color: var(--sb-primary-green); }
-        
-        /* 主內文 */
-        .main-content { padding: 40px 24px; max-width: 1280px; margin: 0 auto; }
-        .page-section { display: none; }
-        .page-section.active { display: block; }
-        h2 { font-size: 24px; font-weight: 700; color: var(--sb-text-black); margin-bottom: 32px; letter-spacing: -0.5px; }
-        .category-title { font-size: 18px; font-weight: 700; margin: 32px 0 16px; color: var(--sb-text-black); border-bottom: 1px solid var(--sb-border); padding-bottom: 8px; }
-        
-        /* 商品網格與卡片 */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 32px; margin-bottom: 48px; }
-        .product-card { background: transparent; cursor: pointer; transition: transform 0.2s; }
-        .product-card:hover { transform: translateY(-4px); }
-        .product-img-wrapper { width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background-color: var(--sb-border); margin-bottom: 16px; }
-        .product-img { width: 100%; height: 100%; object-fit: cover; }
-        .product-info { text-align: center; padding: 0 8px; }
-        .product-name { font-size: 16px; font-weight: 600; color: var(--sb-text-black); line-height: 1.4; }
-        
-        /* 面板卡片 */
-        .card-panel { background: #ffffff; padding: 40px; border-radius: 12px; border: 1px solid var(--sb-border); }
-        input[readonly] { background-color: var(--sb-bg-cream); color: var(--sb-text-gray); border-color: var(--sb-border); cursor: not-allowed; }
-        .btn-action { padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
-        .btn-action:hover { background-color: #004d33; }
-        .btn-secondary { padding: 12px 28px; background-color: transparent; color: var(--sb-primary-green); border: 1px solid var(--sb-primary-green); border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-secondary:hover { background-color: var(--sb-light-green); }
-        .btn-logout { padding: 12px 28px; background-color: transparent; color: var(--sb-danger); border: 1px solid var(--sb-danger); border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 24px; display: block; width: 100%; text-align: center; }
-        .btn-logout:hover { background-color: var(--sb-danger); color: white; }
-        
-        /* 錢包特定奢華美式風格 */
-        .wallet-card { background: var(--sb-dark-green); color: white; padding: 36px; border-radius: 12px; position: relative; overflow: hidden; margin-bottom: 32px; }
-        .wallet-card::after { content: ""; position: absolute; right: -20px; bottom: -40px; font-size: 160px; color: rgba(255,255,255,0.03); font-family: sans-serif; }
-        .wallet-balance-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--sb-gold); margin-bottom: 8px; }
-        .wallet-balance-value { font-size: 42px; font-weight: 700; letter-spacing: -1px; }
-        .notice-box { padding: 16px; background-color: var(--sb-light-green); border-left: 4px solid var(--sb-primary-green); border-radius: 4px; font-size: 14px; color: var(--sb-dark-green); line-height: 1.6; margin-bottom: 24px; }
-        
-        /* 二維碼與積分模組區 */
-        .qr-container { text-align: center; max-width: 440px; margin: 0 auto; background: #ffffff; padding: 48px 32px; border-radius: 12px; border: 1px solid var(--sb-border); }
-        .member-id-display { font-size: 14px; font-weight: 500; color: var(--sb-text-gray); letter-spacing: 1px; margin-bottom: 24px; text-transform: uppercase; }
-        #qr-code-output { width: 210px; height: 210px; margin: 0 auto 28px; padding: 8px; background: #ffffff; border: 1px solid var(--sb-border); display: flex; justify-content: center; align-items: center; }
-        .member-points-container { border-top: 1px solid var(--sb-border); padding-top: 24px; margin-top: 8px; }
-        .member-points-label { font-size: 13px; font-weight: 600; color: var(--sb-text-gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .member-points-value { font-size: 36px; font-weight: 700; color: var(--sb-dark-green); }
-        
-        /* 購物車 */
-        .cart-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .cart-table th { padding: 16px 8px; border-bottom: 1px solid var(--sb-text-black); color: var(--sb-text-black); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .cart-table td { padding: 20px 8px; border-bottom: 1px solid var(--sb-border); font-size: 15px; }
-        .btn-remove { background: none; border: none; color: var(--sb-text-gray); font-size: 13px; text-decoration: underline; cursor: pointer; }
-        .btn-remove:hover { color: var(--sb-danger); }
-        
-        /* 彈窗客製化 */
-        .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
-        .custom-modal.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        .modal-close { position: absolute; top: 20px; right: 24px; font-size: 28px; cursor: pointer; color: var(--sb-text-black); }
-        .modal-body { text-align: left; }
-        .modal-img-wrapper { width: 160px; height: 160px; border-radius: 50%; overflow: hidden; background-color: var(--sb-border); margin: 0 auto 20px; }
-        .modal-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .product-points-badge { background-color: var(--sb-light-green); color: var(--sb-primary-green); font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 4px; display: inline-block; margin: 12px 0; letter-spacing: 0.5px; }
-        .modal-price { font-size: 20px; color: var(--sb-text-black); font-weight: 700; margin-bottom: 12px; }
-        .customization-section { margin-top: 24px; border-top: 1px solid var(--sb-border); padding-top: 24px; }
-        .option-group { margin-bottom: 24px; }
-        .option-label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: var(--sb-text-black); }
-        .selector-wrapper { display: flex; gap: 8px; flex-wrap: wrap; }
-        .selector-item { flex: 1; min-width: 90px; }
-        .selector-item input[type="radio"] { display: none; }
-        .selector-item label { display: block; padding: 10px; border: 1px solid var(--sb-text-gray); border-radius: 24px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .selector-item input[type="radio"]:checked + label { background-color: var(--sb-primary-green); color: white; border-color: var(--sb-primary-green); }
-        .fixed-specification-box { padding: 14px; background-color: var(--sb-bg-cream); border: 1px solid var(--sb-border); border-radius: 8px; font-size: 13px; color: var(--sb-text-gray); }
-        
-        .btn-submit-order { width: 100%; padding: 16px; background-color: var(--sb-primary-green); color: #ffffff; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s; text-align: center; }
-        .btn-submit-order:hover { background-color: #004d33; }
-        
-        /* 美式內置提示與確認方塊 UI */
-        .system-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
-        .system-alert-overlay.active { opacity: 1; pointer-events: auto; }
-        .system-alert-box { background: white; padding: 36px; border-radius: 8px; max-width: 420px; width: 88%; text-align: left; box-shadow: 0 4px 24px rgba(0,0,0,0.15); transform: translateY(20px); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-        .system-alert-overlay.active .system-alert-box { transform: translateY(0); }
-        .system-alert-msg { font-size: 15px; color: var(--sb-text-black); line-height: 1.5; margin-bottom: 28px; white-space: pre-line; font-weight: 500; }
-        .system-alert-btns { display: flex; gap: 12px; justify-content: flex-end; }
-        .system-alert-btn { padding: 10px 24px; border-radius: 50px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: background-color 0.2s; }
-        .system-alert-btn.confirm-main { background-color: var(--sb-primary-green); color: white; }
-        .system-alert-btn.confirm-main:hover { background-color: #004d33; }
-        .system-alert-btn.confirm-cancel { background-color: transparent; color: var(--sb-primary-green); border: 1px solid var(--sb-primary-green); }
-        .system-alert-btn.confirm-cancel:hover { background-color: var(--sb-light-green); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aroma_bakery | 顧客中心</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #1e3932; --secondary-color: #d4e9e2; --accent-color: #cba258;
+      --text-color: #212529; --bg-cream: #f4f2ed; --bg-overlay: rgba(30, 57, 50, 0.65);
+      --danger-color: #b02a37; --sb-border: #dbd9d3; --sb-gray-card: #f9f9f9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Montserrat', 'Noto Serif TC', serif; background-color: var(--bg-cream); color: var(--text-color); min-height: 100vh; }
+    
+    #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; background-size: cover; z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+    .auth-container { background: rgba(255, 255, 255, 0.96); padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); width: 90%; max-width: 450px; backdrop-filter: blur(10px); }
+    .brand-header { text-align: center; margin-bottom: 25px; }
+    .brand-logo { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 700; color: var(--primary-color); letter-spacing: 2px; text-transform: uppercase; }
+    .brand-subtitle { font-size: 11px; color: var(--accent-color); letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; }
+    .form-toggle { display: flex; justify-content: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; }
+    .toggle-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; cursor: pointer; color: #6c757d; font-weight: 600; position: relative; }
+    .toggle-btn.active { color: var(--primary-color); }
+    .toggle-btn.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--primary-color); }
+    .form-group { margin-bottom: 18px; }
+    .form-row { display: flex; gap: 15px; }
+    label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--primary-color); }
+    input, select { width: 100%; padding: 11px 15px; border: 1px solid #cccccc; border-radius: 6px; font-size: 14px; background-color: #fbfbfb; }
+    input:focus, select:focus { outline: none; border-color: var(--primary-color); background-color: #ffffff; }
+    .phone-input-container { display: flex; }
+    .phone-prefix { background: #e9ecef; border: 1px solid #cccccc; border-right: none; padding: 11px; font-size: 14px; border-radius: 6px 0 0 6px; color: #495057; font-weight: 600; }
+    .phone-input-container input { border-radius: 0 6px 6px 0; }
+    .btn-submit { width: 100%; padding: 13px; background-color: var(--primary-color); color: white; border: none; border-radius: 30px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 5px; }
+    .btn-submit:hover { background-color: #132521; }
+    .input-hint { font-size: 11px; color: #6c757d; margin-top: 4px; line-height: 1.3; }
+    .hidden { display: none; }
+    
+    #main-system { display: none; }
+    nav { background-color: var(--primary-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
+    .menu-toggle { font-size: 24px; cursor: pointer; color: var(--secondary-color); font-weight: bold; }
+    .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: rgba(30, 57, 50, 0.98); padding-top: 10px; transition: 0.3s; z-index: 200; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
+    .sidebar.active { left: 0; }
+    .sidebar-header { display: flex; justify-content: flex-end; padding: 15px 20px; }
+    .close-btn { font-size: 24px; color: white; cursor: pointer; }
+    .sidebar-menu { list-style: none; padding: 20px; }
+    .sidebar-menu li { padding: 15px 10px; color: #f4f2ed; font-size: 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
+    .sidebar-menu li:hover { color: var(--accent-color); padding-left: 15px; }
+    
+    .cart-trigger-container { display: flex; align-items: center; }
+    .cart-text-btn { background: transparent; color: #ffffff; border: 1px solid #ffffff; padding: 8px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 1px; transition: all 0.2s; }
+    .cart-text-btn:hover { background: #ffffff; color: var(--primary-color); }
+    
+    .main-content { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
+    .page-section { display: none; }
+    .page-section.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    h2 { font-family: 'Noto Serif TC', serif; color: var(--primary-color); margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
+    .category-title { font-size: 18px; font-weight: 600; margin: 25px 0 15px; color: var(--accent-color); letter-spacing: 1px; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-bottom: 40px; }
+    .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; border: 1px solid #e1ded7; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .product-img { width: 100%; height: 200px; object-fit: cover; background-color: #e9ecef; }
+    .product-info { padding: 15px; text-align: center; }
+    .product-name { font-size: 15px; font-weight: 600; color: var(--primary-color); }
+    .card-panel { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e1ded7; }
+    input[readonly] { background-color: #e9ecef; color: #6c757d; cursor: not-allowed; }
+    
+    .btn-action { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .btn-action:hover { background-color: #132521; }
+    .btn-logout { width: 100%; padding: 12px; background-color: transparent; color: var(--danger-color); border: 2px solid var(--danger-color); border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 15px; }
+    .btn-logout:hover { background-color: var(--danger-color); color: white; }
+    .qr-container { text-align: center; padding: 20px 0; }
+    .member-id-display { font-size: 18px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 20px; }
+    #qr-code-output { width: 200px; height: 200px; margin: 15px auto 0; border: 4px solid var(--primary-color); padding: 5px; background: white; display: flex; justify-content: center; align-items: center; }
+    
+    .cart-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
+    .cart-table th { padding: 12px; border-bottom: 2px solid var(--sb-border); color: var(--primary-color); font-weight: 600; }
+    .cart-table td { padding: 15px 12px; border-bottom: 1px solid var(--sb-border); vertical-align: middle; }
+    .btn-remove { background: none; border: none; color: var(--danger-color); font-weight: 600; cursor: pointer; }
+    
+    .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(5px); }
+    .custom-modal.active { opacity: 1; pointer-events: auto; }
+    .modal-content { background: white; padding: 40px; border-radius: 0; max-width: 460px; width: 90%; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border-top: 4px solid var(--primary-color); }
+    .modal-close { position: absolute; top: 12px; right: 18px; font-size: 24px; cursor: pointer; color: #aaa; }
+    .modal-body { margin-top: 10px; font-size: 15px; line-height: 1.6; }
+    .modal-img { width: 100%; max-height: 220px; object-fit: cover; margin-bottom: 15px; }
+    .modal-price { font-size: 18px; color: var(--accent-color); font-weight: bold; margin: 10px 0; }
+    .customization-section { margin-top: 25px; border-top: 1px solid var(--sb-border); padding-top: 20px; text-align: left; }
+    .option-group { margin-bottom: 20px; }
+    .option-label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; color: var(--text-color); }
+    .selector-wrapper { display: flex; gap: 10px; }
+    .selector-item { flex: 1; text-align: center; }
+    .selector-item input[type="radio"] { display: none; }
+    .selector-item label { display: block; padding: 12px; border: 1px solid var(--sb-border); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .selector-item input[type="radio"]:checked + label { background-color: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+    .fixed-specification-box { padding: 12px; background-color: var(--sb-gray-card); border: 1px solid var(--sb-border); font-size: 13px; font-weight: 500; color: var(--text-color); text-align: left; }
+    .btn-submit-order { width: 100%; padding: 14px; background-color: var(--primary-color); color: #ffffff; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; margin-top: 20px; transition: 0.2s; }
+    .btn-submit-order:hover { background-color: #132521; }
+  </style>
 </head>
 <body>
 
-    <div id="sys-alert-root" class="system-alert-overlay">
-        <div class="system-alert-box">
-            <p id="sys-alert-text" class="system-alert-msg"></p>
-            <div id="sys-alert-action-area" class="system-alert-btns"></div>
-        </div>
-    </div>
+  <div id="auth-overlay">
+    <div class="auth-container">
+      <div class="brand-header">
+        <div class="brand-logo">Aroma_bakery</div>
+        <div class="brand-subtitle">Coffee & Premium Snacks</div>
+      </div>
+      <div class="form-toggle">
+        <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">會員登入</button>
+        <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">註冊新帳戶</button>
+      </div>
+      
+      <form id="login-form" onsubmit="handleCustomerLogin(event); return false;">
+        <div class="form-group"><label>Google 電子郵件</label><input type="email" id="login-email" required placeholder="請輸入註冊的Gmail地址"></div>
+        <div class="form-group"><label>密碼</label><input type="password" id="login-password" required placeholder="請輸入密碼"></div>
+        <button type="submit" class="btn-submit">驗證登入</button>
+      </form>
 
-    <div id="auth-overlay">
-        <div class="auth-container">
-            <div class="brand-header">
-                <div class="brand-logo">Aroma Bakery</div>
-                <div class="brand-subtitle">Star Premium Rewards</div>
-            </div>
-            <div class="form-toggle">
-                <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">登入</button>
-                <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">加入會員</button>
-            </div>
-            
-            <form id="login-form" onsubmit="handleCustomerLogin(event); return false;">
-                <div class="form-group">
-                    <label>Google 電子郵件</label>
-                    <input type="email" id="login-email" required placeholder="請輸入註冊的Gmail地址">
-                </div>
-                <div class="form-group">
-                    <label>密碼</label>
-                    <input type="password" id="login-password" required placeholder="請輸入密碼">
-                </div>
-                <div style="display: flex; justify-content: flex-end;">
-                    <button type="submit" class="btn-submit">登入</button>
-                </div>
-            </form>
-            
-            <form id="register-form" class="hidden" onsubmit="handleCustomerRegister(event); return false;">
-                <div class="form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label>姓氏</label>
-                        <input type="text" id="reg-last-name" required placeholder="例如:陳">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>名字</label>
-                        <input type="text" id="reg-first-name" required placeholder="例如:大文">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>行動電話</label>
-                    <div class="phone-input-container">
-                        <span class="phone-prefix">+852</span>
-                        <input type="tel" id="reg-phone" required placeholder="8位數字手機號碼" pattern="[0-9]{8}">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group" style="flex:1;">
-                        <label>出生月份</label>
-                        <select id="reg-birthday-month" required onchange="handleBirthdayDaysSync('reg-birthday-month', 'reg-birthday-day')">
-                            <option value="" disabled selected>請選擇</option>
-                            <script>
-                                for(let i=1; i<=12; i++) {
-                                    document.write(`<option value="${i.toString().padStart(2,'0')}">${i}月</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label>出生日期</label>
-                        <select id="reg-birthday-day" required>
-                            <option value="" disabled selected>請選擇</option>
-                            <script>
-                                for(let i=1; i<=31; i++) {
-                                    document.write(`<option value="${i.toString().padStart(2,'0')}">${i}日</option>`);
-                                }
-                            </script>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Google 電子郵件地址</label>
-                    <input type="email" id="reg-email" required placeholder="username@gmail.com">
-                </div>
-                <div class="form-group">
-                    <label>密碼</label>
-                    <input type="password" id="reg-password" required placeholder="請設定密碼" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$">
-                    <div class="input-hint">密碼長度至少8位，須包含英文大、小寫字母與數字</div>
-                </div>
-                <div class="form-group">
-                    <label>推薦人代碼(選填)</label>
-                    <input type="text" id="reg-referral" placeholder="請輸入推薦人電話號碼">
-                </div>
-                <div style="display: flex; justify-content: flex-end;">
-                    <button type="submit" class="btn-submit">建立帳戶</button>
-                </div>
-            </form>
+      <form id="register-form" class="hidden" onsubmit="handleCustomerRegister(event); return false;">
+        <div class="form-row">
+          <div class="form-group"><label>中文姓氏</label><input type="text" id="reg-last-name" required placeholder="例:陳"></div>
+          <div class="form-group"><label>名字</label><input type="text" id="reg-first-name" required placeholder="例:大文"></div>
         </div>
-    </div>
-
-    <div id="main-system">
-        <nav>
-            <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-            <div class="brand-logo" style="font-size:18px; color:white;">Aroma Bakery</div>
-            <div class="cart-trigger-container">
-                <button class="cart-text-btn" onclick="openShoppingCartModule()">購物車</button>
-            </div>
-        </nav>
-        
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="close-btn" onclick="toggleSidebar()">×</div>
-            </div>
-            <ul class="sidebar-menu">
-                <li onclick="switchPage('section-products')">精選菜單</li>
-                <li onclick="switchPage('section-profile')">個人資料</li>
-                <li onclick="switchPage('section-wallet')">我的錢包</li>
-                <li onclick="switchPage('section-qrcode')">我的行動綠星卡</li>
-                <li onclick="openShoppingCartModule()">購物車</li>
-            </ul>
+        <div class="form-group">
+          <label>852 電話號碼</label>
+          <div class="phone-input-container">
+            <span class="phone-prefix">+852</span>
+            <input type="tel" id="reg-phone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}">
+          </div>
         </div>
         
-        <div class="main-content">
-            <div id="section-products" class="page-section active">
-                <h2>精選菜單</h2>
-                <div class="category-title">特調飲品</div>
-                <div class="product-grid" id="drinks-grid"></div>
-                <div class="category-title">精緻甜點</div>
-                <div class="product-grid" id="desserts-grid"></div>
-            </div>
-            
-            <div id="section-profile" class="page-section">
-                <h2>個人資料</h2>
-                <div class="card-panel" style="max-width: 560px; margin: 0 auto;">
-                    <div class="form-row">
-                        <div class="form-group" style="flex:1;">
-                            <label>姓氏</label>
-                            <input type="text" id="profile-last-name">
-                        </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label>名字</label>
-                            <input type="text" id="profile-first-name">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>行動電話(唯讀)</label>
-                        <input type="text" id="profile-phone" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>生日資料(唯讀)</label>
-                        <input type="text" id="profile-birthday" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>電子郵件帳戶(唯讀)</label>
-                        <input type="text" id="profile-email" readonly>
-                    </div>
-                    <div style="display: flex; gap: 16px; margin-top:12px;">
-                        <button class="btn-action" style="flex:1;" onclick="updateProfileName()">儲存變更</button>
-                    </div>
-                    <button class="btn-logout" onclick="handleCustomerLogout()">登出帳戶</button>
-                </div>
-            </div>
-            
-            <div id="section-wallet" class="page-section">
-                <h2>我的星賞錢包</h2>
-                <div class="card-panel" style="max-width: 600px; margin: 0 auto;">
-                    <div class="wallet-card">
-                        <div class="wallet-balance-title">帳戶現存總餘額</div>
-                        <div class="wallet-balance-value">HKD <span id="wallet-balance-text">0.00</span></div>
-                    </div>
-                    <div class="category-title" style="margin-top:0;">增值帳戶餘額</div>
-                    <div class="notice-box">
-                        <strong>增值須知:</strong><br>
-                        目前本系統增值交易僅支持<strong>「支付寶(Alipay)」</strong>付款。<br>
-                        選擇增值後，系統將為您顯示官方管理員支付寶收款二維碼。轉賬完成後請務必點擊下方按鈕通知管理員核對。
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:16px;">
-                        <button class="btn-action" style="width:100%;" onclick="openAlipayQRModal()">顯示支付寶收款二維碼</button>
-                        <button class="btn-secondary" style="width: 100%; text-align:center;" onclick="openTopupNotificationModal()">轉賬完畢？通知管理員核對</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="section-qrcode" class="page-section">
-                <h2>我的行動綠星卡</h2>
-                <div class="qr-container">
-                    <div class="member-id-display" id="member-code-text">AROMA_MEMBER</div>
-                    <div id="qr-code-output"></div>
-                    <div class="member-points-container">
-                        <div class="member-points-label">帳戶現存星賞點數</div>
-                        <div class="member-points-value" id="member-points-text">0</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="section-cart" class="page-section">
-                <h2>購物車</h2>
-                <div class="card-panel" style="max-width: 900px; margin: 0 auto;">
-                    <div id="cart-items-container">
-                        <p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p>
-                    </div>
-                    <div style="margin-top: 36px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">小計</span>
-                        <span id="cart-total-price" style="font-size: 24px; font-weight: 700; color: var(--sb-text-black);">HK$ 0</span>
-                    </div>
-                    <button class="btn-submit-order" id="btn-cart-checkout">確認結帳</button>
-                </div>
-            </div>
+        <div class="form-row">
+          <div class="form-group" style="flex:1;">
+            <label>出生月份</label>
+            <select id="reg-birthday-month" required onchange="handleBirthdayDaysSync('reg-birthday-month', 'reg-birthday-day')">
+              <option value="" disabled selected>請選擇</option>
+              <script>for(let i=1;i<=12;i++) document.write(`<option value="${i.toString().padStart(2,'0')}">${i}月</option>`);</script>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>出生日期</label>
+            <select id="reg-birthday-day" required>
+              <option value="" disabled selected>請選擇</option>
+              <script>for(let i=1;i<=31;i++) document.write(`<option value="${i.toString().padStart(2,'0')}">${i}日</option>`);</script>
+            </select>
+          </div>
         </div>
+
+        <div class="form-group"><label>Google 電子郵件(必填)</label><input type="email" id="reg-email" required placeholder="您的帳號@gmail.com"></div>
+        <div class="form-group"><label>密碼</label><input type="password" id="reg-password" required placeholder="請設定密碼" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+          <div class="input-hint">必須至少八位，且包含大小寫字母及數字</div>
+        </div>
+        <div class="form-group"><label>推薦號碼(選填)</label><input type="text" id="reg-referral" placeholder="請輸入推薦人號碼"></div>
+        <button type="submit" class="btn-submit">確認註冊</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="main-system">
+    <nav>
+      <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+      <div class="brand-logo" style="font-size:20px; color:white;">Aroma_bakery</div>
+      <div class="cart-trigger-container"><button class="cart-text-btn" onclick="openShoppingCartModule()">購物車明細</button></div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header"><div class="close-btn" onclick="toggleSidebar()">×</div></div>
+      <ul class="sidebar-menu">
+        <li onclick="switchPage('section-products')">精選商品</li>
+        <li onclick="switchPage('section-profile')">個人資料</li>
+        <li onclick="switchPage('section-qrcode')">會員二維號碼</li>
+        <li onclick="openShoppingCartModule()">購物車明細</li>
+      </ul>
     </div>
 
-    <div class="custom-modal" id="custom-modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal()">×</span>
-            <div id="modal-dynamic-content" class="modal-body"></div>
+    <div class="main-content">
+      <div id="section-products" class="page-section active">
+        <h2>精選商品</h2>
+        <div class="category-title">飲品類 / Drinks</div>
+        <div class="product-grid" id="drinks-grid"></div>
+        <div class="category-title">甜點類 / Desserts</div>
+        <div class="product-grid" id="desserts-grid"></div>
+      </div>
+
+      <div id="section-profile" class="page-section">
+        <h2>個人資料</h2>
+        <div class="card-panel" style="max-width: 500px; margin: 0 auto;">
+          <div class="form-row">
+            <div class="form-group" style="flex:1;"><label>中文姓氏</label><input type="text" id="profile-last-name"></div>
+            <div class="form-group" style="flex:2;"><label>名字</label><input type="text" id="profile-first-name"></div>
+          </div>
+          <div class="form-group"><label>852 電話號碼(不可修改)</label><input type="text" id="profile-phone" readonly></div>
+          <div class="form-group"><label>出生月日(不可修改)</label><input type="text" id="profile-birthday" readonly></div>
+          <div class="form-group"><label>Google 電子郵件(不可修改)</label><input type="text" id="profile-email" readonly></div>
+          <button class="btn-action" onclick="updateProfileName()">儲存修改</button>
+          <button class="btn-logout" onclick="handleCustomerLogout()">登出會員帳戶</button>
         </div>
+      </div>
+
+      <div id="section-qrcode" class="page-section">
+        <h2>會員專屬憑證</h2>
+        <div class="card-panel qr-container" style="max-width: 500px; margin: 0 auto;">
+          <div class="member-id-display">會員碼: <span id="member-code-text">-</span></div>
+          <p style="font-size:13px; color:#6c757d;">結帳時請出示此二維碼以累積積分</p>
+          <div id="qr-code-output"></div>
+        </div>
+      </div>
+
+      <div id="section-cart" class="page-section">
+        <h2>購物車明細</h2>
+        <div class="card-panel" style="max-width: 850px; width: 100%; margin: 0 auto;">
+          <div id="cart-items-container"><p style="text-align: center; color: #6c757d; padding: 20px 0;">您的購物車目前是空的</p></div>
+          <div style="margin-top: 25px; border-top: 2px solid var(--sb-border); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 16px; font-weight: 600; color: var(--primary-color);">商品結算總計：</span>
+            <span id="cart-total-price" style="font-size: 22px; font-weight: 700; color: var(--accent-color);">HK$ 0</span>
+          </div>
+          <button class="btn-submit-order" id="btn-cart-checkout" style="margin-top: 25px; width: 100%;">立即下單</button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, onValue, update, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  <div class="custom-modal" id="custom-modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <div id="modal-dynamic-content" class="modal-body"></div>
+    </div>
+  </div>
 
-        // Firebase 專案配置
-        const firebaseConfig = {
-            apiKey: "AlzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
-            authDomain: "aroma-bakery-492fa.firebaseapp.com",
-            databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com",
-            projectId: "aroma-bakery-492fa",
-            storageBucket: "aroma-bakery-492fa.firebasestorage.app",
-            messagingSenderId: "1060567946315",
-            appId: "1:1060567946315:web:9693ac0e3486ab52c5e9ce",
-            measurementId: "G-D2C1M4SBPC"
-        };
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // 初始化 Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
+      authDomain: "aroma-bakery-492fa.firebaseapp.com",
+      databaseURL: "https://aroma-bakery-492fa-default-rtdb.firebaseio.com",
+      projectId: "aroma-bakery-492fa",
+      storageBucket: "aroma-bakery-492fa.firebasestorage.app",
+      messagingSenderId: "1060567946315",
+      appId: "1:1060567946315:web:9693ac0e3486ab52c5e9ce",
+      measurementId: "G-D2C1M4SBPC"
+    };
 
-        // 全局本地運行變數
-        let currentUserUid = null;
-        let localProductsCache = {};
-        let shoppingCart = [];
-        let currentUserWalletBalance = 0; 
-        let qrCodeInstance = null;
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    
+    let currentUserUid = null;
+    let localProductsCache = {}; 
+    let shoppingCart = [];       
 
-        // 全局自定義美式品牌提示視窗系統彈窗邏輯
-        window.showSystemAlert = function(msg, callback = null) {
-            document.getElementById('sys-alert-text').textContent = msg;
-            const actionArea = document.getElementById('sys-alert-action-area');
-            actionArea.innerHTML = '';
-            
-            const btn = document.createElement('button');
-            btn.className = 'system-alert-btn confirm-main';
-            btn.textContent = '確定';
-            btn.onclick = () => {
-                document.getElementById('sys-alert-root').classList.remove('active');
-                if(callback) callback();
-            };
-            actionArea.appendChild(btn);
-            document.getElementById('sys-alert-root').classList.add('active');
-        };
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if(user.email === 'admin01@aroma.com') { alert('管理員請至後台平台登入。'); auth.signOut(); return; }
+        currentUserUid = user.uid;
+        document.getElementById('auth-overlay').style.opacity = '0';
+        setTimeout(() => { document.getElementById('auth-overlay').style.display = 'none'; document.getElementById('main-system').style.display = 'block'; }, 400);
 
-        window.showSystemConfirm = function(msg, onConfirm, onCancel = null) {
-            document.getElementById('sys-alert-text').textContent = msg;
-            const actionArea = document.getElementById('sys-alert-action-area');
-            actionArea.innerHTML = '';
-            
-            const btnCancel = document.createElement('button');
-            btnCancel.className = 'system-alert-btn confirm-cancel';
-            btnCancel.textContent = '取消';
-            btnCancel.onclick = () => {
-                document.getElementById('sys-alert-root').classList.remove('active');
-                if(onCancel) onCancel();
-            };
-            
-            const btnConfirm = document.createElement('button');
-            btnConfirm.className = 'system-alert-btn confirm-main';
-            btnConfirm.textContent = '確認';
-            btnConfirm.onclick = () => {
-                document.getElementById('sys-alert-root').classList.remove('active');
-                if(onConfirm) onConfirm();
-            };
-            
-            actionArea.appendChild(btnCancel);
-            actionArea.appendChild(btnConfirm);
-            document.getElementById('sys-alert-root').classList.add('active');
-        };
-
-        // UI切換：登入 vs 註冊表單
-        window.switchAuthForm = function(type) {
-            if(type === 'login') {
-                document.getElementById('btn-toggle-login').classList.add('active');
-                document.getElementById('btn-toggle-reg').classList.remove('active');
-                document.getElementById('login-form').classList.remove('hidden');
-                document.getElementById('register-form').classList.add('hidden');
-            } else {
-                document.getElementById('btn-toggle-login').classList.remove('active');
-                document.getElementById('btn-toggle-reg').classList.add('active');
-                document.getElementById('login-form').classList.add('hidden');
-                document.getElementById('register-form').classList.remove('hidden');
-            }
-        };
-
-        // 側邊欄切換
-        window.toggleSidebar = function() {
-            document.getElementById('sidebar').classList.toggle('active');
-        };
-
-        // 頁面主 Tab 頁面切換控制
-        window.switchPage = function(sectionId) {
-            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            document.getElementById('sidebar').classList.remove('active');
-        };
-
-        // 日期同步（根據月份同步每月的日數天數上限，基本防錯）
-        window.handleBirthdayDaysSync = function(mId, dId) {
-            const monthSelect = document.getElementById(mId);
-            const daySelect = document.getElementById(dId);
-            const month = parseInt(monthSelect.value, 10);
-            if(!month) return;
-            
-            let days = 31;
-            if([4, 6, 9, 11].includes(month)) days = 30;
-            else if(month === 2) days = 29; // 預設提供閏年29日供選擇
-            
-            const currentSelected = daySelect.value;
-            daySelect.innerHTML = '<option value="" disabled selected>請選擇</option>';
-            for(let i = 1; i <= days; i++) {
-                const val = i.toString().padStart(2, '0');
-                const opt = document.createElement('option');
-                opt.value = val;
-                opt.textContent = i + '日';
-                if(val === currentSelected) opt.selected = true;
-                daySelect.appendChild(opt);
-            }
-        };
-
-        // 核心帳戶認證：登入邏輯
-        window.handleCustomerLogin = function(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-password').value;
-            
-            signInWithEmailAndPassword(auth, email, pass)
-                .catch(err => {
-                    window.showSystemAlert('帳號密碼驗證失敗，請重新核對後輸入。');
-                });
-        };
-
-        // 核心帳戶認證：註冊與推薦碼處理邏輯
-        window.handleCustomerRegister = function(e) {
-            e.preventDefault();
-            const ln = document.getElementById('reg-last-name').value.trim();
-            const fn = document.getElementById('reg-first-name').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            const bMonth = document.getElementById('reg-birthday-month').value;
-            const bDay = document.getElementById('reg-birthday-day').value;
-            const email = document.getElementById('reg-email').value.trim();
-            const pass = document.getElementById('reg-password').value;
-            const refPhone = document.getElementById('reg-referral').value.trim();
-
-            if(phone.length !== 8) {
-                window.showSystemAlert('請填寫正確的 8 位數字香港手機號碼。');
-                return;
-            }
-
-            // 檢查手機號碼是否已被佔用
-            get(ref(database, 'users')).then(snapshot => {
-                let phoneTaken = false;
-                if(snapshot.exists()) {
-                    const allUsers = snapshot.val();
-                    for(let uid in allUsers) {
-                        if(allUsers[uid].phone === phone) {
-                            phoneTaken = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(phoneTaken) {
-                    window.showSystemAlert('此手機號碼已被綁定註冊，請更換。');
-                    return;
-                }
-
-                // 開始建立 Firebase Auth 帳號
-                createUserWithEmailAndPassword(auth, email, pass)
-                    .then(cred => {
-                        const newUid = cred.user.uid;
-                        const userData = {
-                            lastName: ln,
-                            firstName: fn,
-                            phone: phone,
-                            birthdayMonth: bMonth,
-                            birthdayDay: bDay,
-                            email: email,
-                            balance: 0,
-                            points: 0,
-                            role: 'customer'
-                        };
-
-                        // 寫入基礎用戶資料庫
-                        set(ref(database, 'users/' + newUid), userData).then(() => {
-                            // 判斷是否帶有推薦人號碼
-                            if(refPhone) {
-                                get(ref(database, 'users')).then(snap2 => {
-                                    if(snap2.exists()) {
-                                        const usersMap = snap2.val();
-                                        let referrerUid = null;
-                                        for(let uKey in usersMap) {
-                                            if(usersMap[uKey].phone === refPhone) {
-                                                referrerUid = uKey;
-                                                break;
-                                            }
-                                        }
-                                        if(referrerUid) {
-                                            // 推薦人與被推薦人各獎勵 5 星賞點數
-                                            const refCurrentPoints = usersMap[referrerUid].points || 0;
-                                            update(ref(database, 'users/' + referrerUid), { points: refCurrentPoints + 5 });
-                                            update(ref(database, 'users/' + newUid), { points: 5 });
-                                            window.showSystemAlert('帳戶註冊成功！檢測到有效推薦碼，雙方各自獲得 5 星賞點數！');
-                                        } else {
-                                            window.showSystemAlert('帳戶註冊成功，但推薦的手機號碼不存在，未發放獎勵。');
-                                        }
-                                    }
-                                });
-                            } else {
-                                window.showSystemAlert('恭喜您成功加入 Aroma Bakery 尊享星賞聚樂部！');
-                            }
-                        });
-                    })
-                    .catch(err => {
-                        if(err.code === 'auth/email-already-in-use') {
-                            window.showSystemAlert('此電子郵件帳戶已被註冊。');
-                        } else {
-                            window.showSystemAlert('註冊失敗，請填寫完整資訊並再試一次。');
-                        }
-                    });
-            });
-        };
-
-        // 登出帳戶控制
-        window.handleCustomerLogout = function() {
-            signOut(auth).then(() => {
-                window.closeModal();
-                shoppingCart = [];
-                document.getElementById('login-form').reset();
-                document.getElementById('register-form').reset();
-            });
-        };
-
-        // 更改與儲存個人姓名基本資料
-        window.updateProfileName = function() {
-            if(!currentUserUid) return;
-            const ln = document.getElementById('profile-last-name').value.trim();
-            const fn = document.getElementById('profile-first-name').value.trim();
-            if(!ln || !fn) {
-                window.showSystemAlert('姓氏與名字欄位不可為空。');
-                return;
-            }
-            update(ref(database, 'users/' + currentUserUid), {
-                lastName: ln,
-                firstName: fn
-            }).then(() => {
-                window.showSystemAlert('基本個人資料已成功更新。');
-            });
-        };
-
-        // 彈窗控制基礎
-        window.closeModal = function() {
-            document.getElementById('custom-modal').classList.remove('active');
-        };
-
-        // 行動綠星卡：生成動態實時二維碼功能
-        function updateAndRenderQRCode(uidText) {
-            const qrContainer = document.getElementById('qr-code-output');
-            if(!qrContainer) return;
-            qrContainer.innerHTML = '';
-            qrCodeInstance = new QRCode(qrContainer, {
-                text: uidText,
-                width: 194,
-                height: 194,
-                colorDark: "#1e3932",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        // 開啟支付寶增值二維碼收款視窗
-        window.openAlipayQRModal = function() {
-            get(ref(database, 'admin_settings/alipay_qrcode')).then(snapshot => {
-                let qrUrl = 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'; // 系統預設占位圖
-                if(snapshot.exists() && snapshot.val()) {
-                    qrUrl = snapshot.val();
-                }
-                
-                const contentArea = document.getElementById('modal-dynamic-content');
-                contentArea.innerHTML = `
-                    <h3 style="margin-bottom:18px; color:var(--sb-dark-green);">支付寶官方便捷收款碼</h3>
-                    <p style="font-size:14px; margin-bottom:16px; color:var(--sb-text-gray);">請打開支付寶 App 掃描下方二維碼完成轉賬轉賬，隨後請填寫通知核對。</p>
-                    <div style="text-align:center; margin-bottom:16px;">
-                        <img src="${qrUrl}" style="max-width:240px; border:1px solid var(--sb-border); padding:6px; border-radius:4px;" alt="Alipay 收款碼">
-                    </div>
-                    <button class="btn-action" style="width:100%;" onclick="closeModal()">關閉視窗</button>
-                `;
-                document.getElementById('custom-modal').classList.add('active');
-            });
-        };
-
-        // 打開增值通知核對表單視窗
-        window.openTopupNotificationModal = function() {
-            const contentArea = document.getElementById('modal-dynamic-content');
-            contentArea.innerHTML = `
-                <h3 style="margin-bottom:18px; color:var(--sb-dark-green);">發送增值核對申請</h3>
-                <form id="topup-notify-form" onsubmit="submitTopupNotification(event); return false;">
-                    <div class="form-group">
-                        <label>申請存入金額 (HKD)</label>
-                        <input type="number" id="notify-amount" required min="1" step="any" placeholder="請輸入您實際轉賬的港幣數額">
-                    </div>
-                    <div class="form-group">
-                        <label>您的支付寶帳戶名稱 / 暱稱</label>
-                        <input type="text" id="notify-name" required placeholder="便於管理員在支付寶後台核對">
-                    </div>
-                    <div class="form-group">
-                        <label>轉賬交易號後 4 位（選填）</label>
-                        <input type="text" id="notify-tx" placeholder="提供後核對速度會大幅提升" maxlength="4">
-                    </div>
-                    <button type="submit" class="btn-action" style="width:100%;">提交核對通知</button>
-                </form>
-            `;
-            document.getElementById('custom-modal').classList.add('active');
-        };
-
-        // 提交增值審核通知至數據庫供管理端審核
-        window.submitTopupNotification = function(e) {
-            e.preventDefault();
-            if(!currentUserUid) return;
-            
-            const amt = parseFloat(document.getElementById('notify-amount').value);
-            const name = document.getElementById('notify-name').value.trim();
-            const tx = document.getElementById('notify-tx').value.trim();
-
-            const requestRef = ref(database, 'topup_requests');
-            const newRequestKey = push(requestRef).key;
-
-            // 獲取當前用戶的手機號與信箱以填寫申請人資訊
-            get(ref(database, 'users/' + currentUserUid)).then(snapshot => {
-                const uData = snapshot.val() || {};
-                const requestData = {
-                    id: newRequestKey,
-                    uid: currentUserUid,
-                    userEmail: uData.email || '',
-                    userPhone: uData.phone || '',
-                    amount: amt,
-                    alipayName: name,
-                    txFour: tx,
-                    status: 'pending',
-                    timestamp: Date.now()
-                };
-
-                set(ref(database, 'topup_requests/' + newRequestKey), requestData).then(() => {
-                    window.closeModal();
-                    window.showSystemAlert('增值通知已成功提報！管理員通常會在 15-30 分鐘內完成核對並入賬，請耐心等待。');
-                });
-            });
-        };
-
-        // 主系統渲染商品網格
-        function renderProductGrid(products) {
-            const drinksGrid = document.getElementById('drinks-grid');
-            const dessertsGrid = document.getElementById('desserts-grid');
-            if(!drinksGrid || !dessertsGrid) return;
-            
-            drinksGrid.innerHTML = '';
-            dessertsGrid.innerHTML = '';
-
-            for (let id in products) {
-                const p = products[id];
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <div class="product-img-wrapper">
-                        <img class="product-img" src="${p.photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}" alt="${p.name}">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">${p.name}</div>
-                    </div>
-                `;
-                
-                // 點擊查看詳情並加載客製化視窗
-                card.addEventListener('click', () => {
-                    viewProductDetail(id, p);
-                });
-
-                if(p.category === 'drink') drinksGrid.appendChild(card);
-                else if(p.category === 'dessert') dessertsGrid.appendChild(card);
-            }
-        }
-
-        // 打開商品客製化購買彈窗細節
-        function viewProductDetail(productId, product) {
-            const contentArea = document.getElementById('modal-dynamic-content');
-            let specHtml = '';
-
-            if(product.category === 'drink') {
-                specHtml = `
-                    <div class="customization-section">
-                        <div class="option-group">
-                            <span class="option-label">冷熱溫度選擇</span>
-                            <div class="selector-wrapper">
-                                <div class="selector-item">
-                                    <input type="radio" id="temp-ice" name="drink-temp" value="冰鎮少冰" checked>
-                                    <label for="temp-ice">冰鎮少冰</label>
-                                </div>
-                                <div class="selector-item">
-                                    <input type="radio" id="temp-hot" name="drink-temp" value="溫熱口感">
-                                    <label for="temp-hot">溫熱口感</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="option-group">
-                            <span class="option-label">甜度調節選擇</span>
-                            <div class="selector-wrapper">
-                                <div class="selector-item">
-                                    <input type="radio" id="sugar-normal" name="drink-sugar" value="標準糖" checked>
-                                    <label for="sugar-normal">標準糖</label>
-                                </div>
-                                <div class="selector-item">
-                                    <input type="radio" id="sugar-less" name="drink-sugar" value="半糖(少甜)">
-                                    <label for="sugar-less">半糖(少甜)</label>
-                                </div>
-                                <div class="selector-item">
-                                    <input type="radio" id="sugar-none" name="drink-sugar" value="無糖(不甜)">
-                                    <label for="sugar-none">無糖(不甜)</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                specHtml = `
-                    <div class="customization-section">
-                        <span class="option-label">商品規格說明</span>
-                        <div class="fixed-specification-box">
-                            本甜點均為當日烘焙坊新鮮限量製作，為保證最佳賞味品質，請於領取後 2 小時內冷藏或食用完畢。
-                        </div>
-                    </div>
-                `;
-            }
-
-            contentArea.innerHTML = `
-                <div class="modal-img-wrapper">
-                    <img class="modal-img" src="${product.photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}" alt="${product.name}">
-                </div>
-                <h3 style="font-size:22px; font-weight:700; margin-bottom:6px;">${product.name}</h3>
-                <p style="font-size:13px; color:var(--sb-text-gray); line-height:1.5; margin-bottom:12px;">${product.description || '暫無詳細描述介紹。'}</p>
-                <div class="product-points-badge">購買可積累: +${product.pointsEarn || 0} 綠星點數</div>
-                <div class="modal-price">HK$ ${product.price}</div>
-                
-                ${specHtml}
-                
-                <button class="btn-submit-order" id="btn-add-to-cart-confirm">加入我的購物車</button>
-            `;
-
-            document.getElementById('custom-modal').classList.add('active');
-
-            // 綁定加入購物車事件
-            document.getElementById('btn-add-to-cart-confirm').onclick = () => {
-                let selectedSpec = '標準配置';
-                if(product.category === 'drink') {
-                    const temp = document.querySelector('input[name="drink-temp"]:checked').value;
-                    const sugar = document.querySelector('input[name="drink-sugar"]:checked').value;
-                    selectedSpec = `${temp} / ${sugar}`;
-                }
-
-                shoppingCart.push({
-                    productId: productId,
-                    name: product.name,
-                    price: parseFloat(product.price),
-                    spec: selectedSpec,
-                    pointsEarn: parseInt(product.pointsEarn || 0, 10)
-                });
-
-                window.closeModal();
-                window.showSystemAlert(`已成功將 ${product.name} (${selectedSpec}) 加到您的購物車！`);
-            };
-        }
-
-        // 切換並打開購物車模組頁面
-        window.openShoppingCartModule = function() {
-            window.switchPage('section-cart');
-            renderShoppingCartView();
-        };
-
-        // 渲染購物車介面與數據
-        function renderShoppingCartView() {
-            const container = document.getElementById('cart-items-container');
-            const totalText = document.getElementById('cart-total-price');
-            if(!container) return;
-
-            if(shoppingCart.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p>`;
-                totalText.textContent = 'HK$ 0';
-                return;
-            }
-
-            let html = `
-                <table class="cart-table">
-                    <thead>
-                        <tr>
-                            <th>商品項目</th>
-                            <th>客製化規格</th>
-                            <th>售價</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            let subtotal = 0;
-            shoppingCart.forEach((item, index) => {
-                subtotal += item.price;
-                html += `
-                    <tr>
-                        <td style="font-weight:600;">${item.name}</td>
-                        <td style="color:var(--sb-text-gray); font-size:14px;">${item.spec}</td>
-                        <td style="font-weight:700;">HK$ ${item.price}</td>
-                        <td><button class="btn-remove" onclick="removeCartItemByIndex(${index})">移除</button></td>
-                    </tr>
-                `;
-            });
-
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-            totalText.textContent = `HK$ ${subtotal.toFixed(2)}`;
-        }
-
-        // 從購物車中移除單項商品
-        window.removeCartItemByIndex = function(index) {
-            shoppingCart.splice(index, 1);
-            renderShoppingCartView();
-        };
-
-        // 核心業務邏輯：確認結帳付款模組
-        document.getElementById('btn-cart-checkout').onclick = function() {
-            if(!currentUserUid) return;
-            if(shoppingCart.length === 0) {
-                window.showSystemAlert('您的購物車為空，無法提交結帳。');
-                return;
-            }
-
-            let totalCost = 0;
-            let totalPointsReward = 0;
-            shoppingCart.forEach(item => {
-                totalCost += item.price;
-                totalPointsReward += item.pointsEarn;
-            });
-
-            window.showSystemConfirm(`您本次消費總計為 HKD ${totalCost.toFixed(2)}，確定要從錢包餘額中扣款結帳嗎？`, () => {
-                if(currentUserWalletBalance < totalCost) {
-                    window.showSystemAlert('結帳失敗：您的星賞錢包餘額不足。請前往「我的錢包」進行增值。');
-                    return;
-                }
-
-                // 計算扣款與新增積分
-                const finalBalance = currentUserWalletBalance - totalCost;
-                
-                // 獲取最新積分再做累加
-                get(ref(database, 'users/' + currentUserUid + '/points')).then(pointSnap => {
-                    const currentPoints = pointSnap.val() || 0;
-                    const finalPoints = currentPoints + totalPointsReward;
-
-                    const orderRef = ref(database, 'orders');
-                    const newOrderKey = push(orderRef).key;
-
-                    const orderData = {
-                        id: newOrderKey,
-                        uid: currentUserUid,
-                        items: shoppingCart,
-                        totalCost: totalCost,
-                        timestamp: Date.now(),
-                        status: 'paid'
-                    };
-
-                    // 更新用戶餘額、積分，同時寫入歷史訂單
-                    const updates = {};
-                    updates['users/' + currentUserUid + '/balance'] = finalBalance;
-                    updates['users/' + currentUserUid + '/points'] = finalPoints;
-                    updates['orders/' + newOrderKey] = orderData;
-
-                    update(ref(database), updates).then(() => {
-                        shoppingCart = [];
-                        renderShoppingCartView();
-                        window.switchPage('section-products');
-                        window.showSystemAlert(`結帳成功！已成功扣款 HKD ${totalCost.toFixed(2)}。恭喜您獲得了 +${totalPointsReward} 星賞點數獎勵！`);
-                    });
-                });
-            });
-        };
-
-        // 監聽 Auth 認證狀態變更
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                // 檢查是否為後台管理員信箱，禁止從前台系統入口登入
-                if(user.email === 'admin@aromabakery.com') {
-                    window.showSystemAlert('後台管理帳戶請由管理端面板登入。', () => {
-                        signOut(auth);
-                    });
-                    return;
-                }
-
-                currentUserUid = user.uid;
-                document.getElementById('auth-overlay').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('auth-overlay').style.display = 'none';
-                    document.getElementById('main-system').style.display = 'block';
-                }, 400);
-
-                // 行動綠星卡二維碼初始化與實時更新
-                updateAndRenderQRCode(user.uid);
-                document.getElementById('member-code-text').textContent = `MEMBER_${user.uid.substring(0,10).toUpperCase()}`;
-
-                // 實時接管並監聽用戶雲端節點數據 (個人資料/餘額/積分)
-                onValue(ref(database, 'users/' + user.uid), (snapshot) => {
-                    const data = snapshot.val();
-                    if(data) {
-                        document.getElementById('profile-last-name').value = data.lastName || '';
-                        document.getElementById('profile-first-name').value = data.firstName || '';
-                        document.getElementById('profile-phone').value = data.phone || '';
-                        document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : '未設定';
-                        document.getElementById('profile-email').value = data.email || '';
-                        
-                        // 更新全局錢包數據與UI層
-                        currentUserWalletBalance = parseFloat(data.balance || 0);
-                        document.getElementById('wallet-balance-text').textContent = currentUserWalletBalance.toFixed(2);
-                        document.getElementById('member-points-text').textContent = data.points || 0;
-                    }
-                });
-
-                // 實時接管並監聽商品選單
-                onValue(ref(database, 'products'), (snapshot) => {
-                    if(snapshot.exists()) {
-                        localProductsCache = snapshot.val();
-                        renderProductGrid(localProductsCache);
-                    } else {
-                        // 建立初始範例商品到數據庫（若資料庫全空時自動觸發）
-                        const defaultProducts = {
-                            "p1": { name: "經典醇香拿鐵", category: "drink", price: "38.00", pointsEarn: "3", description: "採用星級莊園深度烘焙咖啡豆，配合醇厚鮮牛乳。", photoUrl: "" },
-                            "p2": { name: "鮮奶抹茶拿鐵", category: "drink", price: "42.00", pointsEarn: "4", description: "精選宇治上等抹茶粉，茶香回甘，奶泡細緻。", photoUrl: "" },
-                            "p3": { name: "法式焦糖布蕾", category: "dessert", price: "45.00", pointsEarn: "4", description: "香脆的炙燒焦糖外殼下，包裹著滑嫩濃郁的香草籽蛋奶凍。", photoUrl: "" },
-                            "p4": { name: "極致黑巧克力慕斯", category: "dessert", price: "48.00", pointsEarn: "5", description: "高純度比利時黑巧克力，綿密絲滑，甜而不膩。", photoUrl: "" }
-                        };
-                        set(ref(database, 'products'), defaultProducts);
-                    }
-                });
-
-            } else {
-                // 用戶登出或未認證狀態，重設並切回認證遮罩
-                currentUserUid = null;
-                document.getElementById('main-system').style.display = 'none';
-                document.getElementById('auth-overlay').style.display = 'flex';
-                setTimeout(() => {
-                    document.getElementById('auth-overlay').style.opacity = '1';
-                }, 50);
-            }
+        onValue(ref(database, 'users/' + user.uid), (snapshot) => {
+          const data = snapshot.val();
+          if(data) {
+            document.getElementById('profile-last-name').value = data.lastName || '';
+            document.getElementById('profile-first-name').value = data.firstName || '';
+            document.getElementById('profile-phone').value = data.phone || '';
+            document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : '未填寫';
+            document.getElementById('profile-email').value = data.email || '';
+            const code = `AROMA_${data.phone}`;
+            document.getElementById('member-code-text').innerText = code;
+            renderMobileQRCode(code);
+          }
         });
-    </script>
+
+        onValue(ref(database, 'products'), (snapshot) => {
+          const products = snapshot.val() || {};
+          localProductsCache = products;
+          renderProductGrid(products);
+        });
+      } else {
+        currentUserUid = null;
+        document.getElementById('main-system').style.display = 'none';
+        document.getElementById('auth-overlay').style.display = 'flex';
+        setTimeout(() => document.getElementById('auth-overlay').style.opacity = '1', 50);
+      }
+    });
+
+    // 解決字串拼接單引號破裂的優化渲染函數
+    function renderProductGrid(products) {
+      const drinksGrid = document.getElementById('drinks-grid');
+      const dessertsGrid = document.getElementById('desserts-grid');
+      if(!drinksGrid || !dessertsGrid) return;
+      
+      drinksGrid.innerHTML = ''; 
+      dessertsGrid.innerHTML = '';
+
+      for (let id in products) {
+        const p = products[id];
+        
+        // 建立獨立的 DOM 節點物件，杜絕 onclick 引號截斷噴錯
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img class="product-img" src="${p.photoUrl || 'https://via.placeholder.com/300'}" alt="${p.name}">
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+          </div>
+        `;
+        
+        card.addEventListener('click', () => {
+          viewProductDetail(p.name, `HK$ ${p.price}`, p.detail || '無詳情', p.photoUrl, p.category || '飲品', id);
+        });
+
+        if(p.category === '飲品') drinksGrid.appendChild(card);
+        else if(p.category === '甜點') dessertsGrid.appendChild(card);
+      }
+    }
+
+    window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('active'); }
+    window.switchPage = function(pageId) { document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active')); document.getElementById(pageId).classList.add('active'); document.getElementById('sidebar').classList.remove('active'); }
+
+    function renderMobileQRCode(textData) {
+      const container = document.getElementById('qr-code-output');
+      container.innerHTML = '';
+      try { new QRCode(container, { text: textData, width: 190, height: 190, colorDark: "#1e3932", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H }); } catch(err){}
+    }
+
+    function viewProductDetail(name, priceStr, detail, photoUrl, category, id) {
+      const p = localProductsCache[id] || {};
+      let customizationHtml = '';
+
+      if (p.hasIce !== false && category === '飲品') {
+        customizationHtml += `
+          <div class="option-group"><span class="option-label">冰量配置</span>
+            <div class="selector-wrapper">
+              <div class="selector-item"><input type="radio" id="ice-normal" name="sb-ice-option" value="正常冰" checked><label for="ice-normal">正常冰</label></div>
+              <div class="selector-item"><input type="radio" id="ice-more" name="sb-ice-option" value="多冰"><label for="ice-more">多冰</label></div>
+              <div class="selector-item"><input type="radio" id="ice-less" name="sb-ice-option" value="少冰"><label for="ice-less">少冰</label></div>
+            </div>
+          </div>`;
+      }
+      if (p.hasSugar !== false && category === '飲品') {
+        customizationHtml += `
+          <div class="option-group"><span class="option-label">甜度配置</span>
+            <div class="selector-wrapper">
+              <div class="selector-item"><input type="radio" id="sugar-normal" name="sb-sugar-option" value="正常糖" checked><label for="sugar-normal">正常糖</label></div>
+              <div class="selector-item"><input type="radio" id="sugar-less" name="sb-sugar-option" value="少糖"><label for="sugar-less">少糖</label></div>
+              <div class="selector-item"><input type="radio" id="sugar-none" name="sb-sugar-option" value="無糖"><label for="sugar-none">無糖</label></div>
+            </div>
+          </div>`;
+      }
+
+      const modalContent = document.getElementById('modal-dynamic-content');
+      modalContent.innerHTML = `
+        <img class="modal-img" src="${photoUrl || 'https://via.placeholder.com/300'}">
+        <h3 style="color:var(--primary-color);" id="modal-p-name"></h3>
+        <div class="modal-price">${priceStr}</div>
+        <p style="font-size:13px; color:#6c757d; margin-bottom:15px;" id="modal-p-detail"></p>
+        <div class="customization-section">
+          ${customizationHtml || '<div class="fixed-specification-box">標準規格，無需客製化配置。</div>'}
+          <div class="option-group" style="margin-top:15px; display:flex; align-items:center; gap:10px;">
+            <span class="option-label" style="margin-bottom:0;">選購數量：</span><input type="number" id="cart-item-qty" value="1" min="1" style="width:80px; padding:6px; text-align:center;">
+          </div>
+        </div>
+        <button class="btn-submit-order" id="btn-add-to-cart-trigger">加入購物車</button>
+      `;
+      
+      // 使用 textContent 賦值，防止特殊符號破壞 HTML
+      document.getElementById('modal-p-name').textContent = name;
+      document.getElementById('modal-p-detail').textContent = detail;
+
+      document.getElementById('btn-add-to-cart-trigger').onclick = function() {
+        window.addToCart(id, name, p.price || 0, category);
+      };
+
+      document.getElementById('custom-modal').classList.add('active');
+    };
+
+    window.addToCart = function(id, name, price, category) {
+      const qty = parseInt(document.getElementById('cart-item-qty').value) || 1;
+      const iceEl = document.querySelector('input[name="sb-ice-option"]:checked');
+      const sugarEl = document.querySelector('input[name="sb-sugar-option"]:checked');
+      const ice = iceEl ? iceEl.value : '標準';
+      const sugar = sugarEl ? sugarEl.value : '標準';
+
+      const existing = shoppingCart.find(i => i.id === id && i.ice === ice && i.sugar === sugar);
+      if (existing) existing.quantity += qty;
+      else shoppingCart.push({ id, name, price, quantity: qty, ice, sugar, category });
+      
+      closeModal();
+      alert(`已加入購物車：${name} x ${qty}`);
+      renderCartUI();
+    };
+
+    window.openShoppingCartModule = function() { switchPage('section-cart'); renderCartUI(); };
+
+    function renderCartUI() {
+      const container = document.getElementById('cart-items-container');
+      const totalDisplay = document.getElementById('cart-total-price');
+      if (shoppingCart.length === 0) {
+        container.innerHTML = `<p style="text-align:center; padding:40px 0;">購物車是空的</p>`;
+        totalDisplay.innerText = 'HK$ 0';
+        return;
+      }
+      
+      container.innerHTML = '';
+      const table = document.createElement('table');
+      table.className = 'cart-table';
+      table.innerHTML = `<tr><th>商品</th><th>規格</th><th>單價</th><th>數量</th><th>小計</th><th>操作</th></tr>`;
+      
+      let grandTotal = 0;
+      shoppingCart.forEach((item, i) => {
+        const itemTotal = item.price * item.quantity; 
+        grandTotal += itemTotal;
+        const spec = [item.ice !== '標準'?item.ice:'', item.sugar !== '標準'?item.sugar:''].filter(Boolean).join('/') || '標準';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="item-title-td"></td>
+          <td>${spec}</td>
+          <td>HK$ ${item.price}</td>
+          <td>${item.quantity}</td>
+          <td>HK$ ${itemTotal}</td>
+          <td><button class="btn-remove">移除</button></td>
+        `;
+        row.querySelector('.item-title-td').textContent = item.name;
+        row.querySelector('.btn-remove').onclick = () => { window.removeFromCart(i); };
+        table.appendChild(row);
+      });
+      
+      container.appendChild(table);
+      totalDisplay.innerText = `HK$ ${grandTotal}`;
+    }
+    
+    window.removeFromCart = function(i) { shoppingCart.splice(i, 1); renderCartUI(); };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn-cart-checkout');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if(shoppingCart.length === 0) return alert('購物車內尚無商品！');
+          alert('【前端沙盒提示】\n您已點擊立即下單。\n根據設定，此功能暫時僅作前端選購展示，無後台看板反應。');
+        });
+      }
+    });
+
+    window.handleCustomerLogin = function(e) { 
+      e.preventDefault(); 
+      signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value).catch(()=>alert('登入失敗，請確認信箱及密碼是否正確。')); 
+    };
+    
+    window.handleCustomerRegister = function(e) {
+      e.preventDefault();
+      const email = document.getElementById('reg-email').value; 
+      const pass = document.getElementById('reg-password').value;
+      if (!email.toLowerCase().endsWith('@gmail.com')) return alert('必須使用 @gmail.com 進行註冊');
+      
+      createUserWithEmailAndPassword(auth, email, pass).then((cred) => {
+        set(ref(database, 'users/' + cred.user.uid), {
+          lastName: document.getElementById('reg-last-name').value, 
+          firstName: document.getElementById('reg-first-name').value, 
+          phone: "852" + document.getElementById('reg-phone').value, 
+          birthdayMonth: document.getElementById('reg-birthday-month').value,
+          birthdayDay: document.getElementById('reg-birthday-day').value,
+          email, 
+          role: "customer"
+        });
+      }).catch(()=>alert('註冊失敗，信箱可能已被使用或密碼強度不足。'));
+    };
+
+    window.updateProfileName = function() {
+      const ln = document.getElementById('profile-last-name').value.trim();
+      const fn = document.getElementById('profile-first-name').value.trim();
+      if(ln && fn) {
+        update(ref(database, 'users/' + currentUserUid), { lastName: ln, firstName: fn })
+          .then(()=>alert('個人姓名更新成功！'));
+      } else {
+        alert('姓氏與名字皆不能留空！');
+      }
+    };
+    
+    window.handleCustomerLogout = function() { if(confirm("確定登出？")) signOut(auth); };
+  </script>
+
+  <script>
+    function switchAuthForm(t) {
+      if(t === 'login') { document.getElementById('login-form').classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); document.getElementById('btn-toggle-login').classList.add('active'); document.getElementById('btn-toggle-reg').classList.remove('active'); }
+      else { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); document.getElementById('btn-toggle-login').classList.remove('active'); document.getElementById('btn-toggle-reg').classList.add('active'); }
+    }
+    function closeModal() { document.getElementById('custom-modal').classList.remove('active'); }
+
+    // 前端動態生日日期下拉選單防呆防錯邏輯（如2月自動過濾不出現30、31號）
+    function handleBirthdayDaysSync(mSelId, dSelId) {
+      const monthSel = document.getElementById(mSelId);
+      const daySel = document.getElementById(dSelId);
+      if(!monthSel || !daySel) return;
+      const month = parseInt(monthSel.value);
+      if(!month) return;
+      
+      let daysInMonth = 31;
+      if([4, 6, 9, 11].includes(month)) daysInMonth = 30;
+      else if(month === 2) daysInMonth = 29; // 考慮閏年最大值給予29天防呆
+      
+      const currentSelected = daySel.value;
+      daySel.innerHTML = '<option value="" disabled>請選擇</option>';
+      for(let i = 1; i <= daysInMonth; i++) {
+        const val = i.toString().padStart(2, '0');
+        const opt = document.createElement('option');
+        opt.value = val; opt.textContent = `${i}日`;
+        if(val === currentSelected) opt.selected = true;
+        daySel.appendChild(opt);
+      }
+    }
+  </script>
 </body>
 </html>
