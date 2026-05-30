@@ -139,6 +139,16 @@
     .system-alert-btn.confirm-main:hover { background-color: #004d33; }
     .system-alert-btn.confirm-cancel { background-color: transparent; color: var(--sb-primary-green); border: 1px solid var(--sb-primary-green); }
     .system-alert-btn.confirm-cancel:hover { background-color: var(--sb-light-green); }
+
+    /* 動畫過場區塊設計 */
+    #login-transition-overlay, #checkout-transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sb-dark-green); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
+    .loading-spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* 訂單卡片設計 */
+    .order-card { border: 1px solid var(--sb-border); border-radius: 8px; padding: 24px; margin-bottom: 24px; background: white; }
+    .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--sb-border); padding-bottom: 16px; margin-bottom: 16px; }
+    .order-status-badge { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 4px; background: var(--sb-light-green); color: var(--sb-primary-green); }
   </style>
 </head>
 <body>
@@ -148,6 +158,15 @@
       <p id="sys-alert-text" class="system-alert-msg"></p>
       <div id="sys-alert-action-area" class="system-alert-btns"></div>
     </div>
+  </div>
+
+  <div id="login-transition-overlay">
+    <h1 style="color:white; font-size:36px; letter-spacing:2px; font-weight:700; text-transform:uppercase;">Aroma Bakery</h1>
+  </div>
+
+  <div id="checkout-transition-overlay">
+    <div class="loading-spinner"></div>
+    <div style="color:white; font-size:20px; font-weight:600; letter-spacing:1px;">正在結帳中！</div>
   </div>
 
   <div id="auth-overlay">
@@ -218,10 +237,10 @@
       <div class="sidebar-header"><div class="close-btn" onclick="toggleSidebar()">×</div></div>
       <ul class="sidebar-menu">
         <li onclick="switchPage('section-products')">精選菜單</li>
+        <li onclick="switchPage('section-orders')">我的訂單</li>
+        <li onclick="switchPage('section-wallet')">我的錢包</li>
         <li onclick="switchPage('section-profile')">個人資料</li>
         <li onclick="switchPage('section-qrcode')">我的行動綠星卡</li>
-        <li onclick="openShoppingCartModule()">購物車</li>
-        <li onclick="switchPage('section-wallet')">我的錢包</li>
       </ul>
     </div>
 
@@ -263,18 +282,6 @@
         </div>
       </div>
 
-      <div id="section-cart" class="page-section">
-        <h2>購物車</h2>
-        <div class="card-panel" style="max-width: 900px; margin: 0 auto;">
-          <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p></div>
-          <div style="margin-top: 36px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">小計</span>
-            <span id="cart-total-price" style="font-size: 24px; font-weight: 700; color: var(--sb-text-black);">HK$ 0</span>
-          </div>
-          <button class="btn-submit-order" id="btn-cart-checkout">確認結帳</button>
-        </div>
-      </div>
-
       <div id="section-wallet" class="page-section">
         <h2>我的錢包</h2>
         <div class="card-panel" style="max-width: 560px; margin: 0 auto;">
@@ -308,6 +315,40 @@
         </div>
       </div>
 
+      <div id="section-orders" class="page-section">
+        <h2>我的訂單</h2>
+        <div id="my-orders-list" style="max-width: 800px; margin: 0 auto;">
+          <p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">讀取中...</p>
+        </div>
+      </div>
+
+      <div id="section-cart" class="page-section">
+        <h2>購物車</h2>
+        <div class="card-panel" style="max-width: 900px; margin: 0 auto;">
+          <p style="color:var(--sb-primary-green); font-weight:700; font-size:14px; margin-bottom:24px; text-align:center;">請預先一天下單，預訂送餐時間下單後將會發送！</p>
+          
+          <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p></div>
+          
+          <div style="margin-top: 24px; background-color: var(--sb-bg-cream); padding: 20px; border-radius: 8px; border: 1px solid var(--sb-border);">
+            <div style="font-weight: 600; margin-bottom: 12px; font-size: 15px;">配送方式選擇</div>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:500; cursor:pointer; margin-bottom:12px;">
+              <input type="radio" name="delivery-type" value="pickup" checked onchange="toggleDeliveryMode()"> 自取清河邨樓下
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-weight:500; cursor:pointer;">
+              <input type="radio" name="delivery-type" value="delivery" onchange="toggleDeliveryMode()"> 配送 (加收 HK$ 1 配送費)
+            </label>
+            <div id="delivery-address-container" style="display:none; margin-top:16px;">
+              <input type="text" id="delivery-address-input" placeholder="請詳細填寫配送地址">
+            </div>
+          </div>
+
+          <div style="margin-top: 36px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">小計</span>
+            <span id="cart-total-price" style="font-size: 24px; font-weight: 700; color: var(--sb-text-black);">HK$ 0</span>
+          </div>
+          <button class="btn-submit-order" id="btn-cart-checkout">確認結帳</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -321,8 +362,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    // 匯入 push 函式
-    import { getDatabase, ref, set, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
@@ -339,6 +379,7 @@
     const database = getDatabase(app);
     
     let currentUserUid = null;
+    let currentUserData = null;
     let localProductsCache = {};
     let shoppingCart = [];       
 
@@ -346,38 +387,26 @@
       document.getElementById('sys-alert-text').textContent = msg;
       const actionArea = document.getElementById('sys-alert-action-area');
       actionArea.innerHTML = '';
-      
       const btn = document.createElement('button');
       btn.className = 'system-alert-btn confirm-main';
       btn.textContent = '確定';
-      btn.onclick = () => {
-        document.getElementById('sys-alert-root').classList.remove('active');
-        if(callback) callback();
-      };
+      btn.onclick = () => { document.getElementById('sys-alert-root').classList.remove('active'); if(callback) callback(); };
       actionArea.appendChild(btn);
       document.getElementById('sys-alert-root').classList.add('active');
     };
+    
     window.showSystemConfirm = function(msg, onConfirm, onCancel = null) {
       document.getElementById('sys-alert-text').textContent = msg;
       const actionArea = document.getElementById('sys-alert-action-area');
       actionArea.innerHTML = '';
-
       const btnCancel = document.createElement('button');
       btnCancel.className = 'system-alert-btn confirm-cancel';
       btnCancel.textContent = '取消';
-      btnCancel.onclick = () => {
-        document.getElementById('sys-alert-root').classList.remove('active');
-        if(onCancel) onCancel();
-      };
-
+      btnCancel.onclick = () => { document.getElementById('sys-alert-root').classList.remove('active'); if(onCancel) onCancel(); };
       const btnConfirm = document.createElement('button');
       btnConfirm.className = 'system-alert-btn confirm-main';
       btnConfirm.textContent = '確認';
-      btnConfirm.onclick = () => {
-        document.getElementById('sys-alert-root').classList.remove('active');
-        if(onConfirm) onConfirm();
-      };
-
+      btnConfirm.onclick = () => { document.getElementById('sys-alert-root').classList.remove('active'); if(onConfirm) onConfirm(); };
       actionArea.appendChild(btnCancel);
       actionArea.appendChild(btnConfirm);
       document.getElementById('sys-alert-root').classList.add('active');
@@ -391,20 +420,29 @@
         }
         currentUserUid = user.uid;
         document.getElementById('auth-overlay').style.opacity = '0';
-        setTimeout(() => { document.getElementById('auth-overlay').style.display = 'none'; document.getElementById('main-system').style.display = 'block'; }, 400);
+        
+        // 觸發 3 秒綠屏過場
+        setTimeout(() => { 
+          document.getElementById('auth-overlay').style.display = 'none'; 
+          const trans = document.getElementById('login-transition-overlay');
+          trans.style.display = 'flex';
+          setTimeout(() => {
+            trans.style.display = 'none';
+            document.getElementById('main-system').style.display = 'block';
+          }, 3000);
+        }, 400);
 
         onValue(ref(database, 'users/' + user.uid), (snapshot) => {
           const data = snapshot.val();
           if(data) {
+            currentUserData = data;
             document.getElementById('profile-last-name').value = data.lastName || '';
             document.getElementById('profile-first-name').value = data.firstName || '';
             document.getElementById('profile-phone').value = data.phone || '';
             document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : '未設定';
             document.getElementById('profile-email').value = data.email || '';
             document.getElementById('member-points-text').innerText = data.points !== undefined ? data.points : 0;
-            // 讀取餘額
             document.getElementById('wallet-balance').innerText = data.balance !== undefined ? data.balance : 0;
-
             const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
             const code = `AROMA_${displayPhone}`;
             document.getElementById('member-code-text').innerText = code;
@@ -418,14 +456,59 @@
           renderProductGrid(products);
         });
 
-        // 讀取管理員設定的支付寶二維碼
         onValue(ref(database, 'adminSettings/alipayQrUrl'), (snapshot) => {
           const url = snapshot.val() || '';
           document.getElementById('alipay-qr-img').src = url;
         });
 
+        // 讀取我的訂單
+        onValue(ref(database, 'orders'), (snapshot) => {
+          const allOrders = snapshot.val() || {};
+          const myOrders = Object.keys(allOrders)
+            .map(k => ({id: k, ...allOrders[k]}))
+            .filter(o => o.userUid === currentUserUid)
+            .sort((a,b) => b.timestamp - a.timestamp);
+            
+          const container = document.getElementById('my-orders-list');
+          container.innerHTML = '';
+          if(myOrders.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">目前沒有訂單紀錄</p>`;
+            return;
+          }
+
+          myOrders.forEach(o => {
+            let itemsHtml = o.items.map(i => `
+              <div style="font-size:14px; margin-bottom:4px; display:flex; justify-content:space-between;">
+                <span>${i.name} (${i.ice !== '標準'?i.ice:'標準'}/${i.sugar !== '標準'?i.sugar:'標準'}) x ${i.quantity}</span>
+              </div>
+            `).join('');
+
+            const card = document.createElement('div');
+            card.className = 'order-card';
+            card.innerHTML = `
+              <div class="order-header">
+                <span style="font-weight:700; font-size:16px;">訂單號 ${o.orderNum}</span>
+                <span class="order-status-badge">${o.status}</span>
+              </div>
+              <div style="margin-bottom:12px; font-size:14px; line-height:1.6; color:var(--sb-text-black);">
+                <div><span style="color:var(--sb-text-gray); min-width:80px; display:inline-block;">收件人姓名</span> ${o.customerName}</div>
+                <div><span style="color:var(--sb-text-gray); min-width:80px; display:inline-block;">聯絡電話</span> ${o.customerPhone}</div>
+                <div><span style="color:var(--sb-text-gray); min-width:80px; display:inline-block;">配送方式</span> ${o.deliveryType === '配送' ? '配送 (' + o.address + ')' : o.address}</div>
+                <div><span style="color:var(--sb-text-gray); min-width:80px; display:inline-block;">預計配送日期</span> ${o.deliveryTime || '待系統分配'}</div>
+              </div>
+              <div style="background:var(--sb-bg-cream); padding:16px; border-radius:6px; margin-bottom:16px;">
+                <div style="font-weight:600; margin-bottom:8px; font-size:13px; color:var(--sb-text-gray);">訂購明細</div>
+                ${itemsHtml}
+              </div>
+              <div style="text-align:right; font-weight:700; font-size:16px;">總計 HK$ ${o.total}</div>
+            `;
+            container.appendChild(card);
+          });
+        });
+
       } else {
         currentUserUid = null;
+        currentUserData = null;
         document.getElementById('main-system').style.display = 'none';
         document.getElementById('auth-overlay').style.display = 'flex';
         setTimeout(() => document.getElementById('auth-overlay').style.opacity = '1', 50);
@@ -499,7 +582,7 @@
       modalContent.innerHTML = `
         <div class="modal-img-wrapper"><img class="modal-img" src="${photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}"></div>
         <h3 style="color:var(--sb-text-black); font-size: 20px; font-weight:700; margin-bottom:4px;" id="modal-p-name"></h3>
-        <div><span class="product-points-badge">可獲 ${productPoints} 顆綠星</span></div>
+        <div><span class="product-points-badge">可獲 ${productPoints} 顆星賞</span></div>
         <div class="modal-price">${priceStr}</div>
         <p style="font-size:14px; color:var(--sb-text-gray); margin-bottom:20px; line-height:1.5;" id="modal-p-detail"></p>
         <div class="customization-section">
@@ -533,6 +616,12 @@
 
     window.openShoppingCartModule = function() { switchPage('section-cart'); renderCartUI(); };
 
+    window.toggleDeliveryMode = function() {
+      const isDelivery = document.querySelector('input[name="delivery-type"]:checked').value === 'delivery';
+      document.getElementById('delivery-address-container').style.display = isDelivery ? 'block' : 'none';
+      renderCartUI();
+    };
+
     function renderCartUI() {
       const container = document.getElementById('cart-items-container');
       const totalDisplay = document.getElementById('cart-total-price');
@@ -545,6 +634,7 @@
       const table = document.createElement('table');
       table.className = 'cart-table';
       table.innerHTML = `<tr><th>商品明細</th><th>客製化規格</th><th>單價</th><th>數量</th><th>總計</th><th>操作</th></tr>`;
+      
       let grandTotal = 0;
       shoppingCart.forEach((item, i) => {
         const itemTotal = item.price * item.quantity; 
@@ -564,6 +654,10 @@
         table.appendChild(row);
       });
       container.appendChild(table);
+
+      const isDelivery = document.querySelector('input[name="delivery-type"]:checked').value === 'delivery';
+      if (isDelivery) grandTotal += 1;
+      
       totalDisplay.innerText = `HK$ ${grandTotal}`;
     }
     
@@ -574,7 +668,58 @@
       if (btn) {
         btn.addEventListener('click', () => {
           if(shoppingCart.length === 0) return window.showSystemAlert('購物車內無任何商品，無法執行結帳。');
-          window.showSystemAlert('訂單已模擬結帳完成。\n此為連接 Firebase 雲端沙盒之功能展示模組。');
+          
+          const isDelivery = document.querySelector('input[name="delivery-type"]:checked').value === 'delivery';
+          const addressInput = document.getElementById('delivery-address-input').value.trim();
+          
+          if (isDelivery && !addressInput) {
+            return window.showSystemAlert('請填寫配送地址。');
+          }
+
+          let itemsTotal = shoppingCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+          let grandTotal = itemsTotal + (isDelivery ? 1 : 0);
+
+          if (!currentUserData || currentUserData.balance === undefined || currentUserData.balance < grandTotal) {
+            return window.showSystemAlert('餘額不足請增值！');
+          }
+
+          // 播放綠屏過場
+          const trans = document.getElementById('checkout-transition-overlay');
+          trans.style.display = 'flex';
+
+          const dateKey = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+          const counterRef = ref(database, 'counters/' + dateKey);
+          
+          get(counterRef).then(snap => {
+            let count = snap.val() || 0;
+            let orderNumStr = "#" + String(count).padStart(3, '0');
+            set(counterRef, count + 1);
+            
+            // 扣除餘額
+            update(ref(database, 'users/' + currentUserUid), { balance: currentUserData.balance - grandTotal });
+            
+            // 寫入訂單
+            push(ref(database, 'orders'), {
+              userUid: currentUserUid,
+              customerName: (currentUserData.lastName || '') + (currentUserData.firstName || ''),
+              customerPhone: currentUserData.phone,
+              orderNum: orderNumStr,
+              deliveryType: isDelivery ? '配送' : '自取',
+              address: isDelivery ? addressInput : '自取清河邨樓下',
+              items: shoppingCart,
+              total: grandTotal,
+              status: '已接單',
+              deliveryTime: '', // 管理員將會設定預計時間
+              timestamp: Date.now()
+            }).then(() => {
+              shoppingCart = [];
+              renderCartUI();
+              setTimeout(() => {
+                trans.style.display = 'none';
+                switchPage('section-orders');
+              }, 2000);
+            });
+          });
         });
       }
     });
@@ -620,7 +765,6 @@
       window.showSystemConfirm("您確定要登出目前的帳戶嗎？", () => { signOut(auth); }); 
     };
 
-    // 處理增值提交流程
     window.handleTopupSubmit = function(e) {
       e.preventDefault();
       if (!currentUserUid) return;
