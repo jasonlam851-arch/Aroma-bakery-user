@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aroma Bakery | Reward Club</title>
+  <title>Aroma Bakery | 尊享星賞聚樂部</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Montserrat', sans-serif; background-color: var(--sb-bg-cream); color: var(--sb-text-black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Montserrat', "Noto Sans HK", "Microsoft JhengHei", sans-serif; background-color: var(--sb-bg-cream); color: var(--sb-text-black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
     
     /* 登入註冊遮罩 */
     #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sb-dark-green); z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -111,7 +111,7 @@
     .btn-remove { background: none; border: none; color: var(--sb-text-gray); font-size: 13px; text-decoration: underline; cursor: pointer; }
     .btn-remove:hover { color: var(--sb-danger); }
     
-    /* 彈窗客製化（星巴克細節規格樣式） */
+    /* 彈窗客製化 */
     .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
     .custom-modal.active { opacity: 1; pointer-events: auto; }
     .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
@@ -154,6 +154,7 @@
 </head>
 <body>
 
+  <!-- 高級內置品牌提示組件 -->
   <div id="sys-alert-root" class="system-alert-overlay">
     <div class="system-alert-box">
       <p id="sys-alert-text" class="system-alert-msg"></p>
@@ -168,52 +169,52 @@
         <div class="brand-subtitle">Star Premium Rewards</div>
       </div>
       <div class="form-toggle">
-        <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">Sign In</button>
-        <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">Join Now</button>
+        <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">登入</button>
+        <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">加入會員</button>
       </div>
       
       <form id="login-form" onsubmit="handleCustomerLogin(event); return false;">
-        <div class="form-group"><label>Google Email</label><input type="email" id="login-email" required placeholder="Enter your registered Gmail"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="login-password" required placeholder="Enter password"></div>
-        <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn-submit">Sign In</button></div>
+        <div class="form-group"><label>Google 電子郵件</label><input type="email" id="login-email" required placeholder="請輸入註冊的 Gmail 地址"></div>
+        <div class="form-group"><label>密碼</label><input type="password" id="login-password" required placeholder="請輸入密碼"></div>
+        <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn-submit">登入</button></div>
       </form>
 
       <form id="register-form" class="hidden" onsubmit="handleCustomerRegister(event); return false;">
         <div class="form-row">
-          <div class="form-group" style="flex:1;"><label>Surname</label><input type="text" id="reg-last-name" required placeholder="e.g. Chan"></div>
-          <div class="form-group" style="flex:1;"><label>First Name</label><input type="text" id="reg-first-name" required placeholder="e.g. Tai Man"></div>
+          <div class="form-group" style="flex:1;"><label>姓氏</label><input type="text" id="reg-last-name" required placeholder="例如：陳"></div>
+          <div class="form-group" style="flex:1;"><label>名字</label><input type="text" id="reg-first-name" required placeholder="例如：大文"></div>
         </div>
         <div class="form-group">
-          <label>Phone Number</label>
+          <label>行動電話</label>
           <div class="phone-input-container">
             <span class="phone-prefix">+852</span>
-            <input type="tel" id="reg-phone" required placeholder="8-digit mobile number" pattern="[0-9]{8}">
+            <input type="tel" id="reg-phone" required placeholder="8位數字手機號碼" pattern="[0-9]{8}">
           </div>
         </div>
         
         <div class="form-row">
           <div class="form-group" style="flex:1;">
-            <label>Birth Month</label>
+            <label>出生月份</label>
             <select id="reg-birthday-month" required onchange="handleBirthdayDaysSync('reg-birthday-month', 'reg-birthday-day')">
-              <option value="" disabled selected>Select</option>
+              <option value="" disabled selected>請選擇</option>
               <script>for(let i=1;i<=12;i++) document.write(`<option value="${i.toString().padStart(2,'0')}">${i}月</option>`);</script>
             </select>
           </div>
           <div class="form-group" style="flex:1;">
-            <label>Birth Day</label>
+            <label>出生日期</label>
             <select id="reg-birthday-day" required>
-              <option value="" disabled selected>Select</option>
+              <option value="" disabled selected>請選擇</option>
               <script>for(let i=1;i<=31;i++) document.write(`<option value="${i.toString().padStart(2,'0')}">${i}日</option>`);</script>
             </select>
           </div>
         </div>
 
-        <div class="form-group"><label>Google Email Address</label><input type="email" id="reg-email" required placeholder="username@gmail.com"></div>
-        <div class="form-group"><label>Password</label><input type="password" id="reg-password" required placeholder="Create password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
-          <div class="input-hint">At least 8 characters, containing uppercase, lowercase letters and numbers</div>
+        <div class="form-group"><label>Google 電子郵件地址</label><input type="email" id="reg-email" required placeholder="username@gmail.com"></div>
+        <div class="form-group"><label>密碼</label><input type="password" id="reg-password" required placeholder="請設定密碼" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+          <div class="input-hint">密碼長度至少8位，須包含英文大、小寫字母與數字</div>
         </div>
-        <div class="form-group"><label>Referral Code (Optional)</label><input type="text" id="reg-referral" placeholder="Enter referral number"></div>
-        <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn-submit">Create Account</button></div>
+        <div class="form-group"><label>推薦人代碼（選填）</label><input type="text" id="reg-referral" placeholder="請輸入推薦人電話號碼"></div>
+        <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn-submit">建立帳戶</button></div>
       </form>
     </div>
   </div>
@@ -222,67 +223,67 @@
     <nav>
       <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
       <div class="brand-logo" style="font-size:18px; color:white;">Aroma Bakery</div>
-      <div class="cart-trigger-container"><button class="cart-text-btn" onclick="openShoppingCartModule()">Shopping Cart</button></div>
+      <div class="cart-trigger-container"><button class="cart-text-btn" onclick="openShoppingCartModule()">購物車</button></div>
     </nav>
 
     <div class="sidebar" id="sidebar">
       <div class="sidebar-header"><div class="close-btn" onclick="toggleSidebar()">×</div></div>
       <ul class="sidebar-menu">
-        <li onclick="switchPage('section-products')">Featured Menu</li>
-        <li onclick="switchPage('section-profile')">Personal Info</li>
-        <li onclick="switchPage('section-qrcode')">My Reward Pass</li>
-        <li onclick="openShoppingCartModule()">Shopping Cart</li>
+        <li onclick="switchPage('section-products')">精選菜單</li>
+        <li onclick="switchPage('section-profile')">個人資料</li>
+        <li onclick="switchPage('section-qrcode')">我的行動綠星卡</li>
+        <li onclick="openShoppingCartModule()">購物車</li>
       </ul>
     </div>
 
     <div class="main-content">
       <div id="section-products" class="page-section active">
-        <h2>Featured Menu</h2>
-        <div class="category-title">Drinks</div>
+        <h2>精選菜單</h2>
+        <div class="category-title">特調飲品</div>
         <div class="product-grid" id="drinks-grid"></div>
-        <div class="category-title">Desserts</div>
+        <div class="category-title">精緻甜點</div>
         <div class="product-grid" id="desserts-grid"></div>
       </div>
 
       <div id="section-profile" class="page-section">
-        <h2>Personal Info</h2>
+        <h2>個人資料</h2>
         <div class="card-panel" style="max-width: 560px; margin: 0 auto;">
           <div class="form-row">
-            <div class="form-group" style="flex:1;"><label>Surname</label><input type="text" id="profile-last-name"></div>
-            <div class="form-group" style="flex:1;"><label>First Name</label><input type="text" id="profile-first-name"></div>
+            <div class="form-group" style="flex:1;"><label>姓氏</label><input type="text" id="profile-last-name"></div>
+            <div class="form-group" style="flex:1;"><label>名字</label><input type="text" id="profile-first-name"></div>
           </div>
-          <div class="form-group"><label>Phone Number (Read-only)</label><input type="text" id="profile-phone" readonly></div>
-          <div class="form-group"><label>Birthday (Read-only)</label><input type="text" id="profile-birthday" readonly></div>
-          <div class="form-group"><label>Email Account (Read-only)</label><input type="text" id="profile-email" readonly></div>
+          <div class="form-group"><label>行動電話（唯讀）</label><input type="text" id="profile-phone" readonly></div>
+          <div class="form-group"><label>生日資料（唯讀）</label><input type="text" id="profile-birthday" readonly></div>
+          <div class="form-group"><label>電子郵件帳戶（唯讀）</label><input type="text" id="profile-email" readonly></div>
           <div style="display:flex; gap:16px; margin-top:12px;">
-            <button class="btn-action" style="flex:1;" onclick="updateProfileName()">Save Changes</button>
+            <button class="btn-action" style="flex:1;" onclick="updateProfileName()">儲存變更</button>
           </div>
-          <button class="btn-logout" onclick="handleCustomerLogout()">Sign Out Account</button>
+          <button class="btn-logout" onclick="handleCustomerLogout()">登出帳戶</button>
         </div>
       </div>
 
       <div id="section-qrcode" class="page-section">
-        <h2>My Reward Pass</h2>
+        <h2>我的行動綠星卡</h2>
         <div class="qr-container">
           <div class="member-id-display" id="member-code-text">AROMA_MEMBER</div>
           <div id="qr-code-output"></div>
           
           <div class="member-points-container">
-            <div class="member-points-label">Available Stars</div>
+            <div class="member-points-label">帳戶現存星賞點數</div>
             <div class="member-points-value" id="member-points-text">0</div>
           </div>
         </div>
       </div>
 
       <div id="section-cart" class="page-section">
-        <h2>Shopping Cart</h2>
+        <h2>購物車</h2>
         <div class="card-panel" style="max-width: 900px; margin: 0 auto;">
-          <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">Your shopping cart is empty</p></div>
+          <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p></div>
           <div style="margin-top: 36px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">Subtotal</span>
+            <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">小計</span>
             <span id="cart-total-price" style="font-size: 24px; font-weight: 700; color: var(--sb-text-black);">HK$ 0</span>
           </div>
-          <button class="btn-submit-order" id="btn-cart-checkout">Checkout</button>
+          <button class="btn-submit-order" id="btn-cart-checkout">確認結帳</button>
         </div>
       </div>
     </div>
@@ -319,7 +320,7 @@
     let localProductsCache = {}; 
     let shoppingCart = [];       
 
-    // 全局系統內置提示函數（拔除表情包與內置彈窗）
+    // 全局系統內置提示函數
     window.showSystemAlert = function(msg, callback = null) {
       document.getElementById('sys-alert-text').textContent = msg;
       const actionArea = document.getElementById('sys-alert-action-area');
@@ -327,7 +328,7 @@
       
       const btn = document.createElement('button');
       btn.className = 'system-alert-btn confirm-main';
-      btn.textContent = 'OK';
+      btn.textContent = '確定';
       btn.onclick = () => {
         document.getElementById('sys-alert-root').classList.remove('active');
         if(callback) callback();
@@ -343,7 +344,7 @@
 
       const btnCancel = document.createElement('button');
       btnCancel.className = 'system-alert-btn confirm-cancel';
-      btnCancel.textContent = 'Cancel';
+      btnCancel.textContent = '取消';
       btnCancel.onclick = () => {
         document.getElementById('sys-alert-root').classList.remove('active');
         if(onCancel) onCancel();
@@ -351,7 +352,7 @@
 
       const btnConfirm = document.createElement('button');
       btnConfirm.className = 'system-alert-btn confirm-main';
-      btnConfirm.textContent = 'Confirm';
+      btnConfirm.textContent = '確認';
       btnConfirm.onclick = () => {
         document.getElementById('sys-alert-root').classList.remove('active');
         if(onConfirm) onConfirm();
@@ -365,7 +366,7 @@
     onAuthStateChanged(auth, (user) => {
       if (user) {
         if(user.email === 'admin01@aroma.com') { 
-          window.showSystemAlert('Admin account must login through management dashboard.', () => { auth.signOut(); }); 
+          window.showSystemAlert('後台管理帳戶請由管理端面板登入。', () => { auth.signOut(); }); 
           return; 
         }
         currentUserUid = user.uid;
@@ -378,10 +379,9 @@
             document.getElementById('profile-last-name').value = data.lastName || '';
             document.getElementById('profile-first-name').value = data.firstName || '';
             document.getElementById('profile-phone').value = data.phone || '';
-            document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : 'Not Set';
+            document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : '未設定';
             document.getElementById('profile-email').value = data.email || '';
             
-            // 實時更新二維碼下方的星巴克風格積分值
             document.getElementById('member-points-text').innerText = data.points !== undefined ? data.points : 0;
 
             const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
@@ -459,7 +459,7 @@
             </div>`;
         });
         customizationHtml += `
-          <div class="option-group"><span class="option-label">Ice</span>
+          <div class="option-group"><span class="option-label">冰量客製化</span>
             <div class="selector-wrapper">${iceOptions}</div>
           </div>`;
       }
@@ -476,7 +476,7 @@
             </div>`;
         });
         customizationHtml += `
-          <div class="option-group"><span class="option-label">Sweetness</span>
+          <div class="option-group"><span class="option-label">甜度客製化</span>
             <div class="selector-wrapper">${sugarOptions}</div>
           </div>`;
       }
@@ -490,18 +490,18 @@
         </div>
         <h3 style="color:var(--sb-text-black); font-size: 20px; font-weight:700; margin-bottom:4px;" id="modal-p-name"></h3>
         
-        <div><span class="product-points-badge">${productPoints} Stars</span></div>
+        <div><span class="product-points-badge">可獲 ${productPoints} 顆綠星</span></div>
         
         <div class="modal-price">${priceStr}</div>
         <p style="font-size:14px; color:var(--sb-text-gray); margin-bottom:20px; line-height:1.5;" id="modal-p-detail"></p>
         <div class="customization-section">
-          ${customizationHtml || '<div class="fixed-specification-box">Standard recipe. Customization options are not available for this item.</div>'}
+          ${customizationHtml || '<div class="fixed-specification-box">本商品採用經典配方，不提供甜度冰量調整。</div>'}
           <div class="option-group" style="margin-top:24px; display:flex; align-items:center; gap:16px;">
-            <span class="option-label" style="margin-bottom:0;">Quantity</span>
+            <span class="option-label" style="margin-bottom:0;">購買數量</span>
             <input type="number" id="cart-item-qty" value="1" min="1" style="width:90px; padding:8px 12px; border-radius:8px; text-align:center;">
           </div>
         </div>
-        <button class="btn-submit-order" id="btn-add-to-cart-trigger">Add to Order</button>
+        <button class="btn-submit-order" id="btn-add-to-cart-trigger">加入購物車</button>
       `;
       
       document.getElementById('modal-p-name').textContent = name;
@@ -518,15 +518,15 @@
       const qty = parseInt(document.getElementById('cart-item-qty').value) || 1;
       const iceEl = document.querySelector('input[name="sb-ice-option"]:checked');
       const sugarEl = document.querySelector('input[name="sb-sugar-option"]:checked');
-      const ice = iceEl ? iceEl.value : 'Standard';
-      const sugar = sugarEl ? sugarEl.value : 'Standard';
+      const ice = iceEl ? iceEl.value : '標準';
+      const sugar = sugarEl ? sugarEl.value : '標準';
 
       const existing = shoppingCart.find(i => i.id === id && i.ice === ice && i.sugar === sugar);
       if (existing) existing.quantity += qty;
       else shoppingCart.push({ id, name, price, quantity: qty, ice, sugar, category });
       
       closeModal();
-      window.showSystemAlert(`Added to cart: ${name} (x${qty})`);
+      window.showSystemAlert(`已成功加入購物車：\n${name} (數量: ${qty})`);
       renderCartUI();
     };
 
@@ -536,7 +536,7 @@
       const container = document.getElementById('cart-items-container');
       const totalDisplay = document.getElementById('cart-total-price');
       if (shoppingCart.length === 0) {
-        container.innerHTML = `<p style="text-align:center; padding:48px 0; color:var(--sb-text-gray);">Your shopping cart is empty</p>`;
+        container.innerHTML = `<p style="text-align:center; padding:48px 0; color:var(--sb-text-gray);">您的購物車目前沒有商品</p>`;
         totalDisplay.innerText = 'HK$ 0';
         return;
       }
@@ -544,13 +544,13 @@
       container.innerHTML = '';
       const table = document.createElement('table');
       table.className = 'cart-table';
-      table.innerHTML = `<tr><th>Item</th><th>Specifications</th><th>Price</th><th>Qty</th><th>Total</th><th>Action</th></tr>`;
+      table.innerHTML = `<tr><th>商品明細</th><th>客製化規格</th><th>單價</th><th>數量</th><th>總計</th><th>操作</th></tr>`;
       
       let grandTotal = 0;
       shoppingCart.forEach((item, i) => {
         const itemTotal = item.price * item.quantity; 
         grandTotal += itemTotal;
-        const spec = [item.ice !== 'Standard'?item.ice:'', item.sugar !== 'Standard'?item.sugar:''].filter(Boolean).join('/') || 'Standard';
+        const spec = [item.ice !== '標準'?item.ice:'', item.sugar !== '標準'?item.sugar:''].filter(Boolean).join('/') || '標準配方';
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -559,7 +559,7 @@
           <td>HK$ ${item.price}</td>
           <td>${item.quantity}</td>
           <td style="font-weight:600;">HK$ ${itemTotal}</td>
-          <td><button class="btn-remove">Remove</button></td>
+          <td><button class="btn-remove">移除</button></td>
         `;
         row.querySelector('.item-title-td').textContent = item.name;
         row.querySelector('.btn-remove').onclick = () => { window.removeFromCart(i); };
@@ -576,8 +576,8 @@
       const btn = document.getElementById('btn-cart-checkout');
       if (btn) {
         btn.addEventListener('click', () => {
-          if(shoppingCart.length === 0) return window.showSystemAlert('Your shopping cart is empty.');
-          window.showSystemAlert('Checkout complete.\nThis is a presentation module demo connected to Firebase sandbox.');
+          if(shoppingCart.length === 0) return window.showSystemAlert('購物車內無任何商品，無法執行結帳。');
+          window.showSystemAlert('訂單已模擬結帳完成。\n此為連接 Firebase 雲端沙盒之功能展示模組。');
         });
       }
     });
@@ -585,14 +585,14 @@
     window.handleCustomerLogin = function(e) { 
       e.preventDefault(); 
       signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
-        .catch(() => window.showSystemAlert('Sign in failed. Please verify your email and password.')); 
+        .catch(() => window.showSystemAlert('登入失敗。請檢查您的電子郵件與密碼是否正確。')); 
     };
     
     window.handleCustomerRegister = function(e) {
       e.preventDefault();
       const email = document.getElementById('reg-email').value; 
       const pass = document.getElementById('reg-password').value;
-      if (!email.toLowerCase().endsWith('@gmail.com')) return window.showSystemAlert('Registration requires a valid @gmail.com address.');
+      if (!email.toLowerCase().endsWith('@gmail.com')) return window.showSystemAlert('註冊系統限定使用有效的 @gmail.com 電子郵件。');
       
       createUserWithEmailAndPassword(auth, email, pass).then((cred) => {
         set(ref(database, 'users/' + cred.user.uid), {
@@ -605,7 +605,7 @@
           points: 0, 
           role: "customer"
         });
-      }).catch(() => window.showSystemAlert('Account creation failed. Password may be too weak or email is already registered.'));
+      }).catch(() => window.showSystemAlert('帳戶建立失敗。請確認密碼強度符合規範，或此電子郵件是否已被註冊。'));
     };
 
     window.updateProfileName = function() {
@@ -613,14 +613,14 @@
       const fn = document.getElementById('profile-first-name').value.trim();
       if(ln && fn) {
         update(ref(database, 'users/' + currentUserUid), { lastName: ln, firstName: fn })
-          .then(() => window.showSystemAlert('Profile details updated successfully.'));
+          .then(() => window.showSystemAlert('個人資料已成功更新。'));
       } else {
-        window.showSystemAlert('Fields cannot be left empty.');
+        window.showSystemAlert('姓氏與名字欄位不得留空。');
       }
     };
     
     window.handleCustomerLogout = function() { 
-      window.showSystemConfirm("Are you sure you want to sign out?", () => { signOut(auth); }); 
+      window.showSystemConfirm("您確定要登出目前的帳戶嗎？", () => { signOut(auth); }); 
     };
   </script>
 
@@ -643,7 +643,7 @@
       else if(month === 2) daysInMonth = 29;
       
       const currentSelected = daySel.value;
-      daySel.innerHTML = '<option value="" disabled>Select</option>';
+      daySel.innerHTML = '<option value="" disabled>請選擇</option>';
       for(let i = 1; i <= daysInMonth; i++) {
         const val = i.toString().padStart(2, '0');
         const opt = document.createElement('option');
