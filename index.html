@@ -92,8 +92,8 @@
     .customization-section { margin-top: 25px; border-top: 1px solid var(--sb-border); padding-top: 20px; text-align: left; }
     .option-group { margin-bottom: 20px; }
     .option-label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; color: var(--text-color); }
-    .selector-wrapper { display: flex; gap: 10px; }
-    .selector-item { flex: 1; text-align: center; }
+    .selector-wrapper { display: flex; gap: 10px; flex-wrap: wrap; }
+    .selector-item { flex: 1; min-width: 80px; text-align: center; }
     .selector-item input[type="radio"] { display: none; }
     .selector-item label { display: block; padding: 12px; border: 1px solid var(--sb-border); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .selector-item input[type="radio"]:checked + label { background-color: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
@@ -234,10 +234,10 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+    // 兩端資料庫路徑配置已完美對齊
     const firebaseConfig = {
       apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
       authDomain: "aroma-bakery-492fa.firebaseapp.com",
@@ -250,7 +250,6 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const auth = getAuth(app);
     const database = getDatabase(app);
     
@@ -273,7 +272,10 @@
             document.getElementById('profile-phone').value = data.phone || '';
             document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : '未填寫';
             document.getElementById('profile-email').value = data.email || '';
-            const code = `AROMA_${data.phone}`;
+            
+            // 會員碼對齊格式：如果存進去的電話沒帶 852 則自動加上，確保生成與後台相符
+            const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
+            const code = `AROMA_${displayPhone}`;
             document.getElementById('member-code-text').innerText = code;
             renderMobileQRCode(code);
           }
@@ -292,7 +294,6 @@
       }
     });
 
-    // 解決字串拼接單引號破裂的優化渲染函數
     function renderProductGrid(products) {
       const drinksGrid = document.getElementById('drinks-grid');
       const dessertsGrid = document.getElementById('desserts-grid');
@@ -303,12 +304,10 @@
 
       for (let id in products) {
         const p = products[id];
-        
-        // 建立獨立的 DOM 節點物件，杜絕 onclick 引號截斷噴錯
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <img class="product-img" src="${p.photoUrl || 'https://via.placeholder.com/300'}" alt="${p.name}">
+          <img class="product-img" src="${p.photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}" alt="${p.name}">
           <div class="product-info">
             <div class="product-name">${p.name}</div>
           </div>
@@ -332,34 +331,50 @@
       try { new QRCode(container, { text: textData, width: 190, height: 190, colorDark: "#1e3932", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H }); } catch(err){}
     }
 
+    // 核心對齊優化：動態解析管理端的客製化欄位 (iceSpecification / sugarSpecification)
     function viewProductDetail(name, priceStr, detail, photoUrl, category, id) {
       const p = localProductsCache[id] || {};
       let customizationHtml = '';
 
-      if (p.hasIce !== false && category === '飲品') {
+      // 解析後台設定的冰量選項
+      const iceSpec = p.iceSpecification || '正常冰,少冰,去冰';
+      if (iceSpec !== '不套用' && category === '飲品') {
+        const iceArr = iceSpec.split(',');
+        let iceOptions = '';
+        iceArr.forEach((ice, index) => {
+          iceOptions += `
+            <div class="selector-item">
+              <input type="radio" id="ice-${index}" name="sb-ice-option" value="${ice}" ${index === 0 ? 'checked' : ''}>
+              <label for="ice-${index}">${ice}</label>
+            </div>`;
+        });
         customizationHtml += `
           <div class="option-group"><span class="option-label">冰量配置</span>
-            <div class="selector-wrapper">
-              <div class="selector-item"><input type="radio" id="ice-normal" name="sb-ice-option" value="正常冰" checked><label for="ice-normal">正常冰</label></div>
-              <div class="selector-item"><input type="radio" id="ice-more" name="sb-ice-option" value="多冰"><label for="ice-more">多冰</label></div>
-              <div class="selector-item"><input type="radio" id="ice-less" name="sb-ice-option" value="少冰"><label for="ice-less">少冰</label></div>
-            </div>
+            <div class="selector-wrapper">${iceOptions}</div>
           </div>`;
       }
-      if (p.hasSugar !== false && category === '飲品') {
+
+      // 解析後台設定的甜度選項
+      const sugarSpec = p.sugarSpecification || '正常甜,少甜,無甜';
+      if (sugarSpec !== '不套用' && category === '飲品') {
+        const sugarArr = sugarSpec.split(',');
+        let sugarOptions = '';
+        sugarArr.forEach((sugar, index) => {
+          sugarOptions += `
+            <div class="selector-item">
+              <input type="radio" id="sugar-${index}" name="sb-sugar-option" value="${sugar}" ${index === 0 ? 'checked' : ''}>
+              <label for="sugar-${index}">${sugar}</label>
+            </div>`;
+        });
         customizationHtml += `
           <div class="option-group"><span class="option-label">甜度配置</span>
-            <div class="selector-wrapper">
-              <div class="selector-item"><input type="radio" id="sugar-normal" name="sb-sugar-option" value="正常糖" checked><label for="sugar-normal">正常糖</label></div>
-              <div class="selector-item"><input type="radio" id="sugar-less" name="sb-sugar-option" value="少糖"><label for="sugar-less">少糖</label></div>
-              <div class="selector-item"><input type="radio" id="sugar-none" name="sb-sugar-option" value="無糖"><label for="sugar-none">無糖</label></div>
-            </div>
+            <div class="selector-wrapper">${sugarOptions}</div>
           </div>`;
       }
 
       const modalContent = document.getElementById('modal-dynamic-content');
       modalContent.innerHTML = `
-        <img class="modal-img" src="${photoUrl || 'https://via.placeholder.com/300'}">
+        <img class="modal-img" src="${photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}">
         <h3 style="color:var(--primary-color);" id="modal-p-name"></h3>
         <div class="modal-price">${priceStr}</div>
         <p style="font-size:13px; color:#6c757d; margin-bottom:15px;" id="modal-p-detail"></p>
@@ -372,7 +387,6 @@
         <button class="btn-submit-order" id="btn-add-to-cart-trigger">加入購物車</button>
       `;
       
-      // 使用 textContent 賦值，防止特殊符號破壞 HTML
       document.getElementById('modal-p-name').textContent = name;
       document.getElementById('modal-p-detail').textContent = detail;
 
@@ -381,7 +395,7 @@
       };
 
       document.getElementById('custom-modal').classList.add('active');
-    };
+    }
 
     window.addToCart = function(id, name, price, category) {
       const qty = parseInt(document.getElementById('cart-item-qty').value) || 1;
@@ -463,6 +477,7 @@
       if (!email.toLowerCase().endsWith('@gmail.com')) return alert('必須使用 @gmail.com 進行註冊');
       
       createUserWithEmailAndPassword(auth, email, pass).then((cred) => {
+        // 全權同步：電話號碼統一儲存為標準 852 格式
         set(ref(database, 'users/' + cred.user.uid), {
           lastName: document.getElementById('reg-last-name').value, 
           firstName: document.getElementById('reg-first-name').value, 
@@ -470,6 +485,7 @@
           birthdayMonth: document.getElementById('reg-birthday-month').value,
           birthdayDay: document.getElementById('reg-birthday-day').value,
           email, 
+          points: 0, // 初始註冊自動給予 0 積分，防止後台讀取 undefined
           role: "customer"
         });
       }).catch(()=>alert('註冊失敗，信箱可能已被使用或密碼強度不足。'));
@@ -496,7 +512,6 @@
     }
     function closeModal() { document.getElementById('custom-modal').classList.remove('active'); }
 
-    // 前端動態生日日期下拉選單防呆防錯邏輯（如2月自動過濾不出現30、31號）
     function handleBirthdayDaysSync(mSelId, dSelId) {
       const monthSel = document.getElementById(mSelId);
       const daySel = document.getElementById(dSelId);
@@ -506,7 +521,7 @@
       
       let daysInMonth = 31;
       if([4, 6, 9, 11].includes(month)) daysInMonth = 30;
-      else if(month === 2) daysInMonth = 29; // 考慮閏年最大值給予29天防呆
+      else if(month === 2) daysInMonth = 29;
       
       const currentSelected = daySel.value;
       daySel.innerHTML = '<option value="" disabled>請選擇</option>';
