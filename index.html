@@ -41,8 +41,8 @@
     .form-group { margin-bottom: 24px; }
     .form-row { display: flex; gap: 16px; }
     label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--sb-text-black); }
-    input, select { width: 100%; padding: 14px 16px; border: 1px solid var(--sb-text-gray); border-radius: 8px; font-size: 15px; background-color: #ffffff; color: var(--sb-text-black); transition: border-color 0.2s; }
-    input:focus, select:focus { outline: none; border-color: var(--sb-primary-green); border-width: 2px; padding: 13px 15px; }
+    input, select, textarea { width: 100%; padding: 14px 16px; border: 1px solid var(--sb-text-gray); border-radius: 8px; font-size: 15px; background-color: #ffffff; color: var(--sb-text-black); transition: border-color 0.2s; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--sb-primary-green); border-width: 2px; padding: 13px 15px; }
     
     .phone-input-container { display: flex; }
     .phone-prefix { background: var(--sb-light-green); border: 1px solid var(--sb-text-gray); border-right: none; padding: 14px; font-size: 15px; border-radius: 8px 0 0 8px; color: var(--sb-dark-green); font-weight: 600; }
@@ -57,7 +57,7 @@
     #main-system { display: none; }
     nav { background-color: var(--sb-dark-green); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
     .menu-toggle { font-size: 22px; cursor: pointer; color: white; display: flex; align-items: center; }
-    .cart-trigger-container { display: flex; align-items: center; }
+    .cart-trigger-container { display: flex; align-items: center; gap: 12px; }
     .cart-text-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .cart-text-btn:hover { background: white; color: var(--sb-dark-green); }
     
@@ -93,9 +93,18 @@
     
     .btn-action { padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
     .btn-action:hover { background-color: #004d33; }
+    .btn-secondary { padding: 12px 28px; background-color: transparent; color: var(--sb-primary-green); border: 1px solid var(--sb-primary-green); border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .btn-secondary:hover { background-color: var(--sb-light-green); }
     .btn-logout { padding: 12px 28px; background-color: transparent; color: var(--sb-danger); border: 1px solid var(--sb-danger); border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 24px; display: block; width: 100%; text-align: center; }
     .btn-logout:hover { background-color: var(--sb-danger); color: white; }
     
+    /* 錢包特定奢華美式風格 */
+    .wallet-card { background: var(--sb-dark-green); color: white; padding: 36px; border-radius: 12px; position: relative; overflow: hidden; margin-bottom: 32px; }
+    .wallet-card::after { content: "★"; position: absolute; right: -20px; bottom: -40px; font-size: 160px; color: rgba(255,255,255,0.03); font-family: sans-serif; }
+    .wallet-balance-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--sb-gold); margin-bottom: 8px; }
+    .wallet-balance-value { font-size: 42px; font-weight: 700; letter-spacing: -1px; }
+    .notice-box { padding: 16px; background-color: var(--sb-light-green); border-left: 4px solid var(--sb-primary-green); border-radius: 4px; font-size: 14px; color: var(--sb-dark-green); line-height: 1.6; margin-bottom: 24px; }
+
     /* 二維碼與積分模組區 */
     .qr-container { text-align: center; max-width: 440px; margin: 0 auto; background: #ffffff; padding: 48px 32px; border-radius: 12px; border: 1px solid var(--sb-border); }
     .member-id-display { font-size: 14px; font-weight: 500; color: var(--sb-text-gray); letter-spacing: 1px; margin-bottom: 24px; text-transform: uppercase; }
@@ -231,6 +240,7 @@
       <ul class="sidebar-menu">
         <li onclick="switchPage('section-products')">精選菜單</li>
         <li onclick="switchPage('section-profile')">個人資料</li>
+        <li onclick="switchPage('section-wallet')">我的錢包</li>
         <li onclick="switchPage('section-qrcode')">我的行動綠星卡</li>
         <li onclick="openShoppingCartModule()">購物車</li>
       </ul>
@@ -259,6 +269,29 @@
             <button class="btn-action" style="flex:1;" onclick="updateProfileName()">儲存變更</button>
           </div>
           <button class="btn-logout" onclick="handleCustomerLogout()">登出帳戶</button>
+        </div>
+      </div>
+
+      <!-- 全新添加：我的錢包介面 -->
+      <div id="section-wallet" class="page-section">
+        <h2>我的星賞錢包</h2>
+        <div class="card-panel" style="max-width: 600px; margin: 0 auto;">
+          <div class="wallet-card">
+            <div class="wallet-balance-title">帳戶現存總餘額</div>
+            <div class="wallet-balance-value">HKD <span id="wallet-balance-text">0.00</span></div>
+          </div>
+          
+          <div class="category-title" style="margin-top:0;">增值帳戶餘額</div>
+          <div class="notice-box">
+            <strong>💡 增值須知：</strong><br>
+            目前本系統增值交易僅支持<strong>「支付寶 (Alipay)」</strong>付款。<br>
+            選擇增值後，系統將為您顯示官方管理員支付寶收款二維碼。轉賬完成後請務必點擊下方按鈕通知管理員核對。
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <button class="btn-action" style="width:100%;" onclick="openAlipayQRModal()">顯示支付寶收款二維碼</button>
+            <button class="btn-secondary" style="width:100%; text-align:center;" onclick="openTopupNotificationModal()">轉賬完畢？通知管理員核對</button>
+          </div>
         </div>
       </div>
 
@@ -299,7 +332,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDbRM8chwqn-MbVxdraBZ4EGUFCF0jtfkE",
@@ -319,6 +352,7 @@
     let currentUserUid = null;
     let localProductsCache = {}; 
     let shoppingCart = [];       
+    let currentUserWalletBalance = 0; // 當前錢包儲值餘額
 
     // 全局系統內置提示函數
     window.showSystemAlert = function(msg, callback = null) {
@@ -383,6 +417,10 @@
             document.getElementById('profile-email').value = data.email || '';
             
             document.getElementById('member-points-text').innerText = data.points !== undefined ? data.points : 0;
+            
+            // 讀取並動態顯示餘額，若欄位不存在預設為 0
+            currentUserWalletBalance = data.balance !== undefined ? parseFloat(data.balance) : 0.00;
+            document.getElementById('wallet-balance-text').innerText = currentUserWalletBalance.toFixed(2);
 
             const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
             const code = `AROMA_${displayPhone}`;
@@ -443,6 +481,82 @@
       try { new QRCode(container, { text: textData, width: 194, height: 194, colorDark: "#1e3932", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H }); } catch(err){}
     }
 
+    // 打開支付寶收款二維碼彈窗
+    window.openAlipayQRModal = function() {
+      const modalContent = document.getElementById('modal-dynamic-content');
+      modalContent.innerHTML = `
+        <h3 style="color:var(--sb-text-black); font-size: 20px; font-weight:700; margin-bottom:16px;">支付寶官方收款碼</h3>
+        <p style="font-size:14px; color:var(--sb-text-gray); margin-bottom:20px; line-height:1.5;">
+          請使用支付寶手機 App 掃描下方二維碼進行轉賬。轉賬完成後，請點擊錢包頁面的「通知管理員」填寫核對表單。
+        </p>
+        <div style="text-align:center; padding:16px; background:#fff; border:1px solid var(--sb-border); border-radius:8px; max-width:240px; margin:0 auto 20px;">
+          <!-- 此處可替換成您在後台儲存或 Unsplash 上的真實支付寶二維碼圖片網址 -->
+          <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80" style="width:100%; height:auto; display:block;" alt="Alipay QR">
+        </div>
+        <button class="btn-submit-order" onclick="closeModal()">我已完成掃碼轉賬</button>
+      `;
+      document.getElementById('custom-modal').classList.add('active');
+    };
+
+    // 打開通知管理員登記表單彈窗
+    window.openTopupNotificationModal = function() {
+      const modalContent = document.getElementById('modal-dynamic-content');
+      modalContent.innerHTML = `
+        <h3 style="color:var(--sb-text-black); font-size: 20px; font-weight:700; margin-bottom:16px;">轉賬核對登記表單</h3>
+        <p style="font-size:13px; color:var(--sb-text-gray); margin-bottom:20px;">請正確填寫您在支付寶轉賬時的詳細資訊，提交後後台管理員將審核並為您的錢包充值。</p>
+        
+        <form id="topup-notify-form" onsubmit="submitTopupNotification(event); return false;">
+          <div class="form-group">
+            <label>支付寶賬戶姓名</label>
+            <input type="text" id="notify-alipay-name" required placeholder="例如：陳大文">
+          </div>
+          <div class="form-group">
+            <label>轉賬日期與時間</label>
+            <input type="datetime-local" id="notify-transfer-date" required>
+          </div>
+          <div class="form-group">
+            <label>轉賬金額 (HKD)</label>
+            <input type="number" id="notify-amount" min="1" step="any" required placeholder="請輸入實際轉賬金額">
+          </div>
+          <div class="form-group">
+            <label>聯絡行動電話</label>
+            <input type="tel" id="notify-phone" required placeholder="請輸入您的8位數字電話號碼">
+          </div>
+          <button type="submit" class="btn-submit-order" style="margin-top:8px;">提交申報，通知管理員</button>
+        </form>
+      `;
+      document.getElementById('custom-modal').classList.add('active');
+    };
+
+    // 提交轉賬核對通知到 Firebase
+    window.submitTopupNotification = function(e) {
+      e.preventDefault();
+      if(!currentUserUid) return;
+
+      const alipayName = document.getElementById('notify-alipay-name').value.trim();
+      const transferDate = document.getElementById('notify-transfer-date').value;
+      const amount = parseFloat(document.getElementById('notify-amount').value);
+      const phone = document.getElementById('notify-phone').value.trim();
+
+      const requestRef = ref(database, 'topup_requests');
+      const newRequestRef = push(requestRef);
+
+      set(newRequestRef, {
+        uid: currentUserUid,
+        alipayName: alipayName,
+        transferDate: transferDate,
+        amount: amount,
+        phone: phone,
+        status: 'pending', // 待審核
+        timestamp: Date.now()
+      }).then(() => {
+        closeModal();
+        window.showSystemAlert('申報成功！\n已成功將通知送達全體管理員，審核通過後金額將立即存入您的錢包。');
+      }).catch(() => {
+        window.showSystemAlert('提交失敗，請檢查網路連線。');
+      });
+    };
+
     function viewProductDetail(name, priceStr, detail, photoUrl, category, id) {
       const p = localProductsCache[id] || {};
       let customizationHtml = '';
@@ -484,7 +598,6 @@
             </div>`;
         }
       } else if (category === '甜點') {
-        // 核心修正：讀取甜點專屬的口味欄位 flavorSpecification
         const flavorSpec = p.flavorSpecification || '';
         if (flavorSpec && flavorSpec !== '不套用') {
           const flavorArr = flavorSpec.split(',');
@@ -554,7 +667,6 @@
         if (flavorEl) flavor = flavorEl.value;
       }
 
-      // 根據品項分類檢查重複，進行購物車合併
       const existing = shoppingCart.find(i => 
         i.id === id && 
         i.category === category && 
@@ -635,7 +747,6 @@
       renderCartUI();
     };
 
-    // 會員更新姓名
     window.updateProfileName = function() {
       if(!currentUserUid) return;
       const ln = document.getElementById('profile-last-name').value.trim();
@@ -647,27 +758,42 @@
         .catch(() => window.showSystemAlert('檔案更新失敗，請檢查網路連線。'));
     };
 
-    // 結帳並發放綠星積分
+    // 修正：確認結帳改由錢包儲值餘額中扣款
     document.getElementById('btn-cart-checkout').onclick = function() {
       if(shoppingCart.length === 0) return;
       if(!currentUserUid) { window.showSystemAlert('請先登入帳戶。'); return; }
 
-      window.showSystemConfirm('確認送出訂單並進行星賞結帳嗎？', () => {
-        let orderTotalPoints = 0;
-        shoppingCart.forEach(item => {
-          const p = localProductsCache[item.id] || {};
-          const singlePoints = p.points !== undefined ? p.points : 0;
-          orderTotalPoints += (singlePoints * item.quantity);
-        });
+      let grandTotal = 0;
+      let orderTotalPoints = 0;
+      
+      shoppingCart.forEach(item => {
+        grandTotal += (item.price * item.quantity);
+        const p = localProductsCache[item.id] || {};
+        const singlePoints = p.points !== undefined ? p.points : 0;
+        orderTotalPoints += (singlePoints * item.quantity);
+      });
 
+      // 檢查錢包儲值金額是否足夠支付
+      if (currentUserWalletBalance < grandTotal) {
+        window.showSystemAlert(`結帳失敗！您的錢包總餘額不足。\n訂單總計：HKD ${grandTotal.toFixed(2)}\n當前餘額：HKD ${currentUserWalletBalance.toFixed(2)}\n\n請前往「我的錢包」頁面進行增值申報。`);
+        return;
+      }
+
+      window.showSystemConfirm(`確認使用錢包餘額結帳嗎？\n將扣除金額：HKD ${grandTotal.toFixed(2)}`, () => {
         const userRef = ref(database, 'users/' + currentUserUid);
         get(userRef).then((snapshot) => {
           const userData = snapshot.val() || {};
           const currentPoints = userData.points !== undefined ? userData.points : 0;
+          
+          // 計算扣款後的全新餘額與新積分
+          const newBalance = currentUserWalletBalance - grandTotal;
           const newPoints = currentPoints + orderTotalPoints;
 
-          update(userRef, { points: newPoints }).then(() => {
-            window.showSystemAlert(`結帳成功！\n本筆訂單已為您累積了 ${orderTotalPoints} 顆綠星 ⭐`);
+          update(userRef, { 
+            balance: newBalance,
+            points: newPoints 
+          }).then(() => {
+            window.showSystemAlert(`結帳成功！已由您的儲值錢包完成扣款。\n本筆訂單已為您累積了 ${orderTotalPoints} 顆綠星 ⭐`);
             shoppingCart = [];
             renderCartUI();
             window.switchPage('section-qrcode');
@@ -676,7 +802,6 @@
       });
     };
 
-    // 會員登入
     window.handleCustomerLogin = function(e) {
       const email = document.getElementById('login-email').value.trim();
       const pass = document.getElementById('login-password').value;
@@ -686,7 +811,6 @@
         .catch(err => window.showSystemAlert('驗證失敗：帳號或密碼輸入錯誤，請重新確認。'));
     };
 
-    // 新會員註冊
     window.handleCustomerRegister = function(e) {
       const ln = document.getElementById('reg-last-name').value.trim();
       const fn = document.getElementById('reg-first-name').value.trim();
@@ -706,6 +830,7 @@
             birthdayDay: d,
             email: email,
             points: 0,
+            balance: 0.00, // 新增會員錢包初始化餘額為 0
             role: 'customer'
           }).then(() => window.showSystemAlert('恭喜加入 Aroma Bakery 星賞會員聚樂部！'));
         })
@@ -715,7 +840,6 @@
         });
     };
 
-    // 登出
     window.handleCustomerLogout = function() {
       signOut(auth).then(() => {
         window.closeModal();
@@ -725,7 +849,6 @@
       });
     };
 
-    // 生日日期同步輔助
     window.handleBirthdayDaysSync = function(mId, dId) {
       const mSel = document.getElementById(mId);
       const dSel = document.getElementById(dId);
@@ -744,7 +867,6 @@
       if(parseInt(currentSelected) <= days) dSel.value = currentSelected;
     };
 
-    // 介面與彈窗控制常規切換
     window.switchAuthForm = function(formType) {
       const btnLogin = document.getElementById('btn-toggle-login');
       const btnReg = document.getElementById('btn-toggle-reg');
