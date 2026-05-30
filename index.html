@@ -3,120 +3,153 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aroma_bakery | 顧客中心</title>
+  <title>Aroma Bakery | Reward Club</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
-      --primary-color: #1e3932; --secondary-color: #d4e9e2; --accent-color: #cba258;
-      --text-color: #212529; --bg-cream: #f4f2ed; --bg-overlay: rgba(30, 57, 50, 0.65);
-      --danger-color: #b02a37; --sb-border: #dbd9d3; --sb-gray-card: #f9f9f9;
+      --sb-dark-green: #1e3932;
+      --sb-primary-green: #006241;
+      --sb-light-green: #f1f8f5;
+      --sb-gold: #cba258;
+      --sb-text-black: #212529;
+      --sb-text-gray: #6b6b6b;
+      --sb-bg-cream: #f7f7f7;
+      --sb-border: #ecebe9;
+      --sb-danger: #d62d2d;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Montserrat', 'Noto Serif TC', serif; background-color: var(--bg-cream); color: var(--text-color); min-height: 100vh; }
+    body { font-family: 'Montserrat', sans-serif; background-color: var(--sb-bg-cream); color: var(--sb-text-black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
     
-    #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; background-size: cover; z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
-    .auth-container { background: rgba(255, 255, 255, 0.96); padding: 40px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); width: 90%; max-width: 450px; backdrop-filter: blur(10px); }
-    .brand-header { text-align: center; margin-bottom: 25px; }
-    .brand-logo { font-family: 'Noto Serif TC', serif; font-size: 28px; font-weight: 700; color: var(--primary-color); letter-spacing: 2px; text-transform: uppercase; }
-    .brand-subtitle { font-size: 11px; color: var(--accent-color); letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; }
-    .form-toggle { display: flex; justify-content: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; }
-    .toggle-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; cursor: pointer; color: #6c757d; font-weight: 600; position: relative; }
-    .toggle-btn.active { color: var(--primary-color); }
-    .toggle-btn.active::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px; background-color: var(--primary-color); }
-    .form-group { margin-bottom: 18px; }
-    .form-row { display: flex; gap: 15px; }
-    label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--primary-color); }
-    input, select { width: 100%; padding: 11px 15px; border: 1px solid #cccccc; border-radius: 6px; font-size: 14px; background-color: #fbfbfb; }
-    input:focus, select:focus { outline: none; border-color: var(--primary-color); background-color: #ffffff; }
+    /* 登入註冊遮罩 */
+    #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sb-dark-green); z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .auth-container { background: #ffffff; padding: 48px; width: 100%; max-width: 480px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; box-shadow: none; }
+    @media (min-width: 576px) { .auth-container { min-height: auto; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); } }
+    
+    .brand-header { text-align: left; margin-bottom: 36px; }
+    .brand-logo { font-size: 24px; font-weight: 700; color: var(--sb-dark-green); letter-spacing: 1px; text-transform: uppercase; }
+    .brand-subtitle { font-size: 12px; color: var(--sb-text-gray); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+    
+    .form-toggle { display: flex; gap: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--sb-border); }
+    .toggle-btn { background: none; border: none; padding: 12px 0; font-size: 16px; font-weight: 600; cursor: pointer; color: var(--sb-text-gray); position: relative; }
+    .toggle-btn.active { color: var(--sb-text-black); }
+    .toggle-btn.active::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--sb-primary-green); }
+    
+    .form-group { margin-bottom: 24px; }
+    .form-row { display: flex; gap: 16px; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--sb-text-black); }
+    input, select { width: 100%; padding: 14px 16px; border: 1px solid var(--sb-text-gray); border-radius: 8px; font-size: 15px; background-color: #ffffff; color: var(--sb-text-black); transition: border-color 0.2s; }
+    input:focus, select:focus { outline: none; border-color: var(--sb-primary-green); border-width: 2px; padding: 13px 15px; }
+    
     .phone-input-container { display: flex; }
-    .phone-prefix { background: #e9ecef; border: 1px solid #cccccc; border-right: none; padding: 11px; font-size: 14px; border-radius: 6px 0 0 6px; color: #495057; font-weight: 600; }
-    .phone-input-container input { border-radius: 0 6px 6px 0; }
-    .btn-submit { width: 100%; padding: 13px; background-color: var(--primary-color); color: white; border: none; border-radius: 30px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 5px; }
-    .btn-submit:hover { background-color: #132521; }
-    .input-hint { font-size: 11px; color: #6c757d; margin-top: 4px; line-height: 1.3; }
+    .phone-prefix { background: var(--sb-light-green); border: 1px solid var(--sb-text-gray); border-right: none; padding: 14px; font-size: 15px; border-radius: 8px 0 0 8px; color: var(--sb-dark-green); font-weight: 600; }
+    .phone-input-container input { border-radius: 0 8px 8px 0; }
+    
+    .btn-submit { width: auto; align-self: flex-end; padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; margin-top: 12px; display: inline-block; text-align: center; }
+    .btn-submit:hover { background-color: #004d33; }
+    .input-hint { font-size: 12px; color: var(--sb-text-gray); margin-top: 6px; line-height: 1.4; }
     .hidden { display: none; }
     
+    /* 主系統版面 */
     #main-system { display: none; }
-    nav { background-color: var(--primary-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
-    .menu-toggle { font-size: 24px; cursor: pointer; color: var(--secondary-color); font-weight: bold; }
-    .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background-color: rgba(30, 57, 50, 0.98); padding-top: 10px; transition: 0.3s; z-index: 200; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
-    .sidebar.active { left: 0; }
-    .sidebar-header { display: flex; justify-content: flex-end; padding: 15px 20px; }
-    .close-btn { font-size: 24px; color: white; cursor: pointer; }
-    .sidebar-menu { list-style: none; padding: 20px; }
-    .sidebar-menu li { padding: 15px 10px; color: #f4f2ed; font-size: 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
-    .sidebar-menu li:hover { color: var(--accent-color); padding-left: 15px; }
-    
+    nav { background-color: var(--sb-dark-green); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
+    .menu-toggle { font-size: 22px; cursor: pointer; color: white; display: flex; align-items: center; }
     .cart-trigger-container { display: flex; align-items: center; }
-    .cart-text-btn { background: transparent; color: #ffffff; border: 1px solid #ffffff; padding: 8px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 1px; transition: all 0.2s; }
-    .cart-text-btn:hover { background: #ffffff; color: var(--primary-color); }
+    .cart-text-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .cart-text-btn:hover { background: white; color: var(--sb-dark-green); }
     
-    .main-content { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
+    /* 側邊欄 */
+    .sidebar { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background-color: #ffffff; padding-top: 24px; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200; box-shadow: 4px 0 12px rgba(0,0,0,0.05); }
+    .sidebar.active { transform: translateX(300px); }
+    .sidebar-header { display: flex; justify-content: flex-end; padding: 0 24px 16px; border-bottom: 1px solid var(--sb-border); }
+    .close-btn { font-size: 28px; color: var(--sb-text-black); cursor: pointer; }
+    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu li { padding: 16px 32px; color: var(--sb-text-black); font-size: 15px; font-weight: 500; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+    .sidebar-menu li:hover { background-color: var(--sb-light-green); color: var(--sb-primary-green); }
+    
+    /* 主內文 */
+    .main-content { padding: 40px 24px; max-width: 1280px; margin: 0 auto; }
     .page-section { display: none; }
-    .page-section.active { display: block; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    h2 { font-family: 'Noto Serif TC', serif; color: var(--primary-color); margin-bottom: 25px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
-    .category-title { font-size: 18px; font-weight: 600; margin: 25px 0 15px; color: var(--accent-color); letter-spacing: 1px; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-bottom: 40px; }
-    .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; border: 1px solid #e1ded7; }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-    .product-img { width: 100%; height: 200px; object-fit: cover; background-color: #e9ecef; }
-    .product-info { padding: 15px; text-align: center; }
-    .product-name { font-size: 15px; font-weight: 600; color: var(--primary-color); }
-    .card-panel { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e1ded7; }
-    input[readonly] { background-color: #e9ecef; color: #6c757d; cursor: not-allowed; }
+    .page-section.active { display: block; }
     
-    .btn-action { width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .btn-action:hover { background-color: #132521; }
-    .btn-logout { width: 100%; padding: 12px; background-color: transparent; color: var(--danger-color); border: 2px solid var(--danger-color); border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-top: 15px; }
-    .btn-logout:hover { background-color: var(--danger-color); color: white; }
+    h2 { font-size: 24px; font-weight: 700; color: var(--sb-text-black); margin-bottom: 32px; letter-spacing: -0.5px; }
+    .category-title { font-size: 18px; font-weight: 700; margin: 32px 0 16px; color: var(--sb-text-black); border-bottom: 1px solid var(--sb-border); padding-bottom: 8px; }
     
-    .qr-container { text-align: center; padding: 20px 0; }
-    .member-id-display { font-size: 18px; font-weight: bold; color: var(--primary-color); letter-spacing: 1px; margin-bottom: 5px; }
-    .member-points-display { font-size: 20px; font-weight: 700; color: var(--accent-color); margin-bottom: 15px; background: #fdfaf4; padding: 8px; border-radius: 6px; border: 1px dashed var(--accent-color); display: inline-block; min-width: 160px; }
-    #qr-code-output { width: 200px; height: 200px; margin: 15px auto 0; border: 4px solid var(--primary-color); padding: 5px; background: white; display: flex; justify-content: center; align-items: center; }
+    /* 商品網格與卡片 */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 32px; margin-bottom: 48px; }
+    .product-card { background: transparent; cursor: pointer; transition: transform 0.2s; }
+    .product-card:hover { transform: translateY(-4px); }
+    .product-img-wrapper { width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background-color: var(--sb-border); margin-bottom: 16px; }
+    .product-img { width: 100%; height: 100%; object-fit: cover; }
+    .product-info { text-align: center; padding: 0 8px; }
+    .product-name { font-size: 16px; font-weight: 600; color: var(--sb-text-black); line-height: 1.4; }
     
-    .product-points-badge { background-color: var(--secondary-color); color: var(--primary-color); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 12px; display: inline-block; margin-bottom: 10px; }
+    /* 面板卡片 */
+    .card-panel { background: #ffffff; padding: 40px; border-radius: 12px; border: 1px solid var(--sb-border); }
+    input[readonly] { background-color: var(--sb-bg-cream); color: var(--sb-text-gray); border-color: var(--sb-border); cursor: not-allowed; }
     
-    .cart-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
-    .cart-table th { padding: 12px; border-bottom: 2px solid var(--sb-border); color: var(--primary-color); font-weight: 600; }
-    .cart-table td { padding: 15px 12px; border-bottom: 1px solid var(--sb-border); vertical-align: middle; }
-    .btn-remove { background: none; border: none; color: var(--danger-color); font-weight: 600; cursor: pointer; }
+    .btn-action { padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
+    .btn-action:hover { background-color: #004d33; }
+    .btn-logout { padding: 12px 28px; background-color: transparent; color: var(--sb-danger); border: 1px solid var(--sb-danger); border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 24px; display: block; width: 100%; text-align: center; }
+    .btn-logout:hover { background-color: var(--sb-danger); color: white; }
     
-    .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(5px); }
+    /* 二維碼與積分模組區 */
+    .qr-container { text-align: center; max-width: 440px; margin: 0 auto; background: #ffffff; padding: 48px 32px; border-radius: 12px; border: 1px solid var(--sb-border); }
+    .member-id-display { font-size: 14px; font-weight: 500; color: var(--sb-text-gray); letter-spacing: 1px; margin-bottom: 24px; text-transform: uppercase; }
+    #qr-code-output { width: 210px; height: 210px; margin: 0 auto 28px; padding: 8px; background: #ffffff; border: 1px solid var(--sb-border); display: flex; justify-content: center; align-items: center; }
+    .member-points-container { border-top: 1px solid var(--sb-border); padding-top: 24px; margin-top: 8px; }
+    .member-points-label { font-size: 13px; font-weight: 600; color: var(--sb-text-gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .member-points-value { font-size: 36px; font-weight: 700; color: var(--sb-dark-green); }
+    
+    /* 購物車 */
+    .cart-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .cart-table th { padding: 16px 8px; border-bottom: 1px solid var(--sb-text-black); color: var(--sb-text-black); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .cart-table td { padding: 20px 8px; border-bottom: 1px solid var(--sb-border); font-size: 15px; }
+    .btn-remove { background: none; border: none; color: var(--sb-text-gray); font-size: 13px; text-decoration: underline; cursor: pointer; }
+    .btn-remove:hover { color: var(--sb-danger); }
+    
+    /* 彈窗客製化（星巴克細節規格樣式） */
+    .custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
     .custom-modal.active { opacity: 1; pointer-events: auto; }
-    .modal-content { background: white; padding: 40px; border-radius: 0; max-width: 460px; width: 90%; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border-top: 4px solid var(--primary-color); }
-    .modal-close { position: absolute; top: 12px; right: 18px; font-size: 24px; cursor: pointer; color: #aaa; }
-    .modal-body { margin-top: 10px; font-size: 15px; line-height: 1.6; }
-    .modal-img { width: 100%; max-height: 220px; object-fit: cover; margin-bottom: 15px; }
-    .modal-price { font-size: 18px; color: var(--accent-color); font-weight: bold; margin: 5px 0; }
-    .customization-section { margin-top: 25px; border-top: 1px solid var(--sb-border); padding-top: 20px; text-align: left; }
-    .option-group { margin-bottom: 20px; }
-    .option-label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; color: var(--text-color); }
-    .selector-wrapper { display: flex; gap: 10px; flex-wrap: wrap; }
-    .selector-item { flex: 1; min-width: 80px; text-align: center; }
+    .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .modal-close { position: absolute; top: 20px; right: 24px; font-size: 28px; cursor: pointer; color: var(--sb-text-black); }
+    
+    .modal-body { text-align: left; }
+    .modal-img-wrapper { width: 160px; height: 160px; border-radius: 50%; overflow: hidden; background-color: var(--sb-border); margin: 0 auto 20px; }
+    .modal-img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* 詳情內商品積分標籤 */
+    .product-points-badge { background-color: var(--sb-light-green); color: var(--sb-primary-green); font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 4px; display: inline-block; margin: 12px 0; letter-spacing: 0.5px; }
+    .modal-price { font-size: 20px; color: var(--sb-text-black); font-weight: 700; margin-bottom: 12px; }
+    .customization-section { margin-top: 24px; border-top: 1px solid var(--sb-border); padding-top: 24px; }
+    .option-group { margin-bottom: 24px; }
+    .option-label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; color: var(--sb-text-black); }
+    
+    .selector-wrapper { display: flex; gap: 8px; flex-wrap: wrap; }
+    .selector-item { flex: 1; min-width: 90px; }
     .selector-item input[type="radio"] { display: none; }
-    .selector-item label { display: block; padding: 12px; border: 1px solid var(--sb-border); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-    .selector-item input[type="radio"]:checked + label { background-color: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
-    .fixed-specification-box { padding: 12px; background-color: var(--sb-gray-card); border: 1px solid var(--sb-border); font-size: 13px; font-weight: 500; color: var(--text-color); text-align: left; }
-    .btn-submit-order { width: 100%; padding: 14px; background-color: var(--primary-color); color: #ffffff; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; margin-top: 20px; transition: 0.2s; }
-    .btn-submit-order:hover { background-color: #132521; }
+    .selector-item label { display: block; padding: 10px; border: 1px solid var(--sb-text-gray); border-radius: 24px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .selector-item input[type="radio"]:checked + label { background-color: var(--sb-primary-green); color: white; border-color: var(--sb-primary-green); }
+    
+    .fixed-specification-box { padding: 14px; background-color: var(--sb-bg-cream); border: 1px solid var(--sb-border); border-radius: 8px; font-size: 13px; color: var(--sb-text-gray); }
+    .btn-submit-order { width: 100%; padding: 16px; background-color: var(--sb-primary-green); color: #ffffff; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s; text-align: center; }
+    .btn-submit-order:hover { background-color: #004d33; }
 
-    /* 全新精美系統內置彈窗與確認視窗 UI */
-    .system-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(3px); }
+    /* 美式星巴克規範內置提示與確認方塊 UI */
+    .system-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
     .system-alert-overlay.active { opacity: 1; pointer-events: auto; }
-    .system-alert-box { background: white; padding: 30px; border-radius: 8px; max-width: 400px; width: 85%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); transform: scale(0.9); transition: transform 0.2s; border-top: 4px solid var(--primary-color); }
-    .system-alert-overlay.active .system-alert-box { transform: scale(1); }
-    .system-alert-msg { font-size: 15px; color: var(--text-color); line-height: 1.6; margin-bottom: 22px; white-space: pre-line; }
-    .system-alert-btns { display: flex; gap: 12px; justify-content: center; }
-    .system-alert-btn { padding: 10px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; min-width: 100px; transition: 0.2s; }
-    .system-alert-btn.confirm-main { background-color: var(--primary-color); color: white; }
-    .system-alert-btn.confirm-main:hover { background-color: #132521; }
-    .system-alert-btn.confirm-cancel { background-color: #e9ecef; color: #495057; }
-    .system-alert-btn.confirm-cancel:hover { background-color: #dbdee1; }
+    .system-alert-box { background: white; padding: 36px; border-radius: 8px; max-width: 420px; width: 88%; text-align: left; box-shadow: 0 4px 24px rgba(0,0,0,0.15); transform: translateY(20px); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    .system-alert-overlay.active .system-alert-box { transform: translateY(0); }
+    .system-alert-msg { font-size: 15px; color: var(--sb-text-black); line-height: 1.5; margin-bottom: 28px; white-space: pre-line; font-weight: 500; }
+    .system-alert-btns { display: flex; gap: 12px; justify-content: flex-end; }
+    .system-alert-btn { padding: 10px 24px; border-radius: 50px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: background-color 0.2s; }
+    .system-alert-btn.confirm-main { background-color: var(--sb-primary-green); color: white; }
+    .system-alert-btn.confirm-main:hover { background-color: #004d33; }
+    .system-alert-btn.confirm-cancel { background-color: transparent; color: var(--sb-primary-green); border: 1px solid var(--sb-primary-green); }
+    .system-alert-btn.confirm-cancel:hover { background-color: var(--sb-light-green); }
   </style>
 </head>
 <body>
@@ -131,56 +164,56 @@
   <div id="auth-overlay">
     <div class="auth-container">
       <div class="brand-header">
-        <div class="brand-logo">Aroma_bakery</div>
-        <div class="brand-subtitle">Coffee & Premium Snacks</div>
+        <div class="brand-logo">Aroma Bakery</div>
+        <div class="brand-subtitle">Star Premium Rewards</div>
       </div>
       <div class="form-toggle">
-        <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">會員登入</button>
-        <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">註冊新帳戶</button>
+        <button class="toggle-btn active" id="btn-toggle-login" onclick="switchAuthForm('login')">Sign In</button>
+        <button class="toggle-btn" id="btn-toggle-reg" onclick="switchAuthForm('register')">Join Now</button>
       </div>
       
       <form id="login-form" onsubmit="handleCustomerLogin(event); return false;">
-        <div class="form-group"><label>Google 電子郵件</label><input type="email" id="login-email" required placeholder="請輸入註冊的Gmail地址"></div>
-        <div class="form-group"><label>密碼</label><input type="password" id="login-password" required placeholder="請輸入密碼"></div>
-        <button type="submit" class="btn-submit">驗證登入</button>
+        <div class="form-group"><label>Google Email</label><input type="email" id="login-email" required placeholder="Enter your registered Gmail"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-password" required placeholder="Enter password"></div>
+        <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn-submit">Sign In</button></div>
       </form>
 
       <form id="register-form" class="hidden" onsubmit="handleCustomerRegister(event); return false;">
         <div class="form-row">
-          <div class="form-group"><label>中文姓氏</label><input type="text" id="reg-last-name" required placeholder="例:陳"></div>
-          <div class="form-group"><label>名字</label><input type="text" id="reg-first-name" required placeholder="例:大文"></div>
+          <div class="form-group" style="flex:1;"><label>Surname</label><input type="text" id="reg-last-name" required placeholder="e.g. Chan"></div>
+          <div class="form-group" style="flex:1;"><label>First Name</label><input type="text" id="reg-first-name" required placeholder="e.g. Tai Man"></div>
         </div>
         <div class="form-group">
-          <label>852 電話號碼</label>
+          <label>Phone Number</label>
           <div class="phone-input-container">
             <span class="phone-prefix">+852</span>
-            <input type="tel" id="reg-phone" required placeholder="請輸入8位數字電話" pattern="[0-9]{8}">
+            <input type="tel" id="reg-phone" required placeholder="8-digit mobile number" pattern="[0-9]{8}">
           </div>
         </div>
         
         <div class="form-row">
           <div class="form-group" style="flex:1;">
-            <label>出生月份</label>
+            <label>Birth Month</label>
             <select id="reg-birthday-month" required onchange="handleBirthdayDaysSync('reg-birthday-month', 'reg-birthday-day')">
-              <option value="" disabled selected>請選擇</option>
+              <option value="" disabled selected>Select</option>
               <script>for(let i=1;i<=12;i++) document.write(`<option value="${i.toString().padStart(2,'0')}">${i}月</option>`);</script>
             </select>
           </div>
           <div class="form-group" style="flex:1;">
-            <label>出生日期</label>
+            <label>Birth Day</label>
             <select id="reg-birthday-day" required>
-              <option value="" disabled selected>請選擇</option>
+              <option value="" disabled selected>Select</option>
               <script>for(let i=1;i<=31;i++) document.write(`<option value="${i.toString().padStart(2,'0')}">${i}日</option>`);</script>
             </select>
           </div>
         </div>
 
-        <div class="form-group"><label>Google 電子郵件(必填)</label><input type="email" id="reg-email" required placeholder="您的帳號@gmail.com"></div>
-        <div class="form-group"><label>密碼</label><input type="password" id="reg-password" required placeholder="請設定密碼" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
-          <div class="input-hint">必須至少八位，且包含大小寫字母及數字</div>
+        <div class="form-group"><label>Google Email Address</label><input type="email" id="reg-email" required placeholder="username@gmail.com"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="reg-password" required placeholder="Create password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$">
+          <div class="input-hint">At least 8 characters, containing uppercase, lowercase letters and numbers</div>
         </div>
-        <div class="form-group"><label>推薦號碼(選填)</label><input type="text" id="reg-referral" placeholder="請輸入推薦人號碼"></div>
-        <button type="submit" class="btn-submit">確認註冊</button>
+        <div class="form-group"><label>Referral Code (Optional)</label><input type="text" id="reg-referral" placeholder="Enter referral number"></div>
+        <div style="display:flex; justify-content:flex-end;"><button type="submit" class="btn-submit">Create Account</button></div>
       </form>
     </div>
   </div>
@@ -188,63 +221,68 @@
   <div id="main-system">
     <nav>
       <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-      <div class="brand-logo" style="font-size:20px; color:white;">Aroma_bakery</div>
-      <div class="cart-trigger-container"><button class="cart-text-btn" onclick="openShoppingCartModule()">購物車明細</button></div>
+      <div class="brand-logo" style="font-size:18px; color:white;">Aroma Bakery</div>
+      <div class="cart-trigger-container"><button class="cart-text-btn" onclick="openShoppingCartModule()">Shopping Cart</button></div>
     </nav>
 
     <div class="sidebar" id="sidebar">
       <div class="sidebar-header"><div class="close-btn" onclick="toggleSidebar()">×</div></div>
       <ul class="sidebar-menu">
-        <li onclick="switchPage('section-products')">精選商品</li>
-        <li onclick="switchPage('section-profile')">個人資料</li>
-        <li onclick="switchPage('section-qrcode')">會員二維號碼</li>
-        <li onclick="openShoppingCartModule()">購物車明細</li>
+        <li onclick="switchPage('section-products')">Featured Menu</li>
+        <li onclick="switchPage('section-profile')">Personal Info</li>
+        <li onclick="switchPage('section-qrcode')">My Reward Pass</li>
+        <li onclick="openShoppingCartModule()">Shopping Cart</li>
       </ul>
     </div>
 
     <div class="main-content">
       <div id="section-products" class="page-section active">
-        <h2>精選商品</h2>
-        <div class="category-title">飲品類 / Drinks</div>
+        <h2>Featured Menu</h2>
+        <div class="category-title">Drinks</div>
         <div class="product-grid" id="drinks-grid"></div>
-        <div class="category-title">甜點類 / Desserts</div>
+        <div class="category-title">Desserts</div>
         <div class="product-grid" id="desserts-grid"></div>
       </div>
 
       <div id="section-profile" class="page-section">
-        <h2>個人資料</h2>
-        <div class="card-panel" style="max-width: 500px; margin: 0 auto;">
+        <h2>Personal Info</h2>
+        <div class="card-panel" style="max-width: 560px; margin: 0 auto;">
           <div class="form-row">
-            <div class="form-group" style="flex:1;"><label>中文姓氏</label><input type="text" id="profile-last-name"></div>
-            <div class="form-group" style="flex:2;"><label>名字</label><input type="text" id="profile-first-name"></div>
+            <div class="form-group" style="flex:1;"><label>Surname</label><input type="text" id="profile-last-name"></div>
+            <div class="form-group" style="flex:1;"><label>First Name</label><input type="text" id="profile-first-name"></div>
           </div>
-          <div class="form-group"><label>852 電話號碼(不可修改)</label><input type="text" id="profile-phone" readonly></div>
-          <div class="form-group"><label>出生月日(不可修改)</label><input type="text" id="profile-birthday" readonly></div>
-          <div class="form-group"><label>Google 電子郵件(不可修改)</label><input type="text" id="profile-email" readonly></div>
-          <button class="btn-action" onclick="updateProfileName()">儲存修改</button>
-          <button class="btn-logout" onclick="handleCustomerLogout()">登出會員帳戶</button>
+          <div class="form-group"><label>Phone Number (Read-only)</label><input type="text" id="profile-phone" readonly></div>
+          <div class="form-group"><label>Birthday (Read-only)</label><input type="text" id="profile-birthday" readonly></div>
+          <div class="form-group"><label>Email Account (Read-only)</label><input type="text" id="profile-email" readonly></div>
+          <div style="display:flex; gap:16px; margin-top:12px;">
+            <button class="btn-action" style="flex:1;" onclick="updateProfileName()">Save Changes</button>
+          </div>
+          <button class="btn-logout" onclick="handleCustomerLogout()">Sign Out Account</button>
         </div>
       </div>
 
       <div id="section-qrcode" class="page-section">
-        <h2>會員專屬憑證</h2>
-        <div class="card-panel qr-container" style="max-width: 500px; margin: 0 auto;">
-          <div class="member-id-display">會員碼: <span id="member-code-text">-</span></div>
-          <div><span class="member-points-display">目前可用積分: <span id="member-points-text">0</span> 分</span></div>
-          <p style="font-size:13px; color:#6c757d;">結帳時請出示此二維碼以累積積分</p>
+        <h2>My Reward Pass</h2>
+        <div class="qr-container">
+          <div class="member-id-display" id="member-code-text">AROMA_MEMBER</div>
           <div id="qr-code-output"></div>
+          
+          <div class="member-points-container">
+            <div class="member-points-label">Available Stars</div>
+            <div class="member-points-value" id="member-points-text">0</div>
+          </div>
         </div>
       </div>
 
       <div id="section-cart" class="page-section">
-        <h2>購物車明細</h2>
-        <div class="card-panel" style="max-width: 850px; width: 100%; margin: 0 auto;">
-          <div id="cart-items-container"><p style="text-align: center; color: #6c757d; padding: 20px 0;">您的購物車目前是空的</p></div>
-          <div style="margin-top: 25px; border-top: 2px solid var(--sb-border); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 16px; font-weight: 600; color: var(--primary-color);">商品結算總計：</span>
-            <span id="cart-total-price" style="font-size: 22px; font-weight: 700; color: var(--accent-color);">HK$ 0</span>
+        <h2>Shopping Cart</h2>
+        <div class="card-panel" style="max-width: 900px; margin: 0 auto;">
+          <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">Your shopping cart is empty</p></div>
+          <div style="margin-top: 36px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">Subtotal</span>
+            <span id="cart-total-price" style="font-size: 24px; font-weight: 700; color: var(--sb-text-black);">HK$ 0</span>
           </div>
-          <button class="btn-submit-order" id="btn-cart-checkout" style="margin-top: 25px; width: 100%;">立即下單</button>
+          <button class="btn-submit-order" id="btn-cart-checkout">Checkout</button>
         </div>
       </div>
     </div>
@@ -281,7 +319,7 @@
     let localProductsCache = {}; 
     let shoppingCart = [];       
 
-    // 全局系統 UI 提示函數（取代原生的 alert 與 confirm）
+    // 全局系統內置提示函數（拔除表情包與內置彈窗）
     window.showSystemAlert = function(msg, callback = null) {
       document.getElementById('sys-alert-text').textContent = msg;
       const actionArea = document.getElementById('sys-alert-action-area');
@@ -289,7 +327,7 @@
       
       const btn = document.createElement('button');
       btn.className = 'system-alert-btn confirm-main';
-      btn.textContent = '確定';
+      btn.textContent = 'OK';
       btn.onclick = () => {
         document.getElementById('sys-alert-root').classList.remove('active');
         if(callback) callback();
@@ -305,7 +343,7 @@
 
       const btnCancel = document.createElement('button');
       btnCancel.className = 'system-alert-btn confirm-cancel';
-      btnCancel.textContent = '取消';
+      btnCancel.textContent = 'Cancel';
       btnCancel.onclick = () => {
         document.getElementById('sys-alert-root').classList.remove('active');
         if(onCancel) onCancel();
@@ -313,7 +351,7 @@
 
       const btnConfirm = document.createElement('button');
       btnConfirm.className = 'system-alert-btn confirm-main';
-      btnConfirm.textContent = '確定';
+      btnConfirm.textContent = 'Confirm';
       btnConfirm.onclick = () => {
         document.getElementById('sys-alert-root').classList.remove('active');
         if(onConfirm) onConfirm();
@@ -327,7 +365,7 @@
     onAuthStateChanged(auth, (user) => {
       if (user) {
         if(user.email === 'admin01@aroma.com') { 
-          window.showSystemAlert('管理員請至後台平台登入。', () => { auth.signOut(); }); 
+          window.showSystemAlert('Admin account must login through management dashboard.', () => { auth.signOut(); }); 
           return; 
         }
         currentUserUid = user.uid;
@@ -340,10 +378,10 @@
             document.getElementById('profile-last-name').value = data.lastName || '';
             document.getElementById('profile-first-name').value = data.firstName || '';
             document.getElementById('profile-phone').value = data.phone || '';
-            document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : '未填寫';
+            document.getElementById('profile-birthday').value = (data.birthdayMonth && data.birthdayDay) ? `${data.birthdayMonth}月${data.birthdayDay}日` : 'Not Set';
             document.getElementById('profile-email').value = data.email || '';
             
-            // 實時動態更新前端專屬憑證的「積分數值」
+            // 實時更新二維碼下方的星巴克風格積分值
             document.getElementById('member-points-text').innerText = data.points !== undefined ? data.points : 0;
 
             const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
@@ -379,14 +417,16 @@
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <img class="product-img" src="${p.photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}" alt="${p.name}">
+          <div class="product-img-wrapper">
+            <img class="product-img" src="${p.photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}" alt="${p.name}">
+          </div>
           <div class="product-info">
             <div class="product-name">${p.name}</div>
           </div>
         `;
         
         card.addEventListener('click', () => {
-          viewProductDetail(p.name, `HK$ ${p.price}`, p.detail || '無詳情', p.photoUrl, p.category || '飲品', id);
+          viewProductDetail(p.name, `HK$ ${p.price}`, p.detail || '', p.photoUrl, p.category || '飲品', id);
         });
 
         if(p.category === '飲品') drinksGrid.appendChild(card);
@@ -400,7 +440,7 @@
     function renderMobileQRCode(textData) {
       const container = document.getElementById('qr-code-output');
       container.innerHTML = '';
-      try { new QRCode(container, { text: textData, width: 190, height: 190, colorDark: "#1e3932", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H }); } catch(err){}
+      try { new QRCode(container, { text: textData, width: 194, height: 194, colorDark: "#1e3932", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H }); } catch(err){}
     }
 
     function viewProductDetail(name, priceStr, detail, photoUrl, category, id) {
@@ -419,7 +459,7 @@
             </div>`;
         });
         customizationHtml += `
-          <div class="option-group"><span class="option-label">冰量配置</span>
+          <div class="option-group"><span class="option-label">Ice</span>
             <div class="selector-wrapper">${iceOptions}</div>
           </div>`;
       }
@@ -436,28 +476,32 @@
             </div>`;
         });
         customizationHtml += `
-          <div class="option-group"><span class="option-label">甜度配置</span>
+          <div class="option-group"><span class="option-label">Sweetness</span>
             <div class="selector-wrapper">${sugarOptions}</div>
           </div>`;
       }
 
-      // 提取並顯示商品的積分數值
       const productPoints = p.points !== undefined ? p.points : 0;
 
       const modalContent = document.getElementById('modal-dynamic-content');
       modalContent.innerHTML = `
-        <img class="modal-img" src="${photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}">
-        <h3 style="color:var(--primary-color); margin-bottom:5px;" id="modal-p-name"></h3>
-        <div><span class="product-points-badge">✨ 購買可得 ${productPoints} 積分</span></div>
+        <div class="modal-img-wrapper">
+          <img class="modal-img" src="${photoUrl || 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=300&q=80'}">
+        </div>
+        <h3 style="color:var(--sb-text-black); font-size: 20px; font-weight:700; margin-bottom:4px;" id="modal-p-name"></h3>
+        
+        <div><span class="product-points-badge">${productPoints} Stars</span></div>
+        
         <div class="modal-price">${priceStr}</div>
-        <p style="font-size:13px; color:#6c757d; margin-bottom:15px;" id="modal-p-detail"></p>
+        <p style="font-size:14px; color:var(--sb-text-gray); margin-bottom:20px; line-height:1.5;" id="modal-p-detail"></p>
         <div class="customization-section">
-          ${customizationHtml || '<div class="fixed-specification-box">標準規格，無需客製化配置。</div>'}
-          <div class="option-group" style="margin-top:15px; display:flex; align-items:center; gap:10px;">
-            <span class="option-label" style="margin-bottom:0;">選購數量：</span><input type="number" id="cart-item-qty" value="1" min="1" style="width:80px; padding:6px; text-align:center;">
+          ${customizationHtml || '<div class="fixed-specification-box">Standard recipe. Customization options are not available for this item.</div>'}
+          <div class="option-group" style="margin-top:24px; display:flex; align-items:center; gap:16px;">
+            <span class="option-label" style="margin-bottom:0;">Quantity</span>
+            <input type="number" id="cart-item-qty" value="1" min="1" style="width:90px; padding:8px 12px; border-radius:8px; text-align:center;">
           </div>
         </div>
-        <button class="btn-submit-order" id="btn-add-to-cart-trigger">加入購物車</button>
+        <button class="btn-submit-order" id="btn-add-to-cart-trigger">Add to Order</button>
       `;
       
       document.getElementById('modal-p-name').textContent = name;
@@ -474,15 +518,15 @@
       const qty = parseInt(document.getElementById('cart-item-qty').value) || 1;
       const iceEl = document.querySelector('input[name="sb-ice-option"]:checked');
       const sugarEl = document.querySelector('input[name="sb-sugar-option"]:checked');
-      const ice = iceEl ? iceEl.value : '標準';
-      const sugar = sugarEl ? sugarEl.value : '標準';
+      const ice = iceEl ? iceEl.value : 'Standard';
+      const sugar = sugarEl ? sugarEl.value : 'Standard';
 
       const existing = shoppingCart.find(i => i.id === id && i.ice === ice && i.sugar === sugar);
       if (existing) existing.quantity += qty;
       else shoppingCart.push({ id, name, price, quantity: qty, ice, sugar, category });
       
       closeModal();
-      window.showSystemAlert(`已加入購物車：\n${name} x ${qty}`);
+      window.showSystemAlert(`Added to cart: ${name} (x${qty})`);
       renderCartUI();
     };
 
@@ -492,7 +536,7 @@
       const container = document.getElementById('cart-items-container');
       const totalDisplay = document.getElementById('cart-total-price');
       if (shoppingCart.length === 0) {
-        container.innerHTML = `<p style="text-align:center; padding:40px 0;">購物車是空的</p>`;
+        container.innerHTML = `<p style="text-align:center; padding:48px 0; color:var(--sb-text-gray);">Your shopping cart is empty</p>`;
         totalDisplay.innerText = 'HK$ 0';
         return;
       }
@@ -500,22 +544,22 @@
       container.innerHTML = '';
       const table = document.createElement('table');
       table.className = 'cart-table';
-      table.innerHTML = `<tr><th>商品</th><th>規格</th><th>單價</th><th>數量</th><th>小計</th><th>操作</th></tr>`;
+      table.innerHTML = `<tr><th>Item</th><th>Specifications</th><th>Price</th><th>Qty</th><th>Total</th><th>Action</th></tr>`;
       
       let grandTotal = 0;
       shoppingCart.forEach((item, i) => {
         const itemTotal = item.price * item.quantity; 
         grandTotal += itemTotal;
-        const spec = [item.ice !== '標準'?item.ice:'', item.sugar !== '標準'?item.sugar:''].filter(Boolean).join('/') || '標準';
+        const spec = [item.ice !== 'Standard'?item.ice:'', item.sugar !== 'Standard'?item.sugar:''].filter(Boolean).join('/') || 'Standard';
         
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td class="item-title-td"></td>
-          <td>${spec}</td>
+          <td class="item-title-td" style="font-weight:600;"></td>
+          <td style="color:var(--sb-text-gray); font-size:14px;">${spec}</td>
           <td>HK$ ${item.price}</td>
           <td>${item.quantity}</td>
-          <td>HK$ ${itemTotal}</td>
-          <td><button class="btn-remove">移除</button></td>
+          <td style="font-weight:600;">HK$ ${itemTotal}</td>
+          <td><button class="btn-remove">Remove</button></td>
         `;
         row.querySelector('.item-title-td').textContent = item.name;
         row.querySelector('.btn-remove').onclick = () => { window.removeFromCart(i); };
@@ -532,8 +576,8 @@
       const btn = document.getElementById('btn-cart-checkout');
       if (btn) {
         btn.addEventListener('click', () => {
-          if(shoppingCart.length === 0) return window.showSystemAlert('購物車內尚無商品！');
-          window.showSystemAlert('【前端沙盒提示】\n您已點擊立即下單。\n根據設定，此功能暫時僅作前端選購展示，無後台看板反應。');
+          if(shoppingCart.length === 0) return window.showSystemAlert('Your shopping cart is empty.');
+          window.showSystemAlert('Checkout complete.\nThis is a presentation module demo connected to Firebase sandbox.');
         });
       }
     });
@@ -541,14 +585,14 @@
     window.handleCustomerLogin = function(e) { 
       e.preventDefault(); 
       signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value)
-        .catch(() => window.showSystemAlert('登入失敗，請確認信箱及密碼是否正確。')); 
+        .catch(() => window.showSystemAlert('Sign in failed. Please verify your email and password.')); 
     };
     
     window.handleCustomerRegister = function(e) {
       e.preventDefault();
       const email = document.getElementById('reg-email').value; 
       const pass = document.getElementById('reg-password').value;
-      if (!email.toLowerCase().endsWith('@gmail.com')) return window.showSystemAlert('必須使用 @gmail.com 進行註冊');
+      if (!email.toLowerCase().endsWith('@gmail.com')) return window.showSystemAlert('Registration requires a valid @gmail.com address.');
       
       createUserWithEmailAndPassword(auth, email, pass).then((cred) => {
         set(ref(database, 'users/' + cred.user.uid), {
@@ -561,7 +605,7 @@
           points: 0, 
           role: "customer"
         });
-      }).catch(() => window.showSystemAlert('註冊失敗，信箱可能已被使用或密碼強度不足。'));
+      }).catch(() => window.showSystemAlert('Account creation failed. Password may be too weak or email is already registered.'));
     };
 
     window.updateProfileName = function() {
@@ -569,14 +613,14 @@
       const fn = document.getElementById('profile-first-name').value.trim();
       if(ln && fn) {
         update(ref(database, 'users/' + currentUserUid), { lastName: ln, firstName: fn })
-          .then(() => window.showSystemAlert('個人姓名更新成功！'));
+          .then(() => window.showSystemAlert('Profile details updated successfully.'));
       } else {
-        window.showSystemAlert('姓氏與名字皆不能留空！');
+        window.showSystemAlert('Fields cannot be left empty.');
       }
     };
     
     window.handleCustomerLogout = function() { 
-      window.showSystemConfirm("確定登出？", () => { signOut(auth); }); 
+      window.showSystemConfirm("Are you sure you want to sign out?", () => { signOut(auth); }); 
     };
   </script>
 
@@ -599,7 +643,7 @@
       else if(month === 2) daysInMonth = 29;
       
       const currentSelected = daySel.value;
-      daySel.innerHTML = '<option value="" disabled>請選擇</option>';
+      daySel.innerHTML = '<option value="" disabled>Select</option>';
       for(let i = 1; i <= daysInMonth; i++) {
         const val = i.toString().padStart(2, '0');
         const opt = document.createElement('option');
