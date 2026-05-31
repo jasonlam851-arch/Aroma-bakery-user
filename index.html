@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --sb-dark-green: #1e3932;
@@ -85,15 +84,13 @@
     .card-panel { background: #ffffff; padding: 40px; border-radius: 12px; border: 1px solid var(--sb-border); }
     input[readonly] { background-color: var(--sb-bg-cream); color: var(--sb-text-gray); border-color: var(--sb-border); cursor: not-allowed; }
     
-    .btn-action { padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
+    .btn-action { padding: 14px 32px; background-color: var(--sb-primary-green); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; display:inline-block; text-align:center; }
     .btn-action:hover { background-color: #004d33; }
     .btn-logout { padding: 12px 28px; background-color: transparent; color: var(--sb-danger); border: 1px solid var(--sb-danger); border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 24px; display: block; width: 100%; text-align: center; }
     .btn-logout:hover { background-color: var(--sb-danger); color: white; }
     
     .qr-container { text-align: center; max-width: 440px; margin: 0 auto; background: #ffffff; padding: 48px 32px; border-radius: 12px; border: 1px solid var(--sb-border); }
-    .member-id-display { font-size: 14px; font-weight: 500; color: var(--sb-text-gray); letter-spacing: 1px; margin-bottom: 24px; text-transform: uppercase; }
-    #qr-code-output { width: 210px; height: 210px; margin: 0 auto 28px; padding: 8px; background: #ffffff; border: 1px solid var(--sb-border); display: flex; justify-content: center; align-items: center; }
-    .member-points-container { border-top: 1px solid var(--sb-border); padding-top: 24px; margin-top: 8px; }
+    .member-points-container { border-top: 1px solid var(--sb-border); padding-top: 24px; margin-top: 24px; }
     .member-points-label { font-size: 13px; font-weight: 600; color: var(--sb-text-gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
     .member-points-value { font-size: 36px; font-weight: 700; color: var(--sb-dark-green); }
     
@@ -144,11 +141,19 @@
     #login-transition-overlay, #checkout-transition-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sb-dark-green); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
     .loading-spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes slideOutLeft { to { transform: translateX(-100%); } }
+    .slide-out-left { animation: slideOutLeft 0.6s forwards cubic-bezier(0.65, 0, 0.35, 1); }
 
     /* 訂單卡片設計 */
     .order-card { border: 1px solid var(--sb-border); border-radius: 8px; padding: 24px; margin-bottom: 24px; background: white; }
     .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--sb-border); padding-bottom: 16px; margin-bottom: 16px; }
     .order-status-badge { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 4px; background: var(--sb-light-green); color: var(--sb-primary-green); }
+    
+    /* 虛擬綠星卡片 */
+    .green-star-card { background: var(--sb-dark-green); border-radius: 12px; padding: 28px; color: white; width: 100%; max-width: 320px; margin: 0 auto; aspect-ratio: 1.58; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 12px 24px rgba(0,0,0,0.15); position: relative; overflow: hidden; }
+    .green-star-card::after { content: ""; position: absolute; right: -20%; bottom: -30%; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+    
+    .coupon-card { border: 1px solid var(--sb-border); border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: white; }
   </style>
 </head>
 <body>
@@ -160,13 +165,26 @@
     </div>
   </div>
 
+  <div class="custom-modal" id="tutorial-modal">
+    <div class="modal-content" style="text-align:center;">
+      <h3 style="margin-bottom:20px; font-size: 22px; color: var(--sb-dark-green);">歡迎來到 Aroma Bakery</h3>
+      <div style="text-align: left; margin-bottom: 28px; font-size: 15px; line-height: 1.8; color: var(--sb-text-black);">
+        <p style="font-weight: 700; margin-bottom: 8px;">快速入門教學指南：</p>
+        <p>1. 點擊「精選菜單」瀏覽並下單購買您喜愛的飲品與甜點。</p>
+        <p>2. 下單前請前往「我的錢包」進行增值，確保餘額充足。</p>
+        <p>3. 購物結帳將累積星賞點數，點數可用於「我的行動綠星卡」兌換專屬優惠券。</p>
+      </div>
+      <button class="btn-action" style="width: 100%;" onclick="closeTutorial()">我已了解，開始使用</button>
+    </div>
+  </div>
+
   <div id="login-transition-overlay">
     <h1 style="color:white; font-size:36px; letter-spacing:2px; font-weight:700; text-transform:uppercase;">Aroma Bakery</h1>
   </div>
 
   <div id="checkout-transition-overlay">
-    <div class="loading-spinner"></div>
-    <div style="color:white; font-size:20px; font-weight:600; letter-spacing:1px;">正在結帳中！</div>
+    <div class="loading-spinner" id="checkout-spinner"></div>
+    <div style="color:white; font-size:20px; font-weight:600; letter-spacing:1px;" id="checkout-text">正在結帳中！</div>
   </div>
 
   <div id="auth-overlay">
@@ -273,12 +291,24 @@
       <div id="section-qrcode" class="page-section">
         <h2>我的行動綠星卡</h2>
         <div class="qr-container">
-          <div class="member-id-display" id="member-code-text">AROMA_MEMBER</div>
-          <div id="qr-code-output"></div>
+          
+          <div class="green-star-card">
+            <div style="font-size: 20px; font-weight: 700; letter-spacing: 2px;">AROMA BAKERY</div>
+            <div>
+              <div style="font-size: 11px; opacity: 0.8; margin-bottom: 4px;">會員編號</div>
+              <div style="font-size: 14px; letter-spacing: 1px;" id="card-member-id"></div>
+            </div>
+          </div>
+
           <div class="member-points-container">
             <div class="member-points-label">帳戶現存星賞點數</div>
             <div class="member-points-value" id="member-points-text">0</div>
           </div>
+        </div>
+
+        <h3 style="font-size:18px; margin:40px 0 20px; border-bottom:1px solid var(--sb-border); padding-bottom:8px;">可兌換優惠</h3>
+        <div id="coupon-list-container" style="max-width:600px; margin:0 auto;">
+          <p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">目前沒有可兌換的優惠券</p>
         </div>
       </div>
 
@@ -292,17 +322,26 @@
           <button class="btn-action" style="width: 100%; margin-bottom: 24px;" onclick="document.getElementById('topup-container').classList.toggle('hidden')">增值餘額</button>
           
           <div id="topup-container" class="hidden" style="border-top: 1px solid var(--sb-border); padding-top: 24px;">
-            <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 700;">支付寶增值</h3>
-            <div style="text-align: center; margin-bottom: 24px;">
-              <img id="alipay-qr-img" src="" alt="支付寶二維碼加載中" style="max-width: 200px; border: 1px solid var(--sb-border); padding: 8px; border-radius: 8px; background: white; object-fit: contain;">
-            </div>
+            <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 700;">增值通知表格</h3>
             <form onsubmit="handleTopupSubmit(event); return false;">
               <div class="form-group">
-                <label>支付姓名</label>
-                <input type="text" id="topup-name" required placeholder="請輸入支付寶帳戶姓名">
+                <label>姓名</label>
+                <input type="text" id="topup-name" required placeholder="請輸入姓名">
               </div>
               <div class="form-group">
-                <label>支付日期</label>
+                <label>聯絡電話</label>
+                <input type="text" id="topup-phone" required placeholder="請輸入聯絡電話">
+              </div>
+              <div class="form-group">
+                <label>支付方式</label>
+                <select id="topup-method" required>
+                  <option value="八達通">八達通</option>
+                  <option value="現金">現金</option>
+                  <option value="支付寶">支付寶</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>日期</label>
                 <input type="date" id="topup-date" required>
               </div>
               <div class="form-group">
@@ -342,7 +381,14 @@
             </div>
           </div>
 
-          <div style="margin-top: 36px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="margin-top: 24px; border-top: 1px solid var(--sb-border); padding-top: 24px;">
+            <div style="font-weight: 600; margin-bottom: 12px; font-size: 15px;">使用優惠券</div>
+            <select id="cart-coupon-select" style="width:100%; max-width:400px;" onchange="renderCartUI()">
+              <option value="">不使用優惠券</option>
+            </select>
+          </div>
+
+          <div style="margin-top: 24px; border-top: 1px solid var(--sb-border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 16px; font-weight: 600; color: var(--sb-text-black);">小計</span>
             <span id="cart-total-price" style="font-size: 24px; font-weight: 700; color: var(--sb-text-black);">HK$ 0</span>
           </div>
@@ -381,6 +427,8 @@
     let currentUserUid = null;
     let currentUserData = null;
     let localProductsCache = {};
+    let allCoupons = {};
+    let myCoupons = {};
     let shoppingCart = [];       
 
     window.showSystemAlert = function(msg, callback = null) {
@@ -421,14 +469,15 @@
         currentUserUid = user.uid;
         document.getElementById('auth-overlay').style.opacity = '0';
         
-        // 觸發 3 秒綠屏過場
+        // 3 秒綠屏過場，完成後向左滑出
         setTimeout(() => { 
           document.getElementById('auth-overlay').style.display = 'none'; 
           const trans = document.getElementById('login-transition-overlay');
           trans.style.display = 'flex';
           setTimeout(() => {
-            trans.style.display = 'none';
+            trans.classList.add('slide-out-left');
             document.getElementById('main-system').style.display = 'block';
+            setTimeout(() => trans.style.display = 'none', 600); // Wait for animation to finish
           }, 3000);
         }, 400);
 
@@ -443,45 +492,57 @@
             document.getElementById('profile-email').value = data.email || '';
             document.getElementById('member-points-text').innerText = data.points !== undefined ? data.points : 0;
             document.getElementById('wallet-balance').innerText = data.balance !== undefined ? data.balance : 0;
+            
             const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
-            const code = `AROMA_${displayPhone}`;
-            document.getElementById('member-code-text').innerText = code;
-            renderMobileQRCode(code);
+            document.getElementById('card-member-id').innerText = `AROMA_${displayPhone}`;
+            
+            myCoupons = data.coupons || {};
+            updateCartCouponsDropdown();
+
+            // 首次登入檢查
+            if (!data.hasSeenTutorial) {
+                setTimeout(() => document.getElementById('tutorial-modal').classList.add('active'), 4000); // 確保在過場動畫後顯示
+            }
           }
         });
 
         onValue(ref(database, 'products'), (snapshot) => {
-          const products = snapshot.val() || {};
-          localProductsCache = products;
-          renderProductGrid(products);
+          localProductsCache = snapshot.val() || {};
+          renderProductGrid(localProductsCache);
         });
 
-        onValue(ref(database, 'adminSettings/alipayQrUrl'), (snapshot) => {
-          const url = snapshot.val() || '';
-          document.getElementById('alipay-qr-img').src = url;
+        onValue(ref(database, 'coupons'), (snapshot) => {
+          allCoupons = snapshot.val() || {};
+          renderRedeemableCoupons();
+          updateCartCouponsDropdown();
         });
 
         // 讀取我的訂單
         onValue(ref(database, 'orders'), (snapshot) => {
           const allOrders = snapshot.val() || {};
-          const myOrders = Object.keys(allOrders)
+          const ordersArr = Object.keys(allOrders)
             .map(k => ({id: k, ...allOrders[k]}))
             .filter(o => o.userUid === currentUserUid)
             .sort((a,b) => b.timestamp - a.timestamp);
             
           const container = document.getElementById('my-orders-list');
           container.innerHTML = '';
-          if(myOrders.length === 0) {
+          if(ordersArr.length === 0) {
             container.innerHTML = `<p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">目前沒有訂單紀錄</p>`;
             return;
           }
 
-          myOrders.forEach(o => {
-            let itemsHtml = o.items.map(i => `
-              <div style="font-size:14px; margin-bottom:4px; display:flex; justify-content:space-between;">
-                <span>${i.name} (${i.ice !== '標準'?i.ice:'標準'}/${i.sugar !== '標準'?i.sugar:'標準'}) x ${i.quantity}</span>
-              </div>
-            `).join('');
+          ordersArr.forEach(o => {
+            let itemsHtml = o.items.map(i => {
+                let details = [];
+                if (i.ice && i.ice !== '標準') details.push(i.ice);
+                if (i.sugar && i.sugar !== '標準') details.push(i.sugar);
+                if (i.flavor && i.flavor !== '標準') details.push(i.flavor);
+                let specTxt = details.length > 0 ? `(${details.join('/')})` : '';
+                return `<div style="font-size:14px; margin-bottom:4px; display:flex; justify-content:space-between;">
+                  <span>${i.name} ${specTxt} x ${i.quantity}</span>
+                </div>`;
+            }).join('');
 
             const card = document.createElement('div');
             card.className = 'order-card';
@@ -515,6 +576,11 @@
       }
     });
 
+    window.closeTutorial = function() {
+        document.getElementById('tutorial-modal').classList.remove('active');
+        if (currentUserUid) update(ref(database, 'users/' + currentUserUid), { hasSeenTutorial: true });
+    };
+
     function renderProductGrid(products) {
       const drinksGrid = document.getElementById('drinks-grid');
       const dessertsGrid = document.getElementById('desserts-grid');
@@ -542,6 +608,73 @@
       }
     }
 
+    function renderRedeemableCoupons() {
+        const container = document.getElementById('coupon-list-container');
+        container.innerHTML = '';
+        const keys = Object.keys(allCoupons);
+        if (keys.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">目前沒有可兌換的優惠券</p>`;
+            return;
+        }
+
+        keys.forEach(id => {
+            const c = allCoupons[id];
+            const div = document.createElement('div');
+            div.className = 'coupon-card';
+            div.innerHTML = `
+                <div>
+                    <div style="font-weight:700; font-size:16px; margin-bottom:4px;">${c.name}</div>
+                    <div style="font-size:13px; color:var(--sb-text-gray); margin-bottom:4px;">${c.detail}</div>
+                    <div style="font-size:12px; color:var(--sb-primary-green); font-weight:600;">限期: ${c.expiry}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:700; color:var(--sb-gold); margin-bottom:8px;">${c.cost} 顆星賞</div>
+                    <button class="btn-action" style="padding:8px 16px; font-size:13px;" onclick="redeemCoupon('${id}', ${c.cost})">兌換</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    window.redeemCoupon = function(couponId, cost) {
+        if (!currentUserData) return;
+        if ((currentUserData.points || 0) < cost) {
+            return window.showSystemAlert('您的星賞點數不足以兌換此優惠券。');
+        }
+        window.showSystemConfirm(`確認花費 ${cost} 顆星賞兌換此優惠？`, () => {
+            const newPoints = currentUserData.points - cost;
+            const updates = {};
+            updates[`users/${currentUserUid}/points`] = newPoints;
+            
+            // Add a unique ID for the user's specific coupon instance
+            const userCouponId = 'UC_' + Date.now();
+            updates[`users/${currentUserUid}/coupons/${userCouponId}`] = { couponId: couponId, used: false };
+            
+            update(ref(database), updates).then(() => {
+                window.showSystemAlert('成功兌換優惠券！可於購物車內使用。');
+            });
+        });
+    }
+
+    function updateCartCouponsDropdown() {
+        const select = document.getElementById('cart-coupon-select');
+        if (!select) return;
+        select.innerHTML = '<option value="">不使用優惠券</option>';
+        
+        for (let ucId in myCoupons) {
+            if (!myCoupons[ucId].used) {
+                const baseCoupon = allCoupons[myCoupons[ucId].couponId];
+                if (baseCoupon) {
+                    const opt = document.createElement('option');
+                    opt.value = ucId;
+                    opt.textContent = `${baseCoupon.name} (${baseCoupon.detail})`;
+                    select.appendChild(opt);
+                }
+            }
+        }
+        renderCartUI();
+    }
+
     window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('active'); }
     window.switchPage = function(pageId) { 
       document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active')); 
@@ -549,34 +682,35 @@
       document.getElementById('sidebar').classList.remove('active');
     }
 
-    function renderMobileQRCode(textData) {
-      const container = document.getElementById('qr-code-output');
-      container.innerHTML = '';
-      try { new QRCode(container, { text: textData, width: 194, height: 194, colorDark: "#1e3932", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
-      } catch(err){}
-    }
-
     function viewProductDetail(name, priceStr, detail, photoUrl, category, id) {
       const p = localProductsCache[id] || {};
       let customizationHtml = '';
-      const iceSpec = p.iceSpecification || '正常冰,少冰,去冰';
-      if (iceSpec !== '不套用' && category === '飲品') {
-        const iceArr = iceSpec.split(',');
-        let iceOptions = '';
-        iceArr.forEach((ice, index) => {
-          iceOptions += `<div class="selector-item"><input type="radio" id="ice-${index}" name="sb-ice-option" value="${ice}" ${index === 0 ? 'checked' : ''}><label for="ice-${index}">${ice}</label></div>`;
-        });
-        customizationHtml += `<div class="option-group"><span class="option-label">冰量客製化</span><div class="selector-wrapper">${iceOptions}</div></div>`;
+      
+      if (category === '飲品') {
+          const iceSpec = p.iceSpecification || '正常冰,少冰,去冰';
+          if (iceSpec !== '不套用') {
+            const iceArr = iceSpec.split(',');
+            let iceOptions = '';
+            iceArr.forEach((ice, index) => { iceOptions += `<div class="selector-item"><input type="radio" id="ice-${index}" name="sb-ice-option" value="${ice}" ${index === 0 ? 'checked' : ''}><label for="ice-${index}">${ice}</label></div>`; });
+            customizationHtml += `<div class="option-group"><span class="option-label">冰量客製化</span><div class="selector-wrapper">${iceOptions}</div></div>`;
+          }
+          const sugarSpec = p.sugarSpecification || '正常甜,少甜,無甜';
+          if (sugarSpec !== '不套用') {
+            const sugarArr = sugarSpec.split(',');
+            let sugarOptions = '';
+            sugarArr.forEach((sugar, index) => { sugarOptions += `<div class="selector-item"><input type="radio" id="sugar-${index}" name="sb-sugar-option" value="${sugar}" ${index === 0 ? 'checked' : ''}><label for="sugar-${index}">${sugar}</label></div>`; });
+            customizationHtml += `<div class="option-group"><span class="option-label">甜度客製化</span><div class="selector-wrapper">${sugarOptions}</div></div>`;
+          }
+      } else if (category === '甜點') {
+          const flavorSpec = p.flavorSpecification || '原味,朱古力,Oreo';
+          if (flavorSpec !== '不套用') {
+            const fArr = flavorSpec.split(',');
+            let fOptions = '';
+            fArr.forEach((fl, index) => { fOptions += `<div class="selector-item"><input type="radio" id="flavor-${index}" name="sb-flavor-option" value="${fl}" ${index === 0 ? 'checked' : ''}><label for="flavor-${index}">${fl}</label></div>`; });
+            customizationHtml += `<div class="option-group"><span class="option-label">口味選擇</span><div class="selector-wrapper">${fOptions}</div></div>`;
+          }
       }
-      const sugarSpec = p.sugarSpecification || '正常甜,少甜,無甜';
-      if (sugarSpec !== '不套用' && category === '飲品') {
-        const sugarArr = sugarSpec.split(',');
-        let sugarOptions = '';
-        sugarArr.forEach((sugar, index) => {
-          sugarOptions += `<div class="selector-item"><input type="radio" id="sugar-${index}" name="sb-sugar-option" value="${sugar}" ${index === 0 ? 'checked' : ''}><label for="sugar-${index}">${sugar}</label></div>`;
-        });
-        customizationHtml += `<div class="option-group"><span class="option-label">甜度客製化</span><div class="selector-wrapper">${sugarOptions}</div></div>`;
-      }
+
       const productPoints = p.points !== undefined ? p.points : 0;
       const modalContent = document.getElementById('modal-dynamic-content');
       modalContent.innerHTML = `
@@ -586,7 +720,7 @@
         <div class="modal-price">${priceStr}</div>
         <p style="font-size:14px; color:var(--sb-text-gray); margin-bottom:20px; line-height:1.5;" id="modal-p-detail"></p>
         <div class="customization-section">
-          ${customizationHtml || '<div class="fixed-specification-box">本商品採用經典配方，不提供甜度冰量調整。</div>'}
+          ${customizationHtml || '<div class="fixed-specification-box">本商品採用經典配方，不提供規格調整。</div>'}
           <div class="option-group" style="margin-top:24px; display:flex; align-items:center; gap:16px;">
             <span class="option-label" style="margin-bottom:0;">購買數量</span>
             <input type="number" id="cart-item-qty" value="1" min="1" style="width:90px; padding:8px 12px; border-radius:8px; text-align:center;">
@@ -602,13 +736,22 @@
 
     window.addToCart = function(id, name, price, category) {
       const qty = parseInt(document.getElementById('cart-item-qty').value) || 1;
-      const iceEl = document.querySelector('input[name="sb-ice-option"]:checked');
-      const sugarEl = document.querySelector('input[name="sb-sugar-option"]:checked');
-      const ice = iceEl ? iceEl.value : '標準';
-      const sugar = sugarEl ? sugarEl.value : '標準';
-      const existing = shoppingCart.find(i => i.id === id && i.ice === ice && i.sugar === sugar);
+      
+      let ice = '標準', sugar = '標準', flavor = '標準';
+      if (category === '飲品') {
+          const iceEl = document.querySelector('input[name="sb-ice-option"]:checked');
+          const sugarEl = document.querySelector('input[name="sb-sugar-option"]:checked');
+          ice = iceEl ? iceEl.value : '標準';
+          sugar = sugarEl ? sugarEl.value : '標準';
+      } else if (category === '甜點') {
+          const flavorEl = document.querySelector('input[name="sb-flavor-option"]:checked');
+          flavor = flavorEl ? flavorEl.value : '標準';
+      }
+
+      const existing = shoppingCart.find(i => i.id === id && i.ice === ice && i.sugar === sugar && i.flavor === flavor);
       if (existing) existing.quantity += qty;
-      else shoppingCart.push({ id, name, price, quantity: qty, ice, sugar, category });
+      else shoppingCart.push({ id, name, price, quantity: qty, ice, sugar, flavor, category });
+      
       closeModal();
       window.showSystemAlert(`已成功加入購物車：\n${name} (數量: ${qty})`);
       renderCartUI();
@@ -622,7 +765,7 @@
       renderCartUI();
     };
 
-    function renderCartUI() {
+    window.renderCartUI = function() {
       const container = document.getElementById('cart-items-container');
       const totalDisplay = document.getElementById('cart-total-price');
       if (shoppingCart.length === 0) {
@@ -635,11 +778,16 @@
       table.className = 'cart-table';
       table.innerHTML = `<tr><th>商品明細</th><th>客製化規格</th><th>單價</th><th>數量</th><th>總計</th><th>操作</th></tr>`;
       
-      let grandTotal = 0;
+      let itemsTotal = 0;
       shoppingCart.forEach((item, i) => {
         const itemTotal = item.price * item.quantity; 
-        grandTotal += itemTotal;
-        const spec = [item.ice !== '標準'?item.ice:'', item.sugar !== '標準'?item.sugar:''].filter(Boolean).join('/') || '標準配方';
+        itemsTotal += itemTotal;
+        let details = [];
+        if(item.ice && item.ice !== '標準') details.push(item.ice);
+        if(item.sugar && item.sugar !== '標準') details.push(item.sugar);
+        if(item.flavor && item.flavor !== '標準') details.push(item.flavor);
+        const spec = details.length > 0 ? details.join('/') : '標準配方';
+
         const row = document.createElement('tr');
         row.innerHTML = `
           <td class="item-title-td" style="font-weight:600;"></td>
@@ -655,11 +803,24 @@
       });
       container.appendChild(table);
 
+      let grandTotal = itemsTotal;
       const isDelivery = document.querySelector('input[name="delivery-type"]:checked').value === 'delivery';
       if (isDelivery) grandTotal += 1;
+
+      // 計算優惠
+      const selectedUcId = document.getElementById('cart-coupon-select')?.value;
+      if (selectedUcId && myCoupons[selectedUcId]) {
+          const cId = myCoupons[selectedUcId].couponId;
+          const couponData = allCoupons[cId];
+          if (couponData && couponData.discountVal) {
+              const discount = parseInt(couponData.discountVal);
+              grandTotal -= discount;
+          }
+      }
       
+      if (grandTotal < 0) grandTotal = 0;
       totalDisplay.innerText = `HK$ ${grandTotal}`;
-    }
+    };
     
     window.removeFromCart = function(i) { shoppingCart.splice(i, 1); renderCartUI(); };
 
@@ -678,6 +839,14 @@
 
           let itemsTotal = shoppingCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
           let grandTotal = itemsTotal + (isDelivery ? 1 : 0);
+          
+          const selectedUcId = document.getElementById('cart-coupon-select')?.value;
+          if (selectedUcId && myCoupons[selectedUcId]) {
+              const cId = myCoupons[selectedUcId].couponId;
+              const couponData = allCoupons[cId];
+              if (couponData && couponData.discountVal) grandTotal -= parseInt(couponData.discountVal);
+          }
+          if (grandTotal < 0) grandTotal = 0;
 
           if (!currentUserData || currentUserData.balance === undefined || currentUserData.balance < grandTotal) {
             return window.showSystemAlert('餘額不足請增值！');
@@ -685,7 +854,14 @@
 
           // 播放綠屏過場
           const trans = document.getElementById('checkout-transition-overlay');
+          const transText = document.getElementById('checkout-text');
+          const transSpinner = document.getElementById('checkout-spinner');
           trans.style.display = 'flex';
+          transText.textContent = '正在結帳中！';
+          transSpinner.style.display = 'block';
+          transSpinner.style.animation = 'spin 1s linear infinite';
+          transSpinner.style.border = '4px solid rgba(255,255,255,0.3)';
+          transSpinner.style.borderTop = '4px solid white';
 
           const dateKey = new Date().toISOString().slice(0, 10).replace(/-/g, '');
           const counterRef = ref(database, 'counters/' + dateKey);
@@ -695,29 +871,50 @@
             let orderNumStr = "#" + String(count).padStart(3, '0');
             set(counterRef, count + 1);
             
-            // 扣除餘額
-            update(ref(database, 'users/' + currentUserUid), { balance: currentUserData.balance - grandTotal });
+            let pointsEarned = shoppingCart.reduce((sum, item) => {
+                let p = localProductsCache[item.id];
+                return sum + ((p && p.points ? p.points : 0) * item.quantity);
+            }, 0);
+
+            const updates = {};
+            updates[`users/${currentUserUid}/balance`] = currentUserData.balance - grandTotal;
+            updates[`users/${currentUserUid}/points`] = (currentUserData.points || 0) + pointsEarned;
             
-            // 寫入訂單
-            push(ref(database, 'orders'), {
-              userUid: currentUserUid,
-              customerName: (currentUserData.lastName || '') + (currentUserData.firstName || ''),
-              customerPhone: currentUserData.phone,
-              orderNum: orderNumStr,
-              deliveryType: isDelivery ? '配送' : '自取',
-              address: isDelivery ? addressInput : '自取清河邨樓下',
-              items: shoppingCart,
-              total: grandTotal,
-              status: '已接單',
-              deliveryTime: '', // 管理員將會設定預計時間
-              timestamp: Date.now()
-            }).then(() => {
-              shoppingCart = [];
-              renderCartUI();
-              setTimeout(() => {
-                trans.style.display = 'none';
-                switchPage('section-orders');
-              }, 2000);
+            if (selectedUcId) {
+                updates[`users/${currentUserUid}/coupons/${selectedUcId}/used`] = true;
+            }
+
+            update(ref(database), updates).then(() => {
+                push(ref(database, 'orders'), {
+                  userUid: currentUserUid,
+                  customerName: (currentUserData.lastName || '') + (currentUserData.firstName || ''),
+                  customerPhone: currentUserData.phone,
+                  orderNum: orderNumStr,
+                  deliveryType: isDelivery ? '配送' : '自取',
+                  address: isDelivery ? addressInput : '自取清河邨樓下',
+                  items: shoppingCart,
+                  total: grandTotal,
+                  status: '已接單',
+                  deliveryTime: '', 
+                  timestamp: Date.now()
+                }).then(() => {
+                  shoppingCart = [];
+                  renderCartUI();
+                  
+                  // 動畫切換至完成
+                  setTimeout(() => {
+                      transSpinner.style.animation = 'none';
+                      transSpinner.style.border = 'none';
+                      transSpinner.innerHTML = '<div style="color:white; font-size:40px;">✓</div>';
+                      transText.textContent = '結帳完成';
+                      
+                      setTimeout(() => {
+                          trans.style.display = 'none';
+                          transSpinner.innerHTML = ''; // reset
+                          switchPage('section-orders');
+                      }, 2000);
+                  }, 1500);
+                });
             });
           });
         });
@@ -745,7 +942,8 @@
           email, 
           points: 0, 
           balance: 0, 
-          role: "customer"
+          role: "customer",
+          hasSeenTutorial: false
         });
       }).catch(() => window.showSystemAlert('帳戶建立失敗。請確認密碼強度符合規範，或此電子郵件是否已被註冊。'));
     };
@@ -769,18 +967,23 @@
       e.preventDefault();
       if (!currentUserUid) return;
       const name = document.getElementById('topup-name').value.trim();
+      const phone = document.getElementById('topup-phone').value.trim();
+      const method = document.getElementById('topup-method').value;
       const date = document.getElementById('topup-date').value;
       const amount = document.getElementById('topup-amount').value;
       
       push(ref(database, 'topupRequests'), {
         uid: currentUserUid,
         name: name,
+        phone: phone,
+        method: method,
         date: date,
         amount: amount,
         timestamp: Date.now()
       }).then(() => {
-        window.showSystemAlert('提交成功，請等待一至兩小時！');
+        window.showSystemAlert('提交成功，請等待客服回覆！');
         document.getElementById('topup-name').value = '';
+        document.getElementById('topup-phone').value = '';
         document.getElementById('topup-date').value = '';
         document.getElementById('topup-amount').value = '';
         document.getElementById('topup-container').classList.add('hidden');
