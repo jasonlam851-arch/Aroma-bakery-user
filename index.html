@@ -118,7 +118,7 @@
     .selector-wrapper { display: flex; gap: 8px; flex-wrap: wrap; }
     .selector-item { flex: 1; min-width: 90px; }
     .selector-item input[type="radio"] { display: none; }
-    .selector-item label { display: block; padding: 10px; border: 1px solid var(--sb-text-gray); border-radius: 24px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .selector-item label { display: block; padding: 10px; border: 1px solid var(--sb-text-gray); border-radius: 24px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 0; }
     .selector-item input[type="radio"]:checked + label { background-color: var(--sb-primary-green); color: white; border-color: var(--sb-primary-green); }
     
     .fixed-specification-box { padding: 14px; background-color: var(--sb-bg-cream); border: 1px solid var(--sb-border); border-radius: 8px; font-size: 13px; color: var(--sb-text-gray); }
@@ -390,14 +390,21 @@
           
           <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p></div>
           
+          <!-- 更新後的配送方式選擇區塊 -->
           <div style="margin-top: 24px; background-color: var(--sb-bg-cream); padding: 20px; border-radius: 8px; border: 1px solid var(--sb-border);">
             <div style="font-weight: 600; margin-bottom: 12px; font-size: 15px;">配送方式選擇</div>
-            <label style="display:flex; align-items:center; gap:8px; font-weight:500; cursor:pointer; margin-bottom:12px;">
-              <input type="radio" name="delivery-type" value="pickup" checked onchange="toggleDeliveryMode()"> 自取清河邨樓下
-            </label>
-            <label style="display:flex; align-items:center; gap:8px; font-weight:500; cursor:pointer;">
-              <input type="radio" name="delivery-type" value="delivery" onchange="toggleDeliveryMode()"> 配送 (加收 HK$ 1 配送費)
-            </label>
+            
+            <div class="selector-wrapper">
+              <div class="selector-item">
+                <input type="radio" id="delivery-pickup" name="delivery-type" value="pickup" checked onchange="toggleDeliveryMode()">
+                <label for="delivery-pickup">自取清河邨樓下</label>
+              </div>
+              <div class="selector-item">
+                <input type="radio" id="delivery-delivery" name="delivery-type" value="delivery" onchange="toggleDeliveryMode()">
+                <label for="delivery-delivery">配送 (加收 HK$ 1 配送費)</label>
+              </div>
+            </div>
+
             <div id="delivery-address-container" style="display:none; margin-top:16px;">
               <input type="text" id="delivery-address-input" placeholder="請詳細填寫配送地址">
             </div>
