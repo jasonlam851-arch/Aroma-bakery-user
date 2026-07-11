@@ -58,14 +58,20 @@
     .cart-text-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .cart-text-btn:hover { background: white; color: var(--sb-dark-green); }
     
-    .sidebar { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background-color: #ffffff; padding-top: 24px; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200; border-right: 1px solid var(--sb-border); box-shadow: 4px 0 12px rgba(0,0,0,0.05); }
+    .sidebar { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background-color: #ffffff; padding-top: 24px; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200; border-right: 1px solid var(--sb-border); box-shadow: 4px 0 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
     .sidebar.active { transform: translateX(300px); }
     .sidebar-header { display: flex; justify-content: flex-end; padding: 0 24px 16px; border-bottom: 1px solid var(--sb-border); }
     .close-btn { font-size: 28px; color: var(--sb-text-black); cursor: pointer; }
-    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu { list-style: none; padding: 16px 0; flex: 1; }
     .sidebar-menu li { padding: 16px 32px; color: var(--sb-text-black); font-size: 15px; font-weight: 500; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
     .sidebar-menu li:hover { background-color: var(--sb-light-green); color: var(--sb-primary-green); }
     
+    /* 側邊欄底部 (版本號與信件) */
+    .sidebar-footer { padding: 24px 32px; border-top: 1px solid var(--sb-border); display: flex; justify-content: space-between; align-items: center; background-color: var(--sb-bg-cream); }
+    .sidebar-version { font-size: 13px; font-weight: 600; color: var(--sb-text-gray); letter-spacing: 1px; }
+    .env-icon { color: var(--sb-primary-green); cursor: pointer; transition: transform 0.2s; }
+    .env-icon:hover { transform: scale(1.1); }
+
     .main-content { padding: 40px 24px; max-width: 1280px; margin: 0 auto; }
     .page-section { display: none; }
     .page-section.active { display: block; }
@@ -124,6 +130,7 @@
     .fixed-specification-box { padding: 14px; background-color: var(--sb-bg-cream); border: 1px solid var(--sb-border); border-radius: 8px; font-size: 13px; color: var(--sb-text-gray); }
     .btn-submit-order { width: 100%; padding: 16px; background-color: var(--sb-primary-green); color: #ffffff; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background-color 0.2s; text-align: center; }
     .btn-submit-order:hover { background-color: #004d33; }
+    .btn-submit-order:disabled { background-color: var(--sb-text-gray); cursor: not-allowed; }
 
     .system-alert-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
     .system-alert-overlay.active { opacity: 1; pointer-events: auto; }
@@ -144,8 +151,9 @@
     .slide-out-left { animation: slideOutLeft 0.6s forwards cubic-bezier(0.65, 0, 0.35, 1); }
 
     .order-card { border: 1px solid var(--sb-border); border-radius: 8px; padding: 24px; margin-bottom: 24px; background: white; }
-    .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--sb-border); padding-bottom: 16px; margin-bottom: 16px; }
+    .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--sb-border); padding-bottom: 16px; margin-bottom: 16px; }
     .order-status-badge { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 4px; background: var(--sb-light-green); border: 1px solid var(--sb-primary-green); color: var(--sb-primary-green); }
+    .order-status-badge.canceled { background: #fff0f0; border-color: var(--sb-danger); color: var(--sb-danger); }
     
     .green-star-card { background: var(--sb-dark-green); border-radius: 12px; padding: 28px; color: white; width: 100%; max-width: 320px; margin: 0 auto; aspect-ratio: 1.58; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 12px 24px rgba(0,0,0,0.15); position: relative; overflow: hidden; transition: background 0.4s ease; border: 1px solid var(--sb-border); }
     .green-star-card::after { content: ""; position: absolute; right: -20%; bottom: -30%; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
@@ -160,8 +168,12 @@
     .skin-btn:hover { border-color: var(--sb-primary-green); background: var(--sb-light-green); }
 
     .coupon-card { border: 1px solid var(--sb-border); border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: white; }
-
     .pickup-code-display { font-size: 32px; font-weight: 700; color: var(--sb-dark-green); text-align: center; margin: 24px 0; letter-spacing: 2px; padding: 24px; border: 1px solid var(--sb-border); background: var(--sb-bg-cream); }
+    
+    /* 信譽分進度條 */
+    .rep-bar-container { width: 100%; height: 12px; background-color: var(--sb-border); border-radius: 50px; overflow: hidden; margin-top: 8px; }
+    .rep-bar-fill { height: 100%; background-color: var(--sb-primary-green); transition: width 0.5s ease; }
+    .rep-bar-fill.danger { background-color: var(--sb-danger); }
   </style>
 </head>
 <body>
@@ -178,9 +190,10 @@
       <h3 style="margin-bottom:20px; font-size: 22px; color: var(--sb-dark-green);">歡迎來到 Aroma Bakery</h3>
       <div style="text-align: left; margin-bottom: 28px; font-size: 15px; line-height: 1.8; color: var(--sb-text-black);">
         <p style="font-weight: 700; margin-bottom: 8px;">快速入門教學指南：</p>
-        <p>1. 點擊「精選菜單」瀏覽並下單購買您喜愛的飲品與甜點。</p>
+        <p>1. 點擊「精選菜單」瀏覽並購買您喜愛的飲品與甜點，每次成功購買可獲 <strong style="color:var(--sb-primary-green);">+5 信譽分</strong>。</p>
         <p>2. 下單前請前往「我的錢包」進行增值，確保餘額充足。</p>
-        <p>3. 購物結帳將累積星賞點數，點數可用於「我的行動綠星卡」兌換專屬優惠券。</p>
+        <p>3. 購物結帳將累積星賞點數，點數可用於「行動綠星卡」兌換專屬優惠券。</p>
+        <p>4. <strong style="color:var(--sb-danger);">注意：</strong>若取消未接單之訂單將扣除 10 點信譽分，並限制當日購買權限。若信譽分歸零將永久停權。</p>
       </div>
       <button class="btn-action" style="width: 100%;" onclick="closeTutorial()">我已了解，開始使用</button>
     </div>
@@ -266,6 +279,13 @@
         <li onclick="switchPage('section-profile')">個人資料</li>
         <li onclick="switchPage('section-qrcode')">我的行動綠星卡</li>
       </ul>
+      <div class="sidebar-footer">
+        <span class="sidebar-version">v1.0</span>
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="env-icon" onclick="switchPage('section-messages')">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </div>
     </div>
 
     <div class="main-content">
@@ -277,9 +297,36 @@
         <div class="product-grid" id="desserts-grid"></div>
       </div>
 
+      <div id="section-messages" class="page-section">
+        <h2>系統信件匣</h2>
+        <div class="card-panel" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 60px 20px;">
+          <svg viewBox="0 0 24 24" width="48" height="48" stroke="var(--sb-border)" stroke-width="2" fill="none" style="margin-bottom: 16px;">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <p style="color: var(--sb-text-gray); font-size: 15px;">目前沒有新信件</p>
+        </div>
+      </div>
+
       <div id="section-profile" class="page-section">
         <h2>個人資料</h2>
         <div class="card-panel" style="max-width: 560px; margin: 0 auto;">
+          
+          <div style="background-color: var(--sb-bg-cream); padding: 20px; border-radius: 8px; border: 1px solid var(--sb-border); margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+              <span style="font-weight: 700; font-size: 15px; color: var(--sb-text-black);">帳號信譽總分</span>
+              <span style="font-weight: 700; font-size: 20px; color: var(--sb-primary-green);" id="profile-reputation-text">100 / 100</span>
+            </div>
+            <div class="rep-bar-container">
+              <div id="profile-reputation-bar" class="rep-bar-fill" style="width: 100%;"></div>
+            </div>
+            <p style="font-size: 11px; color: var(--sb-text-gray); margin-top: 12px; line-height: 1.5;">
+              * 購買商品可賺取 +5 信譽分。<br>
+              * 取消「未接單」訂單將扣除 10 分並限制當日購買。<br>
+              * 若信譽分歸零，該帳號將永久限制購買權限。
+            </p>
+          </div>
+
           <div class="form-row">
             <div class="form-group" style="flex:1;"><label>姓氏</label><input type="text" id="profile-last-name"></div>
             <div class="form-group" style="flex:1;"><label>名字</label><input type="text" id="profile-first-name"></div>
@@ -390,7 +437,6 @@
           
           <div id="cart-items-container"><p style="text-align: center; color: var(--sb-text-gray); padding: 32px 0;">您的購物車目前沒有商品</p></div>
           
-          <!-- 更新後的配送方式選擇區塊 -->
           <div style="margin-top: 24px; background-color: var(--sb-bg-cream); padding: 20px; border-radius: 8px; border: 1px solid var(--sb-border);">
             <div style="font-weight: 600; margin-bottom: 12px; font-size: 15px;">配送方式選擇</div>
             
@@ -539,6 +585,15 @@
             document.getElementById('member-points-text').innerText = data.points !== undefined ? data.points : 0;
             document.getElementById('wallet-balance').innerText = data.balance !== undefined ? data.balance : 0;
             
+            // 信譽分顯示邏輯
+            const rep = data.reputation !== undefined ? data.reputation : 100;
+            const repText = document.getElementById('profile-reputation-text');
+            const repBar = document.getElementById('profile-reputation-bar');
+            repText.innerText = `${rep} / 100`;
+            repBar.style.width = `${rep}%`;
+            if (rep <= 30) repBar.className = 'rep-bar-fill danger';
+            else repBar.className = 'rep-bar-fill';
+
             const displayPhone = data.phone ? (data.phone.startsWith('852') ? data.phone : '852' + data.phone) : '';
             document.getElementById('card-member-id').innerText = `AROMA_${displayPhone}`;
             
@@ -599,12 +654,23 @@
                 </div>`;
             }).join('');
 
+            const badgeClass = o.status === '已取消' ? 'order-status-badge canceled' : 'order-status-badge';
+            let cancelBtnHtml = '';
+            
+            // 信譽分扣除退單按鈕
+            if (o.status === '未接單') {
+              cancelBtnHtml = `<button class="btn-logout" style="padding: 6px 16px; font-size: 12px; margin-top: 0; width: auto; border-color: var(--sb-danger);" onclick="cancelMyOrder('${o.id}', ${o.total})">取消訂單</button>`;
+            }
+
             const card = document.createElement('div');
             card.className = 'order-card';
             card.innerHTML = `
               <div class="order-header">
-                <span style="font-weight:700; font-size:16px;">訂單號 ${o.orderNum}</span>
-                <span class="order-status-badge">${o.status}</span>
+                <div>
+                  <span style="font-weight:700; font-size:16px;">訂單號 ${o.orderNum}</span>
+                  <div style="margin-top: 6px;"><span class="${badgeClass}">${o.status}</span></div>
+                </div>
+                ${cancelBtnHtml}
               </div>
               <div style="margin-bottom:12px; font-size:14px; line-height:1.6; color:var(--sb-text-black);">
                  <div><span style="color:var(--sb-text-gray); min-width:80px; display:inline-block;">專屬取餐碼</span> <strong style="color:var(--sb-primary-green);">${o.pickupCode || '無'}</strong></div>
@@ -629,6 +695,31 @@
         setTimeout(() => document.getElementById('auth-overlay').style.opacity = '1', 50);
       }
     });
+
+    // 取消訂單邏輯
+    window.cancelMyOrder = function(orderId, orderTotal) {
+      if (!currentUserData) return;
+      const today = new Date().toISOString().slice(0, 10);
+      
+      if (currentUserData.lastCancelDate === today) {
+        return window.showSystemAlert('您今日已經取消過一筆訂單，當日限制已達上限，無法再次取消。');
+      }
+
+      window.showSystemConfirm('確定要取消此訂單嗎？\n\n注意：退單將扣除 10 點信譽分，退還訂單款項至錢包餘額。且您今日將被暫停購買權限。\n\n若信譽分歸零，該帳號將永久不得購買！', () => {
+        const currentRep = currentUserData.reputation !== undefined ? currentUserData.reputation : 100;
+        const newRep = Math.max(0, currentRep - 10);
+        
+        const updates = {};
+        updates[`orders/${orderId}/status`] = '已取消';
+        updates[`users/${currentUserUid}/reputation`] = newRep;
+        updates[`users/${currentUserUid}/lastCancelDate`] = today;
+        updates[`users/${currentUserUid}/balance`] = (currentUserData.balance || 0) + orderTotal;
+
+        update(ref(database), updates).then(() => {
+          window.showSystemAlert(`訂單已成功取消。\n已扣除 10 點信譽分，剩餘信譽分：${newRep}\n\n訂單退款 HK$ ${orderTotal} 已發放至您的錢包餘額。`);
+        });
+      });
+    };
 
     window.requestSkinChange = function(skinType) {
         if (!currentUserData) return;
@@ -921,6 +1012,19 @@
         btn.addEventListener('click', () => {
           if(shoppingCart.length === 0) return window.showSystemAlert('購物車內無任何商品，無法執行結帳。');
           
+          if(!currentUserData) return;
+
+          // 結帳信譽分封鎖邏輯
+          const currentRep = currentUserData.reputation !== undefined ? currentUserData.reputation : 100;
+          if (currentRep <= 0) {
+            return window.showSystemAlert('您的帳號信譽分已歸零，系統已永久限制您的購買權限，無法繼續結帳。');
+          }
+
+          const todayDateString = new Date().toISOString().slice(0, 10);
+          if (currentUserData.lastCancelDate === todayDateString) {
+            return window.showSystemAlert('您今日因退單已受購買限制，今日無法再下單購買，請明日再試。');
+          }
+
           const isDelivery = document.querySelector('input[name="delivery-type"]:checked').value === 'delivery';
           const addressInput = document.getElementById('delivery-address-input').value.trim();
           
@@ -936,7 +1040,7 @@
               if (couponData && couponData.discountVal) grandTotal -= parseInt(couponData.discountVal);
           }
           if (grandTotal < 0) grandTotal = 0;
-          if (!currentUserData || currentUserData.balance === undefined || currentUserData.balance < grandTotal) {
+          if (currentUserData.balance === undefined || currentUserData.balance < grandTotal) {
             return window.showSystemAlert('餘額不足請增值！');
           }
 
@@ -970,6 +1074,8 @@
               const updates = {};
               updates[`users/${currentUserUid}/balance`] = currentUserData.balance - grandTotal;
               updates[`users/${currentUserUid}/points`] = (currentUserData.points || 0) + pointsEarned;
+              // 結帳成功信譽分 +5
+              updates[`users/${currentUserUid}/reputation`] = Math.min(100, currentRep + 5);
               
               if (selectedUcId) {
                   updates[`users/${currentUserUid}/coupons/${selectedUcId}/used`] = true;
@@ -1036,6 +1142,7 @@
           email, 
           points: 0, 
           balance: 0, 
+          reputation: 100, /* 初始給予 100 點信譽分 */
           role: "customer",
           hasSeenTutorial: false,
           cardSkin: 'default',
